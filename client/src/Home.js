@@ -3,7 +3,6 @@ import axios from "axios";
 import { ReactComponent as PreviousIcon } from "./buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "./buttons/caret-forward-outline.svg";
 import styles from "./home.module.css";
-import levenshtein from "fast-levenshtein";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 import SearchBar from "./SearchBar";

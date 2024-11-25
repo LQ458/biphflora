@@ -1,13 +1,9 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import levenshtein from "fast-levenshtein";
 import SubBox from "./SubBox.js";
 import "./creationPaint.css";
 import { ReactComponent as PreviousIcon } from "./buttons/caret-back-outline.svg";
-import { ReactComponent as SearchIcon } from "./buttons/search-outline.svg";
 import { ReactComponent as NextIcon } from "./buttons/caret-forward-outline.svg";
-import { useHistory } from "react-router-dom";
 
 const CreationPaintings = (props) => {
   const [pics, setPics] = useState([]);

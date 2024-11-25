@@ -1,9 +1,7 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
-import levenshtein from "fast-levenshtein";
 import { Link } from "react-router-dom";
-import "./db2.css";
+import React, { useState, useEffect } from "react";
+import "./homeDatabase.css";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
 const DatabaseTwo = ({ handleGet, setLoading }) => {

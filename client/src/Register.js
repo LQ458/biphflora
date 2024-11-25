@@ -3,7 +3,6 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
-import styles from "./register.css";
 import { useEffect } from "react";
 import Navbar from "./Navbar";
 

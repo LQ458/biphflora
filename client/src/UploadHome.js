@@ -1,12 +1,8 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import "./uploadHome.css";
 
 const UploadHome = () => {
-  const navigate = useNavigate();
-
   const [homeEntries, setHomeEntries] = useState([]);
 
   const [serial1, setSerial1] = useState();

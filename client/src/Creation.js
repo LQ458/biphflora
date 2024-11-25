@@ -1,10 +1,5 @@
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import "./creation.css";
-import { ReactComponent as SearchIcon } from "./buttons/search-outline.svg";
-import { useHistory } from "react-router-dom";
 import CreationDocumentary from "./CreationDocumentary.js";
 import CreationPaintings from "./CreationPaintings.js";
 import CreationNotes from "./CreationNotes.js";

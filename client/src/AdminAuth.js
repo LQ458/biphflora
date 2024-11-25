@@ -2,7 +2,6 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { ReactComponent as PreviousIcon } from "./buttons/caret-back-outline.svg";
-import { ReactComponent as SearchIcon } from "./buttons/search-outline.svg";
 import { ReactComponent as NextIcon } from "./buttons/caret-forward-outline.svg";
 import "./AdminAuth.css";
 

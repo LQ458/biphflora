@@ -1,11 +1,7 @@
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import levenshtein from "fast-levenshtein";
-import { Link } from "react-router-dom";
 import InfoDatabase from "./InfoDatabase.js";
-import DatabaseTwo from "./DatabaseTwo.js";
-import DatabaseThree from "./DatabaseThree.js";
+import HomeDatabase from "./HomeDatabase.js";
+import GalleryDatabase from "./GalleryDatabase.js";
 import "./database.css";
 import Navbar from "./Navbar.js";
 
@@ -43,7 +39,7 @@ const Database = (prop) => {
       <section onLoad={() => setLoading(false)} className="db">
         <Navbar />
         <div className="infoDatabase">
-          <DatabaseThree
+          <GalleryDatabase
             customKey={key}
             handleBack={handleBack}
             gallerySearch={gallerySearch}
@@ -100,8 +96,8 @@ const Database = (prop) => {
             flexGrow: 1,
           }}
         >
-          <div className="databaseTwo">
-            <DatabaseTwo handleGet={handleGet} setLoading={setLoading} />
+          <div className="homeDatabase">
+            <HomeDatabase handleGet={handleGet} setLoading={setLoading} />
           </div>
           <div
             style={{

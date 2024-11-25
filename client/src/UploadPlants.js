@@ -12,13 +12,11 @@ import { Button } from "primereact/button";
 import imageCompression from "browser-image-compression";
 
 const UploadPlants = () => {
-  const navigate = useNavigate();
   const [latinName, setLatinName] = useState("");
   const [chineseName, setChineseName] = useState("");
   const [commonName, setCommonName] = useState("");
   const [location, setLocation] = useState("");
   const [bloomingSeason, setBloomingSeason] = useState("");
-  const [fruitingSeason, setFruitingSeason] = useState("");
   const [links, setLinks] = useState("");
   const [chineseLinks, setChineseLinks] = useState("");
   const [editor, setEditor] = useState("");
@@ -40,13 +38,6 @@ const UploadPlants = () => {
   const [plant, setPlant] = useState([]);
   const [artFiles, setArtFiles] = useState([]);
   const [picFiles, setPicFiles] = useState([]);
-  const [creationPicFile, setCreationPicFile] = useState();
-  const [creationArtFile, setCreationArtFile] = useState();
-  const [creationPlant, setCreationPlant] = useState("");
-  const [creationCreator, setCreationCreator] = useState("");
-  const [currentSubpage, setCurrentSubpage] = useState("plant");
-  const [speciesOptions, setSpeciesOptions] = useState([]);
-  const [picEnglishNameFocus, setPicEnglishNameFocus] = useState(false);
   const [plantLoading, setPlantLoading] = useState(false);
   const [picLoading, setPicLoading] = useState(false);
   const [artLoading, setArtLoading] = useState(false);

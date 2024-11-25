@@ -3,13 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { ReactComponent as PreviousIcon } from "./buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "./buttons/caret-forward-outline.svg";
 import React, { useState, useEffect } from "react";
-import levenshtein from "fast-levenshtein";
 import "./infoDatabase.css";
 import { useContext } from "react";
 import { UserContext } from "./UserContext.js";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
-import { Galleria } from "primereact/galleria";
 
 const InfoDatabase = (search) => {
   const { user } = useContext(UserContext);
@@ -238,31 +236,31 @@ const InfoDatabase = (search) => {
           { postName: searchName },
         );
         setPlant(response.data.resultPost[0]);
-    setLatin(response.data.resultPost[0].latinName);
-    document.title =
-      response.data.resultPost[0].latinName +
-      " " +
-      response.data.resultPost[0].commonName +
-      " " +
-      response.data.resultPost[0].chineseName;
-    setName(
-      response.data.resultPost[0].commonName +
-      " " +
-      response.data.resultPost[0].chineseName
-    );
-    
-    setLocation(response.data.resultPost[0].location || "");
-    setAdditionalInfoContent(
-      response.data.resultPost[0].additionalInfo.replace(/\r?\n/g, "<br>")
-    );
-    setLink(response.data.resultPost[0].link);
-    setChineseLink(response.data.resultPost[0].chineseLink || []);
-    setEditor(response.data.resultPost[0].editor || "Unknown");
-    setPostingtime(response.data.resultPost[0].postingtime);
-    setPicPaths(response.data.photographs);
-    assignPicPaths(response.data.photographs);
-    setArts(response.data.arts);
-    setOtherNames(response.data.resultPost[0].otherNames || "");
+        setLatin(response.data.resultPost[0].latinName);
+        document.title =
+          response.data.resultPost[0].latinName +
+          " " +
+          response.data.resultPost[0].commonName +
+          " " +
+          response.data.resultPost[0].chineseName;
+        setName(
+          response.data.resultPost[0].commonName +
+            " " +
+            response.data.resultPost[0].chineseName,
+        );
+
+        setLocation(response.data.resultPost[0].location || "");
+        setAdditionalInfoContent(
+          response.data.resultPost[0].additionalInfo.replace(/\r?\n/g, "<br>"),
+        );
+        setLink(response.data.resultPost[0].link);
+        setChineseLink(response.data.resultPost[0].chineseLink || []);
+        setEditor(response.data.resultPost[0].editor || "Unknown");
+        setPostingtime(response.data.resultPost[0].postingtime);
+        setPicPaths(response.data.photographs);
+        assignPicPaths(response.data.photographs);
+        setArts(response.data.arts);
+        setOtherNames(response.data.resultPost[0].otherNames || "");
       } catch (error) {
         console.log(error);
       }
@@ -329,22 +327,22 @@ const InfoDatabase = (search) => {
         { postName: sendName },
       );
       setLatin(response.data.resultPost[0].latinName);
-    setName(
-      response.data.resultPost[0].commonName +
-      " " +
-      response.data.resultPost[0].chineseName
-    );
-    setLocation(response.data.resultPost[0].location);
-    setAdditionalInfoContent(
-      response.data.resultPost[0].additionalInfo.replace(/\r?\n/g, "<br>")
-    );
-    setLink(response.data.resultPost[0].link);
-    setChineseLink(response.data.resultPost[0].chineseLink);
-    setEditor(response.data.resultPost[0].editor || "Unknown");
-    setPicPaths(response.data.photographs);
-    assignPicPaths(response.data.photographs);
-    setArts(response.data.arts);
-    setOtherNames(response.data.resultPost[0].otherNames || "");
+      setName(
+        response.data.resultPost[0].commonName +
+          " " +
+          response.data.resultPost[0].chineseName,
+      );
+      setLocation(response.data.resultPost[0].location);
+      setAdditionalInfoContent(
+        response.data.resultPost[0].additionalInfo.replace(/\r?\n/g, "<br>"),
+      );
+      setLink(response.data.resultPost[0].link);
+      setChineseLink(response.data.resultPost[0].chineseLink);
+      setEditor(response.data.resultPost[0].editor || "Unknown");
+      setPicPaths(response.data.photographs);
+      assignPicPaths(response.data.photographs);
+      setArts(response.data.arts);
+      setOtherNames(response.data.resultPost[0].otherNames || "");
     } catch (error) {
       console.log(error);
     }
@@ -521,17 +519,33 @@ const InfoDatabase = (search) => {
               </button>
             )}
 
-            <h3 className="titleMessage db1Infos">Information Profile 信息档案</h3>
-            
+            <h3 className="titleMessage db1Infos">
+              Information Profile 信息档案
+            </h3>
+
             {plant && otherNames && (
-              <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "0.5rem",
+                  alignItems: "center",
+                }}
+              >
                 <h3 className="db1Infos">Other names:</h3>
                 <p className="db1Infos">{otherNames}</p>
               </div>
             )}
-            
+
             {plant && location && (
-              <div style={{ display: "flex", flexDirection: "row", gap: "0.5rem", alignItems: "center" }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "0.5rem",
+                  alignItems: "center",
+                }}
+              >
                 <h3 className="db1Infos">Where can you find it 位置:</h3>
                 <p className="db1Infos">{location}</p>
               </div>
@@ -540,12 +554,15 @@ const InfoDatabase = (search) => {
             {plant && additionalInfoContent && (
               <>
                 <h3 className="db1Infos">Additional Info:</h3>
-                <p className="db1Infos" dangerouslySetInnerHTML={{ __html: additionalInfoContent }}></p>
+                <p
+                  className="db1Infos"
+                  dangerouslySetInnerHTML={{ __html: additionalInfoContent }}
+                ></p>
               </>
             )}
 
             <h3 className="db1Infos">Encyclopedia 百科介绍</h3>
-            
+
             {Array.isArray(link) && link.length > 0 && (
               <>
                 <h3 className="db1Infos">(English)</h3>
@@ -559,21 +576,25 @@ const InfoDatabase = (search) => {
               </>
             )}
 
-            {chineseLink.length > 0 && 
-             chineseLink.some((item) => item.link !== "" && item.linkTitle !== "") && (
-              <>
-                <h3 className="db1Infos">(中文)</h3>
-                {chineseLink.map((item, index) =>
-                  item.link !== "" && item.linkTitle !== "" && (
-                    <div key={index}>
-                      <li className="CN">
-                        {item.linkTitle}: {item.link}
-                      </li>
-                    </div>
-                  )
-                )}
-              </>
-            )}
+            {chineseLink.length > 0 &&
+              chineseLink.some(
+                (item) => item.link !== "" && item.linkTitle !== "",
+              ) && (
+                <>
+                  <h3 className="db1Infos">(中文)</h3>
+                  {chineseLink.map(
+                    (item, index) =>
+                      item.link !== "" &&
+                      item.linkTitle !== "" && (
+                        <div key={index}>
+                          <li className="CN">
+                            {item.linkTitle}: {item.link}
+                          </li>
+                        </div>
+                      ),
+                  )}
+                </>
+              )}
           </div>
 
           {/* Information portion (includes the information of the plant) */}

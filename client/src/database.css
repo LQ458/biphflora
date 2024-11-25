@@ -31,7 +31,7 @@ div.infoDatabase {
   min-height: 40rem;
   padding-bottom: 5rem;
 }
-div.databaseTwo {
+div.homeDatabase {
   background: url("../public/homescreen1.jpg") no-repeat;
   background-attachment: fixed;
   background-position: center -2rem;

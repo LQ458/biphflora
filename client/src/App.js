@@ -18,7 +18,7 @@ import "primereact/resources/themes/saga-green/theme.css";
 import "primeicons/primeicons.css";
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 function App() {
   const [search, setSearch] = useState("");

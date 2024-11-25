@@ -1,14 +1,6 @@
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { useContext } from "react";
-import { UserContext } from "./UserContext";
 import "./upload.css";
-import UploadPlants from "./UploadPlants.js";
-import UploadCreation from "./UploadCreation.js";
-import UploadHome from "./UploadHome.js";
 import Navbar from "./Navbar.js";
-import { useLocation } from "react-router-dom";
 
 const AboutUs = () => {
   const [loading, setLoading] = useState(true);
