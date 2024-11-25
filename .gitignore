@@ -25,6 +25,6 @@ yarn-debug.log*
 yarn-error.log*
 
 /public
-/client/public
+/client/public/plantspic
 
 /node_modules
