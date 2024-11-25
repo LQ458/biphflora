@@ -485,7 +485,7 @@ const InfoDatabase = (search) => {
   return (
     <>
       <body className="db1">
-        <div className="topbarDB1">
+        <div className="topbarInfoDB">
           <div style={{ flexGrow: "1", alignContent: "center" }}>
             <SearchBar
               handleGet={handleGet}

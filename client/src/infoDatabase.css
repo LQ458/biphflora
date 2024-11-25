@@ -57,7 +57,7 @@
   position: relative;
   top: 0.2vw;
 }
-.topbarDB1 {
+.topbarInfoDB {
   padding-top: 0rem;
   background-color: #516d4e;
   padding-bottom: 0rem;
@@ -91,7 +91,7 @@ h3.db1Title {
 div.ttl {
   display: flex;
   color: white;
-  flex-grow: 1;
+  padding-bottom: 1rem;
   font-size: 1.45rem;
   align-items: center;
   position: relative;

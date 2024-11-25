@@ -1,12 +1,11 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import React, { useState, useEffect } from "react";
-import "./galleryDatabase.css";
+import React, { useState, useEffect, useMemo } from "react";
+import styles from "./galleryDatabase.module.css";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
 
 const GalleryDatabase = (props) => {
-  const seasons = ["spring", "summer", "autumn", "winter"];
+  const seasons = useMemo(() => ["spring", "summer", "autumn", "winter"], []);
   const [curIndex, setCurIndex] = useState(0);
   const [username, setUsername] = useState("");
   const [admin, setAdmin] = useState("");
@@ -17,8 +16,6 @@ const GalleryDatabase = (props) => {
   const [displays, setDisplays] = useState([true, false, false, false]);
   const [zoomPicLink, setZoomPicLink] = useState("");
   const [featureBtnMsg, setFeatureBtnMsg] = useState("Feature");
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     const springBtn = document.getElementById("springBtn");
@@ -130,7 +127,7 @@ const GalleryDatabase = (props) => {
 
   return (
     <body>
-      <div className="topbar">
+      <div className={styles.topbarGalleryDB}>
         <div style={{ flexGrow: "1", alignContent: "center" }}>
           <SearchBar
             handleGet={props.gallerySearch}
@@ -140,48 +137,48 @@ const GalleryDatabase = (props) => {
             barWidth="80%"
           />
         </div>
-        <div className="ttl">
-          <h3 className="db1T">
+        <div className={styles.ttl}>
+          <h3>
             Name: <em>{props.customKey}</em>
           </h3>
         </div>
       </div>
-      <div className="lowerPart">
-        <button onClick={handleBack} className="backBtn">
+      <div className={styles.lowerPart}>
+        <button onClick={handleBack} className={styles.backBtn}>
           Back
         </button>
-        <h1 className="lowerTitle">Image Gallery图库</h1>
-        <div className="seasons">
+        <h1 className={styles.lowerTitle}>Image Gallery图库</h1>
+        <div className={styles.seasons}>
           <button
             id="springBtn"
-            className="seasonBtn"
+            className={styles.seasonBtn}
             onClick={() => change("spring")}
           >
             Spring
           </button>
-          <div className="lineB" />
-          <button className="seasonBtn" onClick={() => change("summer")}>
+          <div className={styles.lineB} />
+          <button className={styles.seasonBtn} onClick={() => change("summer")}>
             Summer
           </button>
-          <div className="lineB" />
-          <button className="seasonBtn" onClick={() => change("autumn")}>
+          <div className={styles.lineB} />
+          <button className={styles.seasonBtn} onClick={() => change("autumn")}>
             Autumn
           </button>
-          <div className="lineB" />
-          <button className="seasonBtn" onClick={() => change("winter")}>
+          <div className={styles.lineB} />
+          <button className={styles.seasonBtn} onClick={() => change("winter")}>
             Winter
           </button>
         </div>
-        <div className="underSeasons">
+        <div className={styles.underSeasons}>
           <button
             id="springBtn"
-            className="seasonBtn"
+            className={styles.seasonBtn}
             onClick={() => change("spring")}
           >
             Spring
           </button>
-          <div className="lineB" />
-          <button className="seasonBtn" onClick={() => change("summer")}>
+          <div className={styles.lineB} />
+          <button className={styles.seasonBtn} onClick={() => change("summer")}>
             Summer
           </button>
         </div>
@@ -189,20 +186,19 @@ const GalleryDatabase = (props) => {
           (pic, index) =>
             displays[index] && (
               <>
-                <div className="summerPics" key={index}>
+                <div className={styles.summerPics} key={index}>
                   {pic
                     .slice(curIndex * 12, (curIndex + 1) * 12)
                     .map((p, index) => (
-                      <div className="summerPic">
+                      <div className={styles.summerPic} key={index}>
                         <img
-                          key={index}
                           src={p.path}
                           alt=""
-                          className="summerPic"
+                          className={styles.summerPic}
                           onClick={() => zoom(p.path)}
                         />
-                        <div className="summerPicWords">
-                          <p className="SPW">
+                        <div className={styles.summerPicWords}>
+                          <p className={styles.SPW}>
                             {p.takenBy} {p.time} {p.description}
                           </p>
                         </div>
@@ -210,13 +206,13 @@ const GalleryDatabase = (props) => {
                     ))}
                 </div>
                 {pic.length > 12 && (
-                  <div className="pageBtns">
+                  <div className={styles.pageBtns}>
                     {Array.from(
                       { length: Math.ceil(pic.length / 12) },
                       (_, i) => (
                         <button
                           key={i}
-                          className={`pageBtn ${i === curIndex ? "pageBtnA" : ""}`}
+                          className={`${styles.pageBtn} ${i === curIndex ? styles.pageBtnA : ""}`}
                           onClick={() => setCurIndex(i)}
                         >
                           {i + 1}
@@ -229,49 +225,32 @@ const GalleryDatabase = (props) => {
             ),
         )}
       </div>
-      <div className="btmLine" />
-      <div className="zoomPicBox">
+      <div className={styles.btmLine} />
+      <div className={styles.zoomPicBox}>
         {zoomPicLink && (
-          <div className="zoomBox">
-            <img className="zoomPic" src={zoomPicLink} alt={zoomPicLink} />
-            <button
-              className="xButton"
-              onClick={() => {
-                setZoomPicLink();
-              }}
-            >
-              X
-            </button>
-            {username && zoomPicLink && (
+          <div className={styles.zoomBackground}>
+            <div className={styles.zoomBox}>
+              <img
+                className={styles.zoomPic}
+                src={zoomPicLink}
+                alt={zoomPicLink}
+              />
               <button
-                className="featureBtn"
-                onClick={() => {
-                  featureSingleHandle(zoomPicLink);
-                }}
+                className={styles.xButton}
+                onClick={() => setZoomPicLink("")}
               >
-                {featureBtnMsg}
+                X
               </button>
-            )}
+              {username && (
+                <button
+                  className={styles.featureBtn}
+                  onClick={() => featureSingleHandle(zoomPicLink)}
+                >
+                  {featureBtnMsg}
+                </button>
+              )}
+            </div>
           </div>
-        )}
-        {zoomPicLink && <img src={zoomPicLink} alt={zoomPicLink} />}
-        {zoomPicLink && (
-          <button
-            onClick={() => {
-              setZoomPicLink();
-            }}
-          >
-            X
-          </button>
-        )}
-        {username && zoomPicLink && (
-          <button
-            onClick={() => {
-              featureSingleHandle(zoomPicLink);
-            }}
-          >
-            Feature
-          </button>
         )}
       </div>
     </body>
