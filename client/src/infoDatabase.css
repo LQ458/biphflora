@@ -1,0 +1,334 @@
+:root {
+  --dbImg-width: 15.5vw;
+  --dbImg-height: 8vw;
+}
+#searchBar {
+  top: 1.2vw;
+  left: 0vw;
+  position: relative;
+  height: 4.2vw;
+}
+
+.searchBar {
+  display: flex;
+  padding: 1rem;
+}
+
+.db1Icon {
+  position: relative;
+  left: 18vw;
+}
+
+.searchBar {
+  position: relative;
+  flex: 1;
+  border: none;
+  font-size: 1.5rem;
+  outline: none;
+  background-color: transparent;
+  color: black;
+  bottom: 0.1rem;
+  left: 2rem;
+}
+.searchBar::placeholder {
+  font-size: 1.3rem;
+}
+
+.searchBtn {
+  position: relative;
+  background-color: transparent;
+  border: none;
+  font-size: 34px;
+  cursor: pointer;
+  outline: none;
+  top: 0.2rem;
+  right: 1.5rem;
+}
+.searchtitle {
+  position: relative;
+  left: 3rem;
+  text-align: left;
+  font-weight: 580;
+}
+
+.submitForm {
+  width: 70vw;
+
+  position: relative;
+  top: 0.2vw;
+}
+.topbarDB1 {
+  padding-top: 0rem;
+  background-color: #516d4e;
+  padding-bottom: 0rem;
+  position: relative;
+  width: 93vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0 auto;
+  height: 9rem;
+}
+
+h3.db1Title {
+  font-style: italic;
+  position: relative;
+  left: 0.5vw;
+  margin: 0;
+}
+
+.db1T {
+  position: relative;
+  margin: 0;
+}
+
+.db1name {
+  position: relative;
+  margin: 0;
+  left: 1vw;
+}
+
+div.ttl {
+  display: flex;
+  color: white;
+  flex-grow: 1;
+  font-size: 1.45rem;
+  align-items: center;
+  position: relative;
+  left: 2.5vw;
+}
+img.databaseImg {
+  width: var(--dbImg-width);
+  height: var(--dbImg-height);
+  cursor: pointer;
+  object-fit: cover;
+}
+div.dbImgs {
+  display: grid;
+  gap: 26px;
+  grid-template-columns: repeat(4, 1fr);
+}
+div.results {
+  position: absolute;
+  top: 7vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 9999;
+  right: 16.5vw;
+}
+h2.resulth2 {
+  font-weight: 200;
+  font-size: 1rem;
+  bottom: 0.3vh;
+  position: relative;
+}
+
+.db1SearchButton {
+  position: relative;
+  bottom: 0.1vh;
+  right: 19vw;
+  color: black;
+}
+.db1SearchButton:hover {
+  color: #516d4e;
+}
+div.top {
+  display: flex;
+  align-items: top;
+  justify-content: center;
+  gap: 6%;
+}
+div.info {
+  position: relative;
+  width: 50vw;
+  text-align: left;
+}
+div.arts {
+  position: relative;
+  text-align: left;
+}
+.shiftIcon {
+  position: relative;
+}
+h3.artTitle {
+  font-size: 1.7rem;
+  position: relative;
+  left: 5vw;
+}
+h3.titleMessage {
+  font-size: 1.7rem;
+  width: -moz-fit-content;
+  width: fit-content;
+  position: relative;
+}
+li.Eng {
+  font-size: 1rem;
+  position: relative;
+  font-weight: 400;
+  padding: 0.2rem;
+  left: 0.7vw;
+}
+li.CN {
+  font-size: 1rem;
+  position: relative;
+  font-weight: 400;
+  padding: 0.2rem;
+  left: 0.7vw;
+}
+img.artPic {
+  max-width: 20vw;
+  cursor: pointer;
+}
+h3.editor {
+  font-weight: 400;
+  position: relative;
+  text-align: left;
+  left: 8.5vw;
+  bottom: 2vh;
+}
+div.hline11 {
+  position: relative;
+  height: 0.5vh;
+  background-color: #516d4e;
+  width: 84vw;
+  margin-top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+div.Bar {
+  position: relative;
+  justify-content: center;
+  display: flex;
+}
+h3.btTitle {
+  position: relative;
+  right: 28vw;
+  font-size: 1.5rem;
+}
+button.expandBtn {
+  font-weight: 600;
+  position: relative;
+  left: 25vw;
+}
+button.expandBtn:hover {
+  text-decoration: underline;
+}
+h1.seasonTitle {
+  position: relative;
+  right: 34.5vw;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+#buttonDb11 {
+  background-color: white;
+}
+
+div.fit {
+  width: var(--dbImg-width);
+  height: var(--dbImg-height);
+  position: relative;
+  background-color: rgba(119, 119, 119, 0.2);
+}
+.databaseImg,
+.fit {
+  display: inline-block;
+}
+div.hline1 {
+  position: relative;
+  top: 15vh;
+  height: 0.5vh;
+  background-color: #516d4e;
+  width: 85vw;
+  margin: 0 auto;
+}
+button.prev1 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+button.next1 {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+div.artAlt {
+  width: 20vw;
+  height: 40vh;
+  background-color: rgba(185, 185, 185, 0.468);
+}
+div.artPicContainer {
+  display: flex;
+}
+
+.searchResultsButton1 {
+  text-align: left;
+  margin-bottom: 0.5vh;
+  width: 62vw;
+  height: 3vw;
+  background-color: white;
+}
+.db1Infos {
+  word-wrap: break-word;
+}
+
+.zoomBox {
+  border: solid 20px black;
+  position: fixed;
+  display: inline-block;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.zoomPic {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 70vw;
+  max-height: 70vh;
+}
+
+.xButton {
+  color: white;
+  position: absolute;
+  right: 12vw;
+  top: 3vw;
+  font-size: 1.7vw;
+}
+
+button.featurePicBtn {
+  all: initial;
+  display: flex;
+  z-index: 10000;
+  cursor: pointer;
+  position: fixed;
+  right: 4rem;
+  bottom: 3rem;
+  background-color: #739666;
+  color: white;
+  font-size: 1.5rem;
+  padding: 0.5rem 1rem 0.5rem 1rem;
+}
+button.editBtn {
+  position: absolute;
+  right: 8vw;
+  top: 0;
+  margin-top: 1.5em;
+  color: white;
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  background-color: #63895f;
+  font-size: 1.2rem;
+}
+
+div.seasonContainer {
+  display: grid;
+  position: relative;
+  gap: 15px;
+  grid-template-columns: repeat(3, 1fr);
+}

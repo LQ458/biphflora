@@ -1,0 +1,66 @@
+:root {
+  --search-bar-height: 3rem;
+}
+
+.db2SearchButton {
+  position: relative;
+  flex-grow: 1;
+  color: black;
+}
+.searchResultsButton {
+  text-align: left;
+  display: flex;
+  width: auto;
+  align-items: center;
+  pointer-events: auto;
+  cursor: pointer;
+  height: 2rem;
+  padding: 0 0.6rem 0 0.6rem;
+  background-color: white;
+}
+h2.db1h2 {
+  font-size: 17px;
+  font-weight: 100;
+  position: relative;
+}
+form.db2SubmitForm {
+  display: flex;
+  padding: 0.5rem 2rem 0.5rem 3rem;
+  background-color: #fffffa;
+  border-radius: 50px;
+  flex-direction: row;
+  height: var(--search-bar-height);
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.db2Results {
+  position: absolute;
+  z-index: 9999;
+  top: var(--search-bar-height);
+  display: flex;
+  gap: 3px;
+  flex-direction: column;
+}
+.db2SearchBar {
+  position: relative;
+  border: none;
+  font-size: var(--des-size);
+  outline: none;
+  flex-grow: 19;
+  background-color: transparent;
+  color: black;
+}
+.db2SearchBar:placeholder-shown {
+  font-weight: 600;
+}
+.db2SearchButton:hover {
+  color: #516d4e;
+}
+
+.searchBarDiv {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  align-items: center;
+}

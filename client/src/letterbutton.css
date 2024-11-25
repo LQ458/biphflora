@@ -1,0 +1,50 @@
+div.letter {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+div.letterTop {
+  display: flex;
+  gap: 8vw;
+  justify-content: space-between;
+}
+button.lt {
+  font-weight: 600;
+  font-size: var(--letter-size);
+  position: relative;
+}
+button.lt:hover {
+  text-decoration: underline;
+}
+button.add {
+  text-decoration: underline;
+}
+button.col:focus {
+  text-decoration: underline;
+}
+button.col {
+  position: relative;
+  width: fit-content;
+}
+button.cold {
+  display: none;
+}
+button.let {
+  position: relative;
+}
+div.postG {
+  position: relative;
+  margin-bottom: 0.5vh;
+}
+button.glossaryBtns {
+  font-weight: 200;
+  font-size: var(--plant-size);
+}
+button.glossaryBtns:hover {
+  text-decoration: underline;
+}
+div.posts {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}

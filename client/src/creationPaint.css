@@ -1,0 +1,100 @@
+h1.documentarytitle {
+  color: #2d4228;
+  background-color: #f4fae8;
+  position: absolute;
+  width: 61vw;
+  padding-top: 8px;
+  left: 6rem;
+  z-index: 1000;
+  padding-bottom: 8px;
+  font-size: 1.25rem;
+}
+div.docTop {
+  background-color: #516d4e;
+  position: relative;
+  top: -16px;
+  display: flex;
+  flex-direction: row;
+  width: 92vw;
+  margin: 0 auto;
+}
+button.shift {
+  flex-grow: 6;
+}
+.icons {
+  fill: #f4fae8;
+}
+div.docBottom {
+  width: 92vw;
+  position: relative;
+  margin: 0 auto;
+  top: -16px;
+  background-color: #f4fae8;
+}
+p.recArt {
+  color: white;
+  margin: 0;
+  font-weight: 600;
+  font-size: 1.6rem;
+}
+div.bottomBox {
+  border: none;
+  font-weight: 400;
+  position: relative;
+  left: 3vw;
+  top: 2vw;
+  color: #2d4228;
+}
+.crFocused {
+  text-decoration: underline;
+  font-weight: 600 !important;
+}
+button.btn {
+  color: #2d4228;
+  font-weight: 400;
+  margin: 0 0.7rem 0 0.7rem;
+}
+div.subBox1 {
+  padding-top: 40px;
+  margin: 3rem;
+  padding: 0.8rem;
+  padding-top: 2.5rem;
+  background-color: #c3d4b7;
+}
+img.topImgs {
+  width: 75vw;
+  height: 40vw;
+  object-fit: cover;
+  flex-grow: 20;
+}
+div.artBox {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  right: 7.5vw;
+  top: 6rem;
+}
+img.topArts {
+  width: 32vw;
+  height: 25vw;
+  padding: 1.2rem 1.2rem 0 1.2rem;
+  background-color: rgba(78, 105, 72, 0.85);
+  object-fit: cover;
+}
+p.artInfo {
+  color: white;
+  margin: 0;
+}
+div.artDes {
+  display: grid;
+  align-items: center;
+  background-color: rgba(107, 139, 92, 0.785);
+  grid-template-columns: repeat(2, 1fr);
+}
+div.artInfos {
+  display: grid;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.5rem 0 0.5rem 0.5rem;
+  grid-template-rows: repeat(3, 1fr);
+}

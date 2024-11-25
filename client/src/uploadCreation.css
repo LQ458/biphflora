@@ -1,0 +1,56 @@
+div.creationUpload {
+  position: relative;
+  margin-left: 4vw;
+}
+div.creationPic {
+  display: grid;
+  width: 75vw;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2vw;
+}
+div.creationArt {
+  display: grid;
+  width: 75vw;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2vw;
+}
+input.creationUpPlant {
+  width: 25vw;
+}
+input.leftInput {
+  width: 45vw;
+}
+div.creationEntry {
+  border: 2px solid #516d4e;
+  margin-right: 4vw;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  align-items: center;
+  padding: 2rem 3.5rem 2rem 3.5rem;
+  gap: 2vw;
+  background-color: white;
+}
+
+img.upCreationPic {
+  height: 20vw;
+  width: 36vw;
+  object-fit: cover;
+}
+
+img.upCreationArt {
+  height: 26.5vw;
+  width: 20vw;
+  object-fit: cover;
+}
+button.featureBtn {
+  position: relative;
+  margin: 1rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.6rem 1rem 0.6rem 1rem;
+  background-color: #739667;
+}
+h3.creationTitle {
+  color: #2d4228;
+  font-weight: 400;
+}

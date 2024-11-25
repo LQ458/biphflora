@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BIPH识草木服务器/BIPH Flora Server</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Poppins&display=swap");
+      body {
+        font-family: poppins, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: white;
+      }
+      h1 {
+        text-align: center;
+        color: white;
+        bottom: 0.5vh;
+        position: relative;
+      }
+      a.beian {
+        color: black;
+        top: 1vh;
+        position: relative;
+        text-decoration: none;
+      }
+      a.beian:hover {
+        text-decoration: underline;
+      }
+      bottom {
+        background-color: #9eb894;
+        height: 5vh;
+        position: fixed;
+        text-align: center;
+        bottom: 0;
+        width: 100%;
+      }
+      top {
+        background-color: #506d4e;
+        position: absolute;
+        top: 0;
+        height: 10vh;
+        width: 100%;
+      }
+      div.contact {
+        text-align: center;
+        margin-top: 20vh;
+      }
+      div.main {
+        display: flex;
+        align-items: center;
+        position: relative;
+        justify-content: center;
+        gap: 1vw;
+        text-align: center;
+        margin-top: 10vh;
+      }
+      button.btn {
+        position: relative;
+        cursor: pointer;
+        color: white;
+        padding: 9px 9px;
+        border-radius: 5px;
+        box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+        left: 2vw;
+        font-family: poppins, sans-serif;
+        background-color: #a3b515;
+        border: 1.5px solid transparent;
+      }
+      button.btn:hover {
+        border-color: rgb(167, 164, 164);
+        background-color: #93a515;
+      }
+      div.buttons {
+        top: 10vh;
+        width: 20vw;
+        position: relative;
+      }
+      a.m {
+        color: white;
+        text-decoration: none;
+      }
+      a.m:hover {
+        text-decoration: underline;
+      }
+      button.toMain {
+        color: white;
+        cursor: pointer;
+        background-color: #506d4e;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        padding-left: 5px;
+        padding-right: 5px;
+        border: 1px solid transparent;
+        border-radius: 4px;
+      }
+      #mC {
+        overflow: hidden;
+        display: flex;
+        white-space: nowrap;
+        position: relative;
+        top: 1px;
+        background-color: #a3b515;
+      }
+    </style>
+    <script>
+      console.log(
+        "本网站由BIPH识草木团队所有，Oasis团队维护。设计者：Zoe He, 开发者： Leo Qin, Jess Chen。欢迎访问开发者提出意见。",
+      );
+      console.log(
+        "This website is owned by BIPH Flora Team and maintained by Oasis Team. Designer: Zoe He, Developer: Leo Qin, Jess Chen. Welcome to provide any feedback (especially developers).",
+      );
+      function setupAnimation() {
+        const btn = document.getElementById("toMain");
+        const main = document.getElementById("mC");
+
+        // 初始状态为隐藏
+        main.style.width = 0;
+
+        btn.onclick = function () {
+          main.style.width = "auto";
+          const width = main.getBoundingClientRect().width;
+          main.style.width = 0;
+          main.style.transition = "width 0.5s";
+          main.offsetWidth;
+          main.style.padding = "5px";
+          main.style.borderRadius = "5px";
+          main.style.width = width + "px";
+        };
+      }
+
+      window.onload = function () {
+        // 获取浏览器的语言设置
+        var userLang = navigator.language || navigator.userLanguage;
+
+        // 检查语言设置是否为中文
+        if (userLang.startsWith("zh")) {
+          setLanguage("zh");
+        } else {
+          setLanguage("en");
+        }
+
+        setupAnimation();
+      };
+      function setLanguage(lang) {
+        if (lang === "zh") {
+          // 显示中文内容
+          document.getElementById("title").innerHTML = "BIPH识草木网站服务器";
+          document.getElementById("contact").innerHTML = "联系我们";
+          document.getElementById("email1").innerHTML =
+            "邮箱1：yihao.qin17311-biph@basischina.com";
+          document.getElementById("email2").innerHTML =
+            "邮箱2：aiercroft2007@gmail.com";
+          document.getElementById("main").innerHTML =
+            '<button id="toMain" class="toMain">由此去:</button> <div id="mC"> <a id="m" class="m" href="https://biphflora.com" target="_blank" rel="noopener">BIPH识草木主网站</a> </div>';
+          document.getElementById("bottom").innerHTML =
+            '<a class="beian" href="https://beian.miit.gov.cn" target="_blank" rel="noopener">湘ICP备2023027594号-2</a>';
+        } else {
+          // 显示英文内容
+          document.getElementById("title").innerHTML =
+            "BIPH Flora Server Website";
+          document.getElementById("contact").innerHTML = "Contact Us";
+          document.getElementById("email1").innerHTML =
+            "Email 1: yihao.qin17311-biph@basischina.com";
+          document.getElementById("email2").innerHTML =
+            "Email 2: aiercroft2007@gmail.com";
+          document.getElementById("main").innerHTML =
+            '<button id="toMain" class="toMain">To biphflora.com:</button> <div id="mC"> <a id="m" class="m" href="https://biphflora.com" target="_blank" rel="noopener">BIPH Flora Website</a> </div>';
+          document.getElementById("bottom").innerHTML =
+            '<a class="beian" href="https://beian.miit.gov.cn" target="_blank" rel="noopener">Hunan ICP No. 2023027594-2</a>';
+        }
+        setupAnimation();
+      }
+    </script>
+  </head>
+  <body>
+    <top>
+      <h1 id="title"></h1>
+    </top>
+    <br />
+    <div class="buttons">
+      <button class="btn" onclick="setLanguage('en')">English</button>
+      <button class="btn" onclick="setLanguage('zh')">中文</button>
+    </div>
+    <div class="contact">
+      <h2 id="contact"></h2>
+      <p id="email1"></p>
+      <p id="email2"></p>
+    </div>
+    <div class="main" id="main"></div>
+    <bottom id="bottom"></bottom>
+  </body>
+</html>

@@ -1,0 +1,94 @@
+:root {
+  --title-size: 2.5rem;
+  --link-size: 1.3rem;
+  --links-height: 46px;
+  --nav-width: 49vw;
+  --right-padding: 17vw;
+}
+header.topBar {
+  display: flex;
+  width: 100vw;
+  align-items: center;
+}
+h1.htitle {
+  position: relative;
+  text-align: left;
+  left: 4vw;
+  padding-right: var(--right-padding);
+  color: white;
+  border-right: 6px solid white;
+  font-size: var(--title-size);
+  font-weight: 600;
+}
+div.links {
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  width: var(--nav-width);
+  right: 1vw;
+  font-weight: 600;
+  height: var(--links-height);
+  padding: 0.25rem;
+  gap: 1vw;
+  overflow: auto;
+  overflow-y: hidden;
+  justify-content: center;
+  align-items: center;
+  background-color: #e2e8d1;
+  border: 2px solid transparent;
+}
+.linkBarLink {
+  position: relative;
+  color: #7a9a6d;
+  font-size: var(--link-size);
+  text-align: center;
+  display: inline-block;
+  border: 1px solid transparent;
+  padding: 0.5rem 0.6rem 0.5rem 0.6rem;
+  margin: 0;
+
+  text-decoration: none;
+}
+.widen {
+  width: 9.5vw;
+}
+.linkBarLink:hover {
+  position: relative;
+  color: #639c4c;
+  background-color: #7a9a6d77;
+  text-decoration: none;
+}
+.hline {
+  height: 0.25rem;
+  position: relative;
+  background-color: white;
+}
+div.nav {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+}
+
+@media screen and (max-width: 1500px) {
+  :root {
+    --title-size: 2rem;
+    --link-size: 1.2rem;
+    --links-height: 40px;
+    --nav-width: 47vw;
+    --right-padding: 20vw;
+  }
+}
+
+@media screen and (min-width: 1600px) {
+  :root {
+    --right-padding: 25vw;
+    --nav-width: 42vw;
+  }
+}
+
+@media screen and (max-width: 1400px) {
+  :root {
+    --right-padding: 17vw;
+    --nav-width: 51vw;
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "name": "biphflora",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.2",
+    "browser-image-compression": "^2.0.2",
+    "compression": "^1.7.4",
+    "connect-mongo": "^5.1.0",
+    "cookie-parser": "^1.4.6",
+    "cookie-session": "^2.0.0",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "fs": "^0.0.1-security",
+    "fuse.js": "^7.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "moment-timezone": "^0.5.45",
+    "mongoose": "^8.0.1",
+    "multer": "^1.4.5-lts.1",
+    "node": "^21.2.0",
+    "nodemon": "^3.1.0",
+    "npm": "^10.3.0",
+    "passport": "^0.6.0",
+    "passport-local": "^1.0.0",
+    "primeicons": "^7.0.0",
+    "primereact": "^10.8.4",
+    "react-helmet": "^6.1.0",
+    "react-icons": "^4.12.0",
+    "react-virtualized-auto-sizer": "^1.0.24",
+    "react-window": "^1.8.10",
+    "redis": "^4.6.13",
+    "sharp": "^0.33.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
+  }
+}

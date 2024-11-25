@@ -1,0 +1,18 @@
+div.namesEdit {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 27vw;
+  gap: 1vw;
+}
+div.secEdit {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 22vw;
+  gap: 1vw;
+}
+textarea.additionalInfoBox {
+  width: 41vw;
+}
+input.linksBox {
+  width: 41vw;
+}

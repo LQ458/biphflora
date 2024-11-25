@@ -1,0 +1,104 @@
+div.msg {
+  position: relative;
+  background-color: #dce6cd;
+  padding: 1rem 1.7rem;
+  text-align: center;
+  color: #2c4126;
+  width: 15rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+div.number {
+  position: relative;
+  background-color: #dce6cd;
+  height: 1rem;
+  text-align: center;
+  padding: 1.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #2c4126;
+  width: 3rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.link {
+  position: relative;
+  text-decoration: none;
+  background-color: #dce6cd;
+  padding: 0.8rem 1rem;
+  color: #2c4126;
+  text-align: center;
+  width: 12rem;
+  display: flex;
+  font-size: 1rem;
+  font-weight: 550;
+  margin-right: 2rem;
+}
+.link:hover {
+  text-decoration: underline;
+}
+h1.db2ttl {
+  font-size: 1.7rem;
+}
+p.numberP {
+  position: relative;
+}
+div.dbBlock {
+  position: relative;
+  background-color: #516d4e;
+  padding: 0;
+  height: 1.9rem;
+}
+img.picImg {
+  width: 18vw;
+  height: 10vw;
+  object-fit: cover;
+}
+
+div.db2picAlt {
+  width: 18vw;
+  height: 10vw;
+  background-color: rgba(185, 185, 185, 0.468);
+}
+
+div.db2pics {
+  display: grid;
+  width: 75%;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #f4fae8;
+  gap: 3rem;
+  padding: 2rem 8rem;
+  justify-content: center;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+div.dbImgs {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+div.numOfPlantsBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0 7rem;
+  justify-content: space-between;
+}
+
+div.numOfPlantsBoxInner {
+  display: flex;
+  gap: 60px;
+  align-items: center;
+}
+
+div.db2Container {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+}

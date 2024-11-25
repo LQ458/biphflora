@@ -1,0 +1,198 @@
+.db3SearchButton {
+  position: relative;
+  right: 1vw;
+  bottom: 0.2vh;
+  color: black;
+}
+.db3SearchButton:hover {
+  color: #516d4e;
+}
+button.backBtn:hover {
+  text-decoration: underline;
+}
+button.backBtn {
+  position: relative;
+  top: 5vh;
+  margin-bottom: 3vh;
+  right: 37vw;
+}
+h1.lowerTitle {
+  position: relative;
+  font-size: 1.8rem;
+  padding: 2rem 1rem;
+  right: 30vw;
+}
+div.lowerParts {
+  align-items: center;
+  justify-content: center;
+}
+div.seasons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  width: 75%;
+  margin: 0 auto;
+}
+button.seasonBtn {
+  background-color: #95b28b;
+  padding: 0.7rem 0.7rem;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+button.seasonBtn:hover {
+  background-color: #516d4e;
+  text-decoration: underline;
+}
+button.seasonBtn:focus {
+  background-color: #516d4e;
+  text-decoration: underline;
+}
+div.lineB {
+  position: relative;
+  height: 0.6vh;
+  margin-top: 2.7vh;
+  background-color: #516d4e;
+}
+div.springPics {
+  top: 4vh;
+  display: grid;
+  gap: 1rem;
+  position: relative;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  grid-template-columns: repeat(4, 1fr);
+}
+div.summerPics {
+  top: 4vh;
+  display: grid;
+  gap: 1rem;
+  position: relative;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  grid-template-columns: repeat(4, 1fr);
+}
+div.autumnPics {
+  top: 4vh;
+  display: grid;
+  gap: 1rem;
+  position: relative;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  grid-template-columns: repeat(4, 1fr);
+}
+div.winterPics {
+  top: 4vh;
+  display: grid;
+  gap: 1rem;
+  position: relative;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  grid-template-columns: repeat(4, 1fr);
+}
+img.summerPic {
+  width: 18vw;
+  height: 9.5vw;
+  cursor: pointer;
+  object-fit: cover;
+}
+div.summerPicWords {
+  position: relative;
+  background-color: #83a276;
+  text-align: left;
+  color: white;
+  align-items: center;
+  width: 18vw;
+}
+div.summerPic {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: 0 auto;
+}
+p.SPW {
+  font-size: 0.8rem;
+  font-weight: 550;
+  margin-left: 8px;
+  position: relative;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.db3Name {
+  color: white;
+  position: relative;
+  top: 1.8vw;
+  right: 39vw;
+  font-size: 2vw;
+}
+div.resultsdb3 {
+  position: absolute;
+  z-index: 1000;
+  left: 14.4vw;
+  top: 7.5vh;
+}
+h3.db3h3 {
+  position: relative;
+  font-size: 1.1rem;
+  bottom: 1.5vh;
+  font-weight: 300;
+}
+.zoomPic {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 70vw;
+  max-height: 70vh;
+}
+
+.xButton {
+  color: white;
+  position: absolute;
+  right: 12vw;
+  top: 3vw;
+  font-size: 1.7vw;
+}
+
+.featureBtn {
+  right: 5vw;
+  top: 50vw;
+  color: white;
+  background-color: #739666;
+  padding: 0.5vw 1vw;
+  position: absolute;
+}
+button.pageBtn {
+  background-color: #95b28b;
+  color: white;
+  height: 3rem;
+  position: relative;
+  margin: 0 auto;
+  width: 2.5rem;
+}
+div.pageBtns {
+  display: grid;
+  position: relative;
+  margin: 2rem;
+  width: 14vw;
+  margin: 0 auto;
+  margin-top: 6rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+div.btmLine {
+  height: 0.3rem;
+  background-color: #516d4e;
+  width: 88vw;
+  margin-top: 6rem !important;
+  position: relative;
+  margin: 0 auto;
+}
+.pageBtnA {
+  background-color: #63895f !important;
+}
+
+.underSeasons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  width: 25%;
+}

@@ -1,0 +1,192 @@
+h.title {
+  position: relative;
+  text-align: left;
+  left: 4vw;
+  padding-right: 10vw;
+  top: 3.4vh;
+  border-right: 6px solid white;
+  font-size: 2.5vw;
+  font-weight: 600;
+}
+h1.admin {
+  text-align: left;
+  font-size: 2.2rem;
+  position: relative;
+  left: 3vw;
+}
+div.userInfo {
+  position: relative;
+  left: 6vw;
+}
+div.entriesInfo {
+  position: relative;
+  left: 6vw;
+}
+button.toggle {
+  font-size: 16px;
+  font-weight: 800;
+  font-style: oblique;
+}
+button.toggle:hover {
+  color: #639c4c;
+  text-decoration: underline;
+}
+div.entry {
+  display: flex;
+  align-items: center;
+}
+button.logout {
+  position: relative;
+  left: 6vw;
+  font-size: 1.9rem;
+  font-weight: 800;
+  font-style: oblique;
+}
+button.logout:hover {
+  color: #639c4c;
+  text-decoration: underline;
+}
+/* UserTable */
+.userTable {
+  width: 50vw;
+  border-collapse: collapse;
+}
+
+.userTable thead,
+.userTable tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.userTable thead tr::after {
+  content: "";
+  content: "";
+  width: 16px; /* Adjust based on your scrollbar width */
+  display: table-cell;
+}
+
+.userTable tbody {
+  display: block;
+  max-height: 100px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.userTable th:nth-child(1),
+.userTable td:nth-child(1) {
+  width: 30%; /* adjust as needed */
+}
+
+.userTable th:nth-child(2),
+.userTable td:nth-child(2) {
+  width: 70%; /* adjust as needed */
+}
+
+.userTable th,
+.userTable td {
+  border: 1px solid #000;
+  padding: 10px; /* new line */
+}
+
+/* AdminTable */
+.adminTable {
+  width: 50vw;
+  border-collapse: collapse;
+}
+
+.adminTable thead,
+.adminTable tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.adminTable thead tr::after {
+  content: "";
+  width: 16px; /* Adjust based on your scrollbar width */
+  display: table-cell;
+}
+
+.adminTable tbody {
+  display: block;
+  max-height: 100px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.adminTable th:nth-child(1),
+.adminTable td:nth-child(1) {
+  width: 30%; /* adjust as needed */
+}
+
+.adminTable th:nth-child(2),
+.adminTable td:nth-child(2) {
+  width: 30%; /* adjust as needed */
+}
+
+.adminTable th:nth-child(3),
+.adminTable td:nth-child(3) {
+  width: 40%; /* adjust as needed */
+}
+
+.adminTable th,
+.adminTable td {
+  border: 1px solid #000;
+  padding: 10px; /* adjust as needed */
+}
+
+h2.usrLoad {
+  position: absolute;
+  left: 18vw;
+  bottom: 23.5vh;
+}
+
+h2.usrLoad {
+  position: absolute;
+  left: 18vw;
+  bottom: 23.5vh;
+  font-size: 1.5rem;
+}
+
+/* PlantsTable */
+.plantsTable {
+  width: 50vw;
+  border-collapse: collapse;
+}
+
+.plantsTable thead,
+.plantsTable tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.plantsTable thead tr::after {
+  content: "";
+  width: 17px; /* Adjust based on your scrollbar width */
+  display: table-cell;
+}
+
+.plantsTable tbody {
+  display: block;
+  max-height: 100px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.plantsTable th:nth-child(1),
+.plantsTable td:nth-child(1) {
+  width: 70%; /* adjust as needed */
+}
+
+.plantsTable th:nth-child(2),
+.plantsTable td:nth-child(2) {
+  width: 30%; /* adjust as needed */
+}
+
+.plantsTable th,
+.plantsTable td {
+  border: 1px solid #000;
+  padding: 10px; /* adjust as needed */
+}

@@ -1,0 +1,92 @@
+img.art {
+  width: 20vw;
+  height: 21vw;
+  object-fit: cover;
+}
+div.artCodeT {
+  position: absolute;
+  left: 1vw;
+  z-index: 1000;
+}
+img.pic {
+  width: 22vw;
+  height: 12vw;
+  object-fit: cover;
+}
+section.subBox {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+div.subsubBox {
+  display: flex;
+  position: relative;
+  align-items: flex-end;
+  text-align: center;
+  flex-direction: column;
+}
+div.subsubBox div {
+  align-items: center;
+  display: flex;
+  margin-right: 1vw;
+  position: relative;
+  flex-direction: column;
+}
+div.subTop {
+  display: flex;
+  cursor: pointer;
+  pointer-events: auto;
+  flex-direction: column;
+  position: relative;
+  margin-bottom: 4.5rem;
+  padding: 0.8rem 0 0.8rem 0;
+  width: 15vw;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  border-top: 3px solid white;
+  border-bottom: 3px solid white;
+}
+div.subTop h1 {
+  padding: 0;
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2d4228;
+}
+div.subMid {
+  display: flex;
+  cursor: copy;
+  pointer-events: auto;
+  flex-direction: column;
+  background-color: #739667;
+  overflow-wrap: break-word;
+  width: 15vw;
+  padding: 0.2rem 2rem 0.2rem 2rem;
+}
+div.subMid h3 {
+  margin: 0;
+  font-weight: 500;
+  font-size: 1rem;
+  color: white;
+}
+div.picInfo {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 23vw;
+  left: 2vw;
+  background-color: #739667;
+  overflow-wrap: break-word;
+  width: 15vw;
+  padding: 0.2rem 2rem 0.2rem 2rem;
+}
+div.picInfo span {
+  margin: 0;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: copy;
+  pointer-events: auto;
+  color: white;
+}
+div.subsubBox {
+  pointer-events: none;
+}

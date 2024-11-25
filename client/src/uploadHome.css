@@ -1,0 +1,12 @@
+h1.homeTitle {
+  color: #2d4228;
+  font-size: 1.8rem;
+  text-align: left;
+  position: relative;
+  left: 5vw;
+}
+div.homeEntryBox {
+  border: 2px solid #516d4e;
+  width: 50vw;
+  margin-left: 5vw;
+}
