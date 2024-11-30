@@ -2,9 +2,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as PreviousIcon } from "./buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "./buttons/caret-forward-outline.svg";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import "./infoDatabase.css";
-import { useContext } from "react";
 import { UserContext } from "./UserContext.js";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
@@ -28,6 +27,7 @@ const InfoDatabase = (search) => {
   const [titleMessage, setTitleMessage] = useState(
     "Information Profile 信息档案",
   );
+  const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState("Where can you find it 位置 :");
   const [additionalInfo, setAdditionalInfo] = useState("Additional Info:");
   const [additionalInfoContent, setAdditionalInfoContent] = useState("");
@@ -69,6 +69,7 @@ const InfoDatabase = (search) => {
   const [zoomPicLink, setZoomPicLink] = useState("");
   const [zoomArtLink, setZoomArtLink] = useState("");
   const [postingtime, setPostingtime] = useState("");
+  const loadingTimeoutRef = useRef(null);
 
   const featureSingleArtHandle = async (input) => {
     setFeatureBtnMsg("Loading...");
@@ -160,6 +161,8 @@ const InfoDatabase = (search) => {
     if (artsIndex < artPathsArray.length - 1) {
       setArtsIndex(artsIndex + 1);
       setArtIndex(artIndex + 1);
+    } else if (artsIndex === artPathsArray.length - 1) {
+      setArtsIndex(0);
     }
   };
 
@@ -216,7 +219,7 @@ const InfoDatabase = (search) => {
     }
   };
 
-  // Now you can use handleNavigation for both previous and next navigation
+  // 现在你可以使用 handleNavigation 进行前后导航
   const handlePrevious = (season) => handleNavigation(season, "previous");
   const handleNext = (season) => handleNavigation(season, "next");
 
@@ -228,44 +231,57 @@ const InfoDatabase = (search) => {
     handleArtChange();
   }, [artsIndex, artPathsArray]);
 
-  useEffect(() => {
-    const handleSetup = async () => {
-      try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_Source_URL}/getStuff`,
-          { postName: searchName },
-        );
-        setPlant(response.data.resultPost[0]);
-        setLatin(response.data.resultPost[0].latinName);
-        document.title =
-          response.data.resultPost[0].latinName +
-          " " +
-          response.data.resultPost[0].commonName +
-          " " +
-          response.data.resultPost[0].chineseName;
-        setName(
-          response.data.resultPost[0].commonName +
-            " " +
-            response.data.resultPost[0].chineseName,
-        );
+  const handleSetup = async () => {
+    setLoading(true);
+    const startTime = Date.now();
 
-        setLocation(response.data.resultPost[0].location || "");
-        setAdditionalInfoContent(
-          response.data.resultPost[0].additionalInfo.replace(/\r?\n/g, "<br>"),
-        );
-        setLink(response.data.resultPost[0].link);
-        setChineseLink(response.data.resultPost[0].chineseLink || []);
-        setEditor(response.data.resultPost[0].editor || "Unknown");
-        setPostingtime(response.data.resultPost[0].postingtime);
-        setPicPaths(response.data.photographs);
-        assignPicPaths(response.data.photographs);
-        setArts(response.data.arts);
-        setOtherNames(response.data.resultPost[0].otherNames || "");
-      } catch (error) {
-        console.log(error);
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_Source_URL}/syncPlantInfo`,
+        { postName: searchName },
+      );
+
+      const endTime = Date.now();
+      const loadTime = endTime - startTime;
+
+      if (loadTime < 500) {
+        await new Promise((resolve) => setTimeout(resolve, 500 - loadTime));
       }
-    };
 
+      setPlant(response.data.resultPost[0]);
+      setLatin(response.data.resultPost[0].latinName);
+      document.title =
+        response.data.resultPost[0].latinName +
+        " " +
+        response.data.resultPost[0].commonName +
+        " " +
+        response.data.resultPost[0].chineseName;
+      setName(
+        response.data.resultPost[0].commonName +
+          " " +
+          response.data.resultPost[0].chineseName,
+      );
+
+      setLocation(response.data.resultPost[0].location || "");
+      setAdditionalInfoContent(
+        response.data.resultPost[0].additionalInfo.replace(/\r?\n/g, "<br>"),
+      );
+      setLink(response.data.resultPost[0].link);
+      setChineseLink(response.data.resultPost[0].chineseLink || []);
+      setEditor(response.data.resultPost[0].editor || "Unknown");
+      setPostingtime(response.data.resultPost[0].postingtime.split(" ")[0]);
+      setPicPaths(response.data.photographs);
+      assignPicPaths(response.data.photographs);
+      setArts(response.data.arts);
+      setOtherNames(response.data.resultPost[0].otherNames || "");
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     handleSetup();
   }, [searchName]);
 
@@ -323,7 +339,7 @@ const InfoDatabase = (search) => {
     setSearchName(sendName);
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/getStuff`,
+        `${process.env.REACT_APP_Source_URL}/syncPlantInfo`,
         { postName: sendName },
       );
       setLatin(response.data.resultPost[0].latinName);
@@ -346,7 +362,6 @@ const InfoDatabase = (search) => {
     } catch (error) {
       console.log(error);
     }
-
     setLoadingMessage("");
   };
 
@@ -384,14 +399,14 @@ const InfoDatabase = (search) => {
       setLoad(false);
       setLoadedSrc(displayArtPath);
     };
-  }, [displayArtPath]); // Image Load Funtion
+  }, [displayArtPath]); // Image Load Function
 
   function Season({
     seasonPaths = [],
     season,
     seasonCheck,
-    seasonLeft,
     seasonIndex,
+    seasonLeft,
   }) {
     if (seasonPaths?.path?.length === 0) {
       return null;
@@ -473,16 +488,17 @@ const InfoDatabase = (search) => {
     });
   }, [autumnPathsArray, springPathsArray, summerPathsArray, winterPathsArray]); // Include the missing dependencies in the dependency array
 
-  const itemTemplate = (item) => {
-    return (
-      <img
-        src={item}
-        alt="artwork"
-        style={{ width: "100%", display: "block" }}
-      />
-    );
-  };
-  return (
+  return loading ? (
+    <section className="loadingCreation">
+      <div className="dots-container">
+        <div className="dots"></div>
+        <div className="dots"></div>
+        <div className="dots"></div>
+        <div className="dots"></div>
+        <div className="dots"></div>
+      </div>
+    </section>
+  ) : (
     <>
       <body className="db1">
         <div className="topbarInfoDB">
@@ -599,28 +615,27 @@ const InfoDatabase = (search) => {
 
           {/* Information portion (includes the information of the plant) */}
 
-          <div className="arts">
-            <h3 className="artTitle">Artwork</h3>
-            <div className="artPicContainer">
-              <button className="prevArtBtn" onClick={prevArt}>
-                <PreviousIcon className="shiftIcon" width={50} height={50} />
-              </button>
-              {load ? (
-                <div className="artAlt" />
-              ) : (
-                <img
-                  src={loadedSrc}
-                  id="artPic"
-                  onClick={() => handleArtZoom(displayArtPath)}
-                  alt="art"
-                  className="artPic"
-                />
-              )}
-              <button className="nextArBtn" onClick={nextArt}>
-                <NextIcon className="shiftIcon" width={50} height={50} />
-              </button>
+          {artPathsArray.length > 0 && (
+            <div className="arts">
+              <h3 className="artTitle">Artwork</h3>
+              <div className="artPicContainer">
+                {load ? (
+                  <div className="artAlt" />
+                ) : (
+                  <img
+                    src={loadedSrc}
+                    id="artPic"
+                    onClick={() => handleArtZoom(displayArtPath)}
+                    alt="art"
+                    className="artPic"
+                  />
+                )}
+                <button className="nextArBtn" onClick={nextArt}>
+                  <NextIcon className="shiftIcon" width={50} height={50} />
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Art portion (includes the art of the plant) */}
         </div>
@@ -636,7 +651,7 @@ const InfoDatabase = (search) => {
           autumnPathsArray?.path?.length !== 0 ||
           winterPathsArray?.path?.length !== 0) && (
           <div className="Bar">
-            <h3 className="btTitle">Image Gallery图库</h3>
+            <h3 className="btTitle">Image Gallery 图库</h3>
 
             {editor && (
               <button

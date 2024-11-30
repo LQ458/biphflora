@@ -126,7 +126,7 @@ const GalleryDatabase = (props) => {
   }, []);
 
   return (
-    <body>
+    <body className={styles.db}>
       <div className={styles.topbarGalleryDB}>
         <div style={{ flexGrow: "1", alignContent: "center" }}>
           <SearchBar
@@ -147,7 +147,7 @@ const GalleryDatabase = (props) => {
         <button onClick={handleBack} className={styles.backBtn}>
           Back
         </button>
-        <h1 className={styles.lowerTitle}>Image Gallery图库</h1>
+        <h1 className={styles.lowerTitle}>Image Gallery 图库</h1>
         <div className={styles.seasons}>
           <button
             id="springBtn"

@@ -585,15 +585,11 @@ app.post(
   uploadmiddleware,
   verifyToken,
   async function (req, res) {
-    const startTime = process.hrtime(); // 开始计时
     const inputFiles = [];
     const outputFolderPath = "client/public/plantspic/";
 
     try {
-      const dbStartTime = process.hrtime(); // 数据库查询开始计时
       const plant = await Post.findOne({ latinName: req.body.picEnglishName });
-      const dbEndTime = process.hrtime(dbStartTime); // 数据库查询结束计时
-      const dbDuration = (dbEndTime[0] * 1000 + dbEndTime[1] / 1e6).toFixed(2); // 转换为毫秒
 
       if (!plant) {
         return res.status(404).send("Plant not found");
@@ -647,12 +643,6 @@ app.post(
         res.status(400).json({ success: false, message: "No files uploaded" });
       }
 
-      const endTime = process.hrtime(startTime); // 总处理结束计时
-      const totalDuration = (endTime[0] * 1000 + endTime[1] / 1e6).toFixed(2); // 转换为毫秒
-
-      console.log(
-        `Server-Timing: app;dur=${totalDuration}, db;dur=${dbDuration}`,
-      );
       res.status(200).send("Upload successful");
     } catch (error) {
       res.status(500).send("Internal Server Error");
@@ -668,7 +658,7 @@ app.get("/searchNames", async (req, res) => {
   res.json({ success: true, returnNames: posts, numOfPlants: posts.length });
 });
 
-app.post("/getStuff", async (req, res) => {
+app.post("/syncPlantInfo", async (req, res) => {
   const resultPost = await Post.find({
     latinName: req.body.postName,
     authorization: true,

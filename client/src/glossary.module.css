@@ -1,7 +1,3 @@
-:root {
-  --letter-size: 1.5rem;
-  --plant-size: calc(var(--letter-size) - 0.6rem);
-}
 body.glossary {
   color: #ffffff;
   background: url("../public/homescreen.jpg") no-repeat;

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import LetterButton from "./LetterButton";
 import { Link } from "react-router-dom";
-import "./glossary.css";
+import styles from "./glossary.module.css";
 import Navbar from "./Navbar";
 
 const Glossary = ({ handleGets }) => {
@@ -59,21 +59,21 @@ const Glossary = ({ handleGets }) => {
   };
 
   return (
-    <body className="glossary">
+    <body className={styles.glossary}>
       <Navbar />
-      <div className="sec">
-        <div className="greenTop" />
-        <div className="gTop">
-          <Link className="back" to="/database">
+      <div className={styles.sec}>
+        <div className={styles.greenTop} />
+        <div className={styles.gTop}>
+          <Link className={styles.back} to="/database">
             Back
           </Link>
-          <h1 className="gh1">Glossary (Click Alphabet to expand)</h1>
+          <h1 className={styles.gh1}>Glossary (Click Alphabet to expand)</h1>
         </div>
         <br />
         <br />
         <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-          <section className="letters">
-            <div className="letters1">
+          <section className={styles.letters}>
+            <div className={styles.letters1}>
               {letters.slice(0, 9).map((letter, index) => (
                 <LetterButton
                   key={index}
@@ -87,7 +87,7 @@ const Glossary = ({ handleGets }) => {
                 />
               ))}
             </div>
-            <div className="letters2">
+            <div className={styles.letters2}>
               {letters.slice(9, 18).map((letter, index) => (
                 <LetterButton
                   key={index}
@@ -101,7 +101,7 @@ const Glossary = ({ handleGets }) => {
                 />
               ))}
             </div>
-            <div className="letters3">
+            <div className={styles.letters3}>
               {letters.slice(18, 26).map((letter, index) => (
                 <LetterButton
                   key={index}
@@ -116,7 +116,7 @@ const Glossary = ({ handleGets }) => {
               ))}
             </div>
           </section>
-          <div className="fullList">
+          <div className={styles.fullList}>
             <p>Want the Full List?</p>
             <Link to="https://bssgj-my.sharepoint.com/:b:/g/personal/zoe_he41172-biph_basischina_com/EWL-FJbpRiJKpnbj6lZ2g94BGblcwkIxvMI5qHt_PxaWYA?e=JQvdKO">
               Download
@@ -124,7 +124,7 @@ const Glossary = ({ handleGets }) => {
           </div>
         </div>
       </div>
-      <div className="greenTop"></div>
+      <div className={styles.greenTop}></div>
     </body>
   );
 };
