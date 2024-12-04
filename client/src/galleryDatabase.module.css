@@ -283,10 +283,5 @@ button.monthBtn {
   font-weight: bold;
 }
 button.monthBtn:hover {
-  background-color: #516d4e;
-  text-decoration: underline;
-}
-button.monthBtn:focus {
-  background-color: #516d4e;
   text-decoration: underline;
 }
