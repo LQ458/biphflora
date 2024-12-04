@@ -469,6 +469,28 @@ const UploadPlants = () => {
     }
   };
 
+  const resetPicForm = () => {
+    setPicFiles([]);
+    setPicEnglishName("");
+    setPicSeason("");
+    setPicPhotographer("");
+    setPicSetting("");
+    setMonth("");
+    if (fileUploadRef.current) {
+      fileUploadRef.current.clear();
+    }
+  };
+
+  const resetArtForm = () => {
+    setArtFiles([]);
+    setPlant("");
+    setArtist("");
+    setArtLocation("");
+    if (artFileUploadRef.current) {
+      artFileUploadRef.current.clear();
+    }
+  };
+
   return (
     <>
       <div className="upload">
@@ -701,6 +723,7 @@ const UploadPlants = () => {
                 uploadHandler={handlePicFileChange}
                 chooseLabel="Click to upload file(s)"
                 className="fileUploadComponent"
+                uploadLabel="Confirm"
               />
               <br />
               <div className="picBtm">
@@ -716,6 +739,12 @@ const UploadPlants = () => {
                   value={picSetting}
                   onChange={(e) => setPicSetting(e.target.value)}
                   required
+                />
+                <Button
+                  icon="pi pi-refresh"
+                  label="Reset"
+                  className="resetButton"
+                  onClick={() => resetPicForm()}
                 />
               </div>
               <Button
@@ -774,19 +803,6 @@ const UploadPlants = () => {
                   onChange={(e) => setArtist(e.target.value)}
                   required
                 />
-                {/* <label htmlFor="artFiles" className="fileLabel">
-                  {artFiles.length === 0
-                    ? "Click to upload file(s)"
-                    : artFiles.length + " file(s) selected"}
-                </label>
-                <input
-                  id="artFiles"
-                  type="file"
-                  name="files"
-                  className="file"
-                  onChange={handleArtFileChange}
-                  multiple
-                /> */}
               </div>
               <br />
               <FileUpload
@@ -801,22 +817,31 @@ const UploadPlants = () => {
                 uploadHandler={handleArtFileChange}
                 chooseLabel="Click to upload file(s)"
                 className="fileUploadComponent"
+                uploadLabel="Confirm"
               />
               <br />
-              <InputText
-                type="text"
-                id="artLocation"
-                name="location"
-                placeholder="Location"
-                className="artLocation"
-                style={{
-                  borderRadius: "0",
-                  border: "2px solid #516d4e",
-                }}
-                value={artLocation}
-                onChange={(e) => setArtLocation(e.target.value)}
-                required
-              />
+              <div style={{ display: "flex", gap: "2rem" }}>
+                <InputText
+                  type="text"
+                  id="artLocation"
+                  name="location"
+                  placeholder="Location"
+                  className="artLocation"
+                  style={{
+                    borderRadius: "0",
+                    border: "2px solid #516d4e",
+                  }}
+                  value={artLocation}
+                  onChange={(e) => setArtLocation(e.target.value)}
+                  required
+                />
+                <Button
+                  icon="pi pi-refresh"
+                  label="Reset"
+                  className="resetButton"
+                  onClick={() => resetArtForm()}
+                />
+              </div>
               <br />
               <Button
                 type="submit"

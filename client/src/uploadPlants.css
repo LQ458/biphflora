@@ -62,6 +62,14 @@ button.formSubmit {
   margin-top: 1rem;
   background-color: #739667;
 }
+button.resetButton {
+  color: white;
+  font-size: 1rem;
+  position: relative;
+  display: flex;
+  width: fit-content;
+  background-color: #739667;
+}
 div.picTop {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -110,7 +118,7 @@ div.artTop {
   width: 80vw;
 }
 input.artLocation {
-  width: 65vw;
+  width: 25vw;
 }
 .fileUploadComponent {
   width: 92%;
