@@ -527,7 +527,9 @@ const InfoDatabase = (search) => {
         </div>
 
         <div className={styles.top}>
-          <div className={styles.info}>
+          <div
+            className={`${styles.info} ${artPathsArray.length === 0 ? styles.widen : ""}`}
+          >
             {status === "authenticated" && (
               <button
                 disabled={status === "loading"}

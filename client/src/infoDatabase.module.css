@@ -411,3 +411,6 @@ div.artLabel p {
   font-weight: 500;
   font-size: calc(var(--label-size) - 0.1rem);
 }
+.widen {
+  width: 80vw !important;
+}
