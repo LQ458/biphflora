@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { ReactComponent as PreviousIcon } from "./buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "./buttons/caret-forward-outline.svg";
 import React, { useState, useEffect, useContext, useRef } from "react";
-import "./infoDatabase.css";
+import styles from "./infoDatabase.module.css";
 import { UserContext } from "./UserContext.js";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
@@ -24,15 +24,9 @@ const InfoDatabase = (search) => {
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
   const [latin, setLatin] = useState("");
-  const [titleMessage, setTitleMessage] = useState(
-    "Information Profile 信息档案",
-  );
   const [loading, setLoading] = useState(true);
   const [location, setLocation] = useState("Where can you find it 位置 :");
-  const [additionalInfo, setAdditionalInfo] = useState("Additional Info:");
   const [additionalInfoContent, setAdditionalInfoContent] = useState("");
-  const [encyclopediaMessage, setEncyclopediaMessage] =
-    useState("Encyclopedia 百科介绍");
   const [chineseLink, setChineseLink] = useState([]);
   const [link, setLink] = useState("");
   const [editor, setEditor] = useState("Editor:");
@@ -41,8 +35,6 @@ const InfoDatabase = (search) => {
   const [artPathsArray, setArtPathsArray] = useState([]);
   const [numOfPlants, setNumOfPlants] = useState("");
   const [loadingMessage, setLoadingMessage] = useState("");
-  const [chineseSitesMessage, setChineseSitesMessage] = useState("中文");
-  const [englishSitesMessage, setEnglishSitesMessage] = useState("English");
   const [otherNames, setOtherNames] = useState("");
   const [springPathsArray, setSpringPathsArray] = useState([]);
   const [summerPathsArray, setSummerPathsArray] = useState([]);
@@ -56,7 +48,6 @@ const InfoDatabase = (search) => {
   const [autumnPicsArrayIndex, setAutumnPicsArrayIndex] = useState(0);
   const [winterPicsArrayIndex, setWinterPicsArrayIndex] = useState(0);
   const [artLength, setArtLength] = useState(0);
-  const [artIndex, setArtIndex] = useState(1);
   const [featureBtnMsg, setFeatureBtnMsg] = useState("Feature");
   const [springLeftover, setSpringLeftover] = useState(0);
   const [summerLeftover, setSummerLeftover] = useState(0);
@@ -69,7 +60,7 @@ const InfoDatabase = (search) => {
   const [zoomPicLink, setZoomPicLink] = useState("");
   const [zoomArtLink, setZoomArtLink] = useState("");
   const [postingtime, setPostingtime] = useState("");
-  const loadingTimeoutRef = useRef(null);
+  const [artInfoArray, setArtInfoArray] = useState([]);
 
   const featureSingleArtHandle = async (input) => {
     setFeatureBtnMsg("Loading...");
@@ -78,7 +69,7 @@ const InfoDatabase = (search) => {
         plant: latin,
         path: zoomArtLink,
       };
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_Source_URL}/uploadFeatureArtSingle`,
         newFeature,
         {
@@ -102,7 +93,7 @@ const InfoDatabase = (search) => {
         plant: latin,
         path: zoomPicLink,
       };
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_Source_URL}/uploadFeatureSingle`,
         newFeature,
         {
@@ -132,15 +123,20 @@ const InfoDatabase = (search) => {
   useEffect(() => {
     const handleArts = () => {
       var artPaths = [];
+      var artInfo = [];
 
       if (arts.length > 0) {
         arts.forEach((art) => {
-          if (art.plant === searchName) artPaths.push(art.path);
+          if (art.plant === searchName) {
+            artPaths.push(art.path);
+            artInfo.push({ painter: art.artist, setting: art.location });
+          }
         });
       }
 
       setArtPathsArray(artPaths);
       setArtLength(artPaths.length);
+      setArtInfoArray(artInfo);
     };
 
     handleArts();
@@ -150,17 +146,9 @@ const InfoDatabase = (search) => {
     search.handleGallery(input);
   };
 
-  const prevArt = () => {
-    if (artsIndex > 0) {
-      setArtsIndex(artsIndex - 1);
-      setArtIndex(artIndex - 1);
-    }
-  };
-
   const nextArt = () => {
     if (artsIndex < artPathsArray.length - 1) {
       setArtsIndex(artsIndex + 1);
-      setArtIndex(artIndex + 1);
     } else if (artsIndex === artPathsArray.length - 1) {
       setArtsIndex(0);
     }
@@ -417,7 +405,7 @@ const InfoDatabase = (search) => {
         return (
           <div key={index}>
             <img
-              className="databaseImg"
+              className={styles.databaseImg}
               src={path}
               alt={`${index + 1}`}
               onClick={() => handleZoom(path, codes[index])}
@@ -430,7 +418,7 @@ const InfoDatabase = (search) => {
 
     const renderEmptySlots = (count) => {
       return Array.from({ length: count }).map((_, index) => (
-        <div className="fit" key={index} />
+        <div className={styles.fit} key={index} />
       ));
     };
 
@@ -452,18 +440,21 @@ const InfoDatabase = (search) => {
 
     return (
       <>
-        <h1 className="seasonTitle">
+        <h1 className={styles.seasonTitle}>
           {season.charAt(0).toUpperCase() + season.slice(1)}
         </h1>
-        <div className="seasonContainer">
-          <button onClick={() => handlePrevious(season)} className="prev1">
+        <div className={styles.seasonContainer}>
+          <button
+            onClick={() => handlePrevious(season)}
+            className={styles.prev1}
+          >
             <PreviousIcon width={50} height={50} />
           </button>
-          <div className="dbImgs">
+          <div className={styles.dbImgs}>
             {images}
             {emptySlots}
           </div>
-          <button onClick={() => handleNext(season)} className="next1">
+          <button onClick={() => handleNext(season)} className={styles.next1}>
             <NextIcon width={50} height={50} />
           </button>
         </div>
@@ -489,19 +480,19 @@ const InfoDatabase = (search) => {
   }, [autumnPathsArray, springPathsArray, summerPathsArray, winterPathsArray]); // Include the missing dependencies in the dependency array
 
   return loading ? (
-    <section className="loadingCreation">
-      <div className="dots-container">
-        <div className="dots"></div>
-        <div className="dots"></div>
-        <div className="dots"></div>
-        <div className="dots"></div>
-        <div className="dots"></div>
+    <section className={styles.loadingCreation}>
+      <div className={styles.dotsContainer}>
+        <div className={styles.dots}></div>
+        <div className={styles.dots}></div>
+        <div className={styles.dots}></div>
+        <div className={styles.dots}></div>
+        <div className={styles.dots}></div>
       </div>
     </section>
   ) : (
     <>
-      <body className="db1">
-        <div className="topbarInfoDB">
+      <body className={styles.db1}>
+        <div className={styles.topbarInfoDB}>
           <div style={{ flexGrow: "1", alignContent: "center" }}>
             <SearchBar
               handleGet={handleGet}
@@ -511,17 +502,15 @@ const InfoDatabase = (search) => {
               barWidth="80%"
             />
           </div>
-          <div className="ttl">
-            <h3 className="db1T">Name:</h3>
-            <h3 className="db1Title">{latin}</h3>
-            <h3 className="db1name">{name}</h3>
+          <div className={styles.ttl}>
+            <h3 className={styles.db1T}>Name:</h3>
+            <h3 className={styles.db1Title}>{latin}</h3>
+            <h3 className={styles.db1name}>{name}</h3>
           </div>
         </div>
 
-        {/* Search portion (includes the name of the plant) */}
-
-        <div className="top">
-          <div className="info">
+        <div className={styles.top}>
+          <div className={styles.info}>
             {status === "authenticated" && (
               <button
                 disabled={status === "loading"}
@@ -529,13 +518,13 @@ const InfoDatabase = (search) => {
                   handleEditPage([plant, picPaths, arts, { admin: admin }]);
                   navigate("/editPage");
                 }}
-                className="editBtn"
+                className={styles.editBtn}
               >
                 Edit/编辑
               </button>
             )}
 
-            <h3 className="titleMessage db1Infos">
+            <h3 className={`${styles.titleMessage} ${styles.db1Infos}`}>
               Information Profile 信息档案
             </h3>
 
@@ -548,8 +537,8 @@ const InfoDatabase = (search) => {
                   alignItems: "center",
                 }}
               >
-                <h3 className="db1Infos">Other names:</h3>
-                <p className="db1Infos">{otherNames}</p>
+                <h3 className={styles.db1Infos}>Other names:</h3>
+                <p className={styles.db1Infos}>{otherNames}</p>
               </div>
             )}
 
@@ -562,30 +551,30 @@ const InfoDatabase = (search) => {
                   alignItems: "center",
                 }}
               >
-                <h3 className="db1Infos">Where can you find it 位置:</h3>
-                <p className="db1Infos">{location}</p>
+                <h3 className={styles.db1Infos}>Where can you find it 位置:</h3>
+                <p className={styles.db1Infos}>{location}</p>
               </div>
             )}
 
             {plant && additionalInfoContent && (
               <>
-                <h3 className="db1Infos">Additional Info:</h3>
+                <h3 className={styles.db1Infos}>Additional Info:</h3>
                 <p
-                  className="db1Infos"
+                  className={styles.db1Infos}
                   dangerouslySetInnerHTML={{ __html: additionalInfoContent }}
                 ></p>
               </>
             )}
 
-            <h3 className="db1Infos">Encyclopedia 百科介绍</h3>
+            <h3 className={styles.db1Infos}>Encyclopedia 百科介绍</h3>
 
             {Array.isArray(link) && link.length > 0 && (
               <>
-                <h3 className="db1Infos">(English)</h3>
+                <h3 className={styles.db1Infos}>(English)</h3>
                 {link.map((item, index) => (
                   <div key={index}>
-                    <li className="Eng">
-                      {item.linkTitle}: {item.link}
+                    <li className={styles.Eng}>
+                      {item.linkTitle}: <a href={item.link}>{item.link}</a>
                     </li>
                   </div>
                 ))}
@@ -597,14 +586,15 @@ const InfoDatabase = (search) => {
                 (item) => item.link !== "" && item.linkTitle !== "",
               ) && (
                 <>
-                  <h3 className="db1Infos">(中文)</h3>
+                  <h3 className={styles.db1Infos}>(中文)</h3>
                   {chineseLink.map(
                     (item, index) =>
                       item.link !== "" &&
                       item.linkTitle !== "" && (
                         <div key={index}>
-                          <li className="CN">
-                            {item.linkTitle}: {item.link}
+                          <li className={styles.CN}>
+                            {item.linkTitle}:{" "}
+                            <a href={item.link}>{item.link}</a>
                           </li>
                         </div>
                       ),
@@ -613,52 +603,57 @@ const InfoDatabase = (search) => {
               )}
           </div>
 
-          {/* Information portion (includes the information of the plant) */}
-
           {artPathsArray.length > 0 && (
-            <div className="arts">
-              <h3 className="artTitle">Artwork</h3>
-              <div className="artPicContainer">
+            <div className={styles.arts}>
+              <h3 className={styles.artTitle}>Artwork</h3>
+              <div className={styles.artPicContainer}>
                 {load ? (
-                  <div className="artAlt" />
+                  <div className={styles.artAlt} />
                 ) : (
-                  <img
-                    src={loadedSrc}
-                    id="artPic"
-                    onClick={() => handleArtZoom(displayArtPath)}
-                    alt="art"
-                    className="artPic"
-                  />
+                  <div style={{ position: "relative" }}>
+                    <img
+                      src={loadedSrc}
+                      id="artPic"
+                      onClick={() => handleArtZoom(displayArtPath)}
+                      alt="art"
+                      className={styles.artPic}
+                    />
+                    <div className={styles.artLabel}>
+                      <p>Painter: {artInfoArray[artsIndex].painter}</p>
+                      {/* <p>Time: {postingtime}</p> */}
+                      <p>Setting: {artInfoArray[artsIndex].setting}</p>
+                    </div>
+                  </div>
                 )}
-                <button className="nextArBtn" onClick={nextArt}>
-                  <NextIcon className="shiftIcon" width={50} height={50} />
+                <button className={styles.nextArBtn} onClick={nextArt}>
+                  <NextIcon
+                    className={styles.shiftIcon}
+                    width={50}
+                    height={50}
+                  />
                 </button>
               </div>
             </div>
           )}
-
-          {/* Art portion (includes the art of the plant) */}
         </div>
-        <div className="hline11" />
-        <h3 className="editor">
+        <div className={styles.hline11} />
+        <h3 className={styles.editor}>
           {editor} {postingtime}
         </h3>
-
-        {/* Top portion (includes artwork) */}
 
         {(springPathsArray?.path?.length !== 0 ||
           summerPathsArray?.path?.length !== 0 ||
           autumnPathsArray?.path?.length !== 0 ||
           winterPathsArray?.path?.length !== 0) && (
-          <div className="Bar">
-            <h3 className="btTitle">Image Gallery 图库</h3>
+          <div className={styles.Bar}>
+            <h3 className={styles.btTitle}>Image Gallery 图库</h3>
 
             {editor && (
               <button
                 onClick={() => {
                   handleGalleryTry(searchName);
                 }}
-                className="expandBtn"
+                className={styles.expandBtn}
               >
                 Expand
               </button>

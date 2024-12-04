@@ -816,27 +816,57 @@ app.get("/adminAuth", verifyToken, async function (req, res) {
 });
 
 app.put("/handleEditDecision", verifyToken, async function (req, res) {
-  const request = await EditTextRequest.findById(req.body.id);
-  if (!req.body.decision) {
-    await EditTextRequest.deleteOne({ _id: request._id });
-    res.json({ success: true, message: "request denied" });
-  } else {
-    const postToEdit = await Post.findOne({ latinName: request.originalLatin });
-    if (postToEdit) {
-      // 使用 request.toObject() 获取普通对象
-      const requestData = request.toObject();
-
-      // 删除不需要的属性
-      delete requestData._id; // 确保不覆盖原有文档的 _id
-      delete requestData.originalLatin;
-
-      // 将 requestData 的属性复制到 postToEdit
-      Object.assign(postToEdit, requestData);
-
-      await postToEdit.save();
+  try {
+    const request = await EditTextRequest.findById(req.body.id);
+    if (!request) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Request not found" });
     }
+
+    if (!req.body.decision) {
+      await EditTextRequest.deleteOne({ _id: request._id });
+      return res.json({ success: true, message: "request denied" });
+    }
+
+    const postToEdit = await Post.findOneAndUpdate(
+      { latinName: request.originalLatin },
+      {
+        $set: {
+          latinName: request.latinName,
+          chineseName: request.chineseName,
+          commonName: request.commonName,
+          location: request.location,
+          additionalInfo: request.additionalInfo,
+          link: request.link,
+          chineseLink: request.chineseLink,
+          editor: request.editor,
+          username: request.username,
+          otherNames: request.otherNames,
+          authorization: true,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!postToEdit) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Post not found" });
+    }
+
     await EditTextRequest.deleteOne({ _id: request._id });
-    res.json({ success: false, message: "request accepted" });
+    return res.json({ success: true, message: "request accepted" });
+  } catch (error) {
+    console.error("Error in handleEditDecision:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
   }
 });
 

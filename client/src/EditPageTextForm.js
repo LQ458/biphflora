@@ -1,10 +1,15 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
+import { Button } from "primereact/button";
+import { Dialog } from "primereact/dialog";
+import { Toast } from "primereact/toast";
 import "./editPageTextForm.css";
 
 const EditPageTextForm = (prop) => {
-  const clearSubpage = prop.clearSubpage;
-  const plant = prop.post;
+  const { clearSubpage, post: plant } = prop;
+  const toast = useRef(null);
 
   const [latinName, setLatinName] = useState(plant.latinName);
   const [commonName, setCommonName] = useState(plant.commonName);
@@ -43,26 +48,37 @@ const EditPageTextForm = (prop) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     setLoadingMessage("loading...");
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/updateText`,
-        {
-          latinName: latinName,
-          chineseName: chineseName,
-          commonName: commonName,
-          additionalInfo: additionalInfo,
-          link: linkArray,
-          chineseLink: chineseLinkArray,
-          otherNames: otherNames,
-          originalLatin: originalLatin,
-        },
-      );
+      await axios.post(`${process.env.REACT_APP_Source_URL}/updateText`, {
+        latinName,
+        chineseName,
+        commonName,
+        location,
+        additionalInfo,
+        link: linkArray,
+        chineseLink: chineseLinkArray,
+        otherNames,
+        originalLatin,
+      });
+
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Plant information updated successfully",
+      });
+
       setLoadingMessage("Submit");
+      clearSubpage();
     } catch (error) {
       console.log(error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to update plant information",
+      });
+      setLoadingMessage("Submit");
     }
   };
 
@@ -97,111 +113,105 @@ const EditPageTextForm = (prop) => {
     });
     setChineseLinkArray(linkArray);
   }, [chineseLinksStringify]);
+
   return (
-    <>
-      <h1>Edit Text Form</h1>
-      <button
-        onClick={() => {
-          clearSubpage();
-        }}
-      >
-        x
-      </button>
-      <br />
-      <br />
-      <form encType="multipart/form-data" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <div className="namesEdit">
-            <input
-              type="text"
-              id="latinName"
-              name="latinName"
-              placeholder={latinName}
-              className="inputBox"
-              value={latinName}
-              onChange={(e) => setLatinName(e.target.value)}
-              required
-            />
-            <input
-              type="text"
-              id="chineseName"
-              name="chineseName"
-              placeholder={chineseName}
-              className="inputBox"
-              value={chineseName}
-              onChange={(e) => setChineseName(e.target.value)}
-              required
-            />
-            <input
-              type="text"
-              id="commonName"
-              name="commonName"
-              placeholder="Common Name"
-              className="inputBox"
-              value={commonName}
-              onChange={(e) => setCommonName(e.target.value)}
-              required
+    <Dialog
+      header="Edit Text Form"
+      visible={true}
+      onHide={clearSubpage}
+      className="edit-dialog"
+    >
+      <Toast ref={toast} />
+
+      <form onSubmit={handleSubmit} className="p-fluid">
+        <div className="grid">
+          {/* Names Section */}
+          <div className="col-12 grid">
+            <div className="col-4">
+              <InputText
+                value={latinName}
+                onChange={(e) => setLatinName(e.target.value)}
+                placeholder="Latin Name"
+                required
+              />
+            </div>
+            <div className="col-4">
+              <InputText
+                value={chineseName}
+                onChange={(e) => setChineseName(e.target.value)}
+                placeholder="Chinese Name"
+                required
+              />
+            </div>
+            <div className="col-4">
+              <InputText
+                value={commonName}
+                onChange={(e) => setCommonName(e.target.value)}
+                placeholder="Common Name"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Secondary Info Section */}
+          <div className="col-12 grid">
+            <div className="col-6">
+              <InputText
+                value={otherNames}
+                onChange={(e) => setOtherNames(e.target.value)}
+                placeholder="Other Names"
+              />
+            </div>
+            <div className="col-6">
+              <InputText
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Location"
+              />
+            </div>
+          </div>
+
+          {/* Additional Info Section */}
+          <div className="col-12">
+            <InputTextarea
+              value={additionalInfo}
+              onChange={(e) => setAdditionalInfo(e.target.value)}
+              placeholder="Additional Information"
+              autoResize
+              rows={5}
             />
           </div>
-          <br />
-          <div className="secEdit">
-            <input
-              type="text"
-              id="otherNames"
-              name="otherNames"
-              placeholder={otherNames}
-              className="inputBox"
-              value={otherNames}
-              onChange={(e) => setOtherNames(e.target.value)}
-            />
-            <input
-              type="text"
-              id="location"
-              name="location"
-              placeholder={location}
-              className="inputBox"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+
+          {/* Links Section */}
+          <div className="col-12">
+            <InputText
+              value={linksStringify}
+              onChange={(e) => setLinksStringify(e.target.value)}
+              placeholder="English Links (Format: Title:Link, Title:Link)"
             />
           </div>
-          <br />
-          <textarea
-            id="additionalInfo"
-            name="additionalInfo"
-            placeholder={additionalInfo}
-            className="inputBox additionalInfoBox"
-            value={additionalInfo}
-            onChange={(e) => setAdditionalInfo(e.target.value)}
-          />
+
+          <div className="col-12">
+            <InputText
+              value={chineseLinksStringify}
+              onChange={(e) => setChineseLinksStringify(e.target.value)}
+              placeholder="Chinese Links (Format: Title:Link, Title:Link)"
+            />
+          </div>
+
+          {/* Submit Button */}
+          <div className="col-12">
+            <Button
+              type="submit"
+              label={loadingMessage}
+              icon="pi pi-check"
+              loading={loadingMessage === "loading..."}
+              className="p-button-success edit-button"
+            />
+          </div>
         </div>
-        <br />
-        <input
-          type="text"
-          id="links"
-          name="links"
-          placeholder={linksStringify}
-          className="inputBox linksBox"
-          value={linksStringify}
-          onChange={(e) => setLinksStringify(e.target.value)}
-        />
-        <br />
-        <br />
-
-        <input
-          type="text"
-          id="chineseLinks"
-          name="chineseLinks"
-          className="inputBox linksBox"
-          value={chineseLinksStringify}
-          onChange={(e) => setChineseLinksStringify(e.target.value)}
-        />
-        <br />
-
-        <button type="submit" className="formSubmit">
-          {loadingMessage}
-        </button>
       </form>
-    </>
+    </Dialog>
   );
 };
 

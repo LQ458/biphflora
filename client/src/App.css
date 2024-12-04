@@ -14,6 +14,8 @@ body::-webkit-scrollbar {
   --art-shift: 15vw;
   --letter-size: 1.5rem;
   --plant-size: calc(var(--letter-size) - 0.6rem);
+  --dbImg-width: 15.5vw;
+  --dbImg-height: 8vw;
 }
 
 .notFound {

@@ -16,6 +16,8 @@ import { UserProvider } from "./UserContext";
 import { PrimeReactProvider } from "primereact/api";
 import "primereact/resources/themes/saga-green/theme.css";
 import "primeicons/primeicons.css";
+import "primereact/resources/primereact.min.css"; // 核心样式                           // 图标
+import "primeflex/primeflex.css"; // 布局
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React, { useState } from "react";

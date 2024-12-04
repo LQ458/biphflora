@@ -1,7 +1,3 @@
-:root {
-  --dbImg-width: 15.5vw;
-  --dbImg-height: 8vw;
-}
 #searchBar {
   top: 1.2vw;
   left: 0vw;
@@ -343,7 +339,7 @@ section.loadingCreation {
   background-color: #63895f;
 }
 
-.dots-container {
+.dotsContainer {
   padding: 0;
   position: absolute;
   text-align: center;
@@ -385,4 +381,24 @@ section.loadingCreation {
   30% {
     transform: translateY(0);
   }
+}
+
+div.artLabel {
+  position: absolute;
+  top: 90%;
+  left: 90%;
+  display: flex;
+  width: max-content;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 9rem;
+  padding: 0.4rem;
+  color: white;
+  background-color: #84a379;
+}
+
+div.artLabel p {
+  margin: 0;
+  font-weight: 500;
+  font-size: calc(var(--label-size) - 0.1rem);
 }

@@ -1,18 +1,46 @@
-div.namesEdit {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  width: 27vw;
-  gap: 1vw;
+.edit-dialog {
+  width: 80vw;
+  max-width: 1200px;
 }
-div.secEdit {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  width: 22vw;
-  gap: 1vw;
+
+.p-dialog .p-dialog-content {
+  padding: 2rem;
 }
-textarea.additionalInfoBox {
-  width: 41vw;
+
+.p-inputtext {
+  width: 100%;
 }
-input.linksBox {
-  width: 41vw;
+
+.p-inputtextarea {
+  width: 100%;
+  min-height: 120px;
+}
+
+/* Add spacing between form elements */
+.grid > .col-12 {
+  margin-bottom: 1rem;
+}
+
+/* Make sure buttons have proper spacing */
+.p-button {
+  margin-right: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .edit-dialog {
+    width: 95vw;
+  }
+
+  .grid > .col-12 > .grid > .col-4,
+  .grid > .col-12 > .grid > .col-6 {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
+
+.edit-button {
+  background-color: #739666 !important;
+  border-color: #739666 !important;
+  color: white;
 }

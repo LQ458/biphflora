@@ -73,6 +73,9 @@ importers:
       passport-local:
         specifier: ^1.0.0
         version: 1.0.0
+      primeflex:
+        specifier: ^3.3.1
+        version: 3.3.1
       primeicons:
         specifier: ^7.0.0
         version: 7.0.0
@@ -1671,6 +1674,12 @@ packages:
     engines: { node: ">=14" }
     hasBin: true
 
+  primeflex@3.3.1:
+    resolution:
+      {
+        integrity: sha512-zaOq3YvcOYytbAmKv3zYc+0VNS9Wg5d37dfxZnveKBFPr7vEIwfV5ydrpiouTft8MVW6qNjfkaQphHSnvgQbpQ==,
+      }
+
   primeicons@7.0.0:
     resolution:
       {
@@ -3039,6 +3048,8 @@ snapshots:
   picomatch@2.3.1: {}
 
   prettier@3.3.3: {}
+
+  primeflex@3.3.1: {}
 
   primeicons@7.0.0: {}
 

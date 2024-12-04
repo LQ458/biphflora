@@ -23,7 +23,13 @@ const EditPage = (props) => {
   const status = user.get("status");
 
   const navigate = useNavigate();
-  const [pics, setPics] = useState(props.editKey[1]);
+  const [pics, setPics] = useState([]);
+
+  useEffect(() => {
+    if (props?.editKey?.[1]) {
+      setPics(props.editKey[1]);
+    }
+  }, [props]);
 
   const deletePic = async (id) => {
     console.log("deletePic");
@@ -43,6 +49,17 @@ const EditPage = (props) => {
   useEffect(() => {
     const authUser = () => {
       if (status === "authenticated") {
+        if (
+          !props?.editKey ||
+          !props.editKey[0] ||
+          !props.editKey[1] ||
+          !props.editKey[2] ||
+          !props.editKey[3]
+        ) {
+          alert("Invalid access. Redirecting to home page.");
+          navigate("/");
+          return;
+        }
         setAuth(true);
       } else if (status === "unauthenticated") {
         alert("Please login to access this page");
@@ -51,6 +68,10 @@ const EditPage = (props) => {
     };
     authUser();
   }, [navigate, status, props]);
+
+  if (!props?.editKey) {
+    return null;
+  }
 
   const clearSubpage = () => {
     setSubpage(null);
