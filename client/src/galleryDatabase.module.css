@@ -12,15 +12,13 @@ button.backBtn:hover {
 }
 button.backBtn {
   position: relative;
-  top: 5vh;
-  margin-bottom: 3vh;
-  right: 37vw;
+  padding: 0;
+  margin: 0;
 }
 h1.lowerTitle {
   position: relative;
   font-size: 1.8rem;
-  padding: 2rem 1rem;
-  right: 30vw;
+  margin: 0;
 }
 div.lowerParts {
   align-items: center;
@@ -40,11 +38,10 @@ button.seasonBtn {
   font-weight: bold;
 }
 button.seasonBtn:hover {
-  background-color: #516d4e;
   text-decoration: underline;
 }
-button.seasonBtn:focus {
-  background-color: #516d4e;
+.focussed {
+  background-color: #516d4e !important;
   text-decoration: underline;
 }
 div.lineB {
@@ -151,6 +148,8 @@ h3.db3h3 {
   position: absolute;
   right: 12vw;
   top: 3vw;
+  text-decoration: underline;
+  color: #2d4228;
   font-size: 1.7vw;
 }
 
@@ -192,9 +191,12 @@ div.btmLine {
 }
 
 .underSeasons {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  width: 25%;
+  display: flex;
+  width: 100%;
+  justify-content: left;
+  align-items: center;
+  margin-left: 3vw;
+  margin-right: 3vw;
 }
 
 .topbarGalleryDB {
@@ -226,17 +228,65 @@ div.btmLine {
 
 .zoomBackground {
   position: fixed;
+  display: inline-block;
+  width: 100vw;
+  height: 100vh;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  background-color: #f4fae8;
 }
 
 body.db {
   overflow: hidden;
+}
+
+div.lowerTop {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+  margin-left: 6rem;
+  flex-direction: column;
+}
+
+button.featurePicBtn {
+  cursor: pointer;
+  color: white;
+  text-decoration: underline;
+}
+
+div.featureInfo {
+  all: initial;
+  display: flex;
+  position: fixed;
+  right: 4rem;
+  bottom: 3rem;
+  background-color: #739666;
+  color: white;
+  font-size: 1.5rem;
+  font-family: "Noto Sans TC", sans-serif;
+  padding: 0.7rem 1rem 0.7rem 1rem;
+  z-index: 10000;
+}
+div.featureInfo p {
+  margin: 0;
+}
+.arrowIcon {
+  height: 1rem;
+}
+
+button.monthBtn {
+  background-color: #95b28b;
+  padding: 0.7rem 1rem;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+button.monthBtn:hover {
+  background-color: #516d4e;
+  text-decoration: underline;
+}
+button.monthBtn:focus {
+  background-color: #516d4e;
+  text-decoration: underline;
 }

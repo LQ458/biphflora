@@ -22,7 +22,6 @@ const UploadPlants = () => {
   const [editor, setEditor] = useState("");
   const [picEnglishName, setPicEnglishName] = useState("");
   const [picSeason, setPicSeason] = useState("");
-  const [picDescription, setPicDescription] = useState("");
   const [picPhotographer, setPicPhotographer] = useState("");
   const [picSetting, setPicSetting] = useState("");
   const [picArt, setPicArt] = useState("photography");
@@ -256,7 +255,6 @@ const UploadPlants = () => {
     const basicInfo = {
       picEnglishName,
       picSeason,
-      picDescription,
       picPhotographer,
       picSetting,
       picArt,
@@ -378,7 +376,6 @@ const UploadPlants = () => {
       setPicFiles([]);
       setPicEnglishName("");
       setPicSeason("");
-      setPicDescription("");
       setPicPhotographer("");
       setPicSetting("");
       setMonth("");
@@ -651,20 +648,6 @@ const UploadPlants = () => {
                   filter
                   valueTemplate={selectedPicEnglishNameTemplate}
                   itemTemplate={picEnglishNameOptionTemplate}
-                  required
-                />
-                <InputText
-                  type="text"
-                  style={{
-                    borderRadius: "0",
-                    border: "2px solid #516d4e",
-                  }}
-                  id="picDescription"
-                  name="picDescription"
-                  placeholder="Description"
-                  className="description"
-                  value={picDescription}
-                  onChange={(e) => setPicDescription(e.target.value)}
                   required
                 />
               </div>

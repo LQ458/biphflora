@@ -2,7 +2,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as PreviousIcon } from "./buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "./buttons/caret-forward-outline.svg";
-import React, { useState, useEffect, useContext, useRef } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import styles from "./infoDatabase.module.css";
 import { UserContext } from "./UserContext.js";
 import SearchBar from "./SearchBar.js";
@@ -31,7 +31,6 @@ const InfoDatabase = (search) => {
   const [link, setLink] = useState("");
   const [editor, setEditor] = useState("Editor:");
   const [picPaths, setPicPaths] = useState([]);
-  const [pathsArray, setPathsArray] = useState([]);
   const [artPathsArray, setArtPathsArray] = useState([]);
   const [numOfPlants, setNumOfPlants] = useState("");
   const [loadingMessage, setLoadingMessage] = useState("");
@@ -61,6 +60,11 @@ const InfoDatabase = (search) => {
   const [zoomArtLink, setZoomArtLink] = useState("");
   const [postingtime, setPostingtime] = useState("");
   const [artInfoArray, setArtInfoArray] = useState([]);
+  const [springInfo, setSpringInfo] = useState([]);
+  const [summerInfo, setSummerInfo] = useState([]);
+  const [autumnInfo, setAutumnInfo] = useState([]);
+  const [winterInfo, setWinterInfo] = useState([]);
+  const [curSeasonInfo, setCurSeasonInfo] = useState({});
 
   const featureSingleArtHandle = async (input) => {
     setFeatureBtnMsg("Loading...");
@@ -110,9 +114,11 @@ const InfoDatabase = (search) => {
     }
   };
 
-  const handleZoom = (path) => {
+  const handleZoom = (path, seasonInfo) => {
     setZoomArtLink();
     setZoomPicLink(path);
+    setCurSeasonInfo(seasonInfo);
+    console.log(seasonInfo);
   };
 
   const handleArtZoom = (path) => {
@@ -320,7 +326,6 @@ const InfoDatabase = (search) => {
 
   const handleGet = async (getName) => {
     setLoadingMessage("Loading...");
-    setPathsArray([]);
     setQuery("");
     setSearchResults("");
     const sendName = getName;
@@ -360,10 +365,17 @@ const InfoDatabase = (search) => {
       autumn: { path: [], code: [] },
       winter: { path: [], code: [] },
     };
-    picPaths.forEach(({ season, path, code }) => {
+    const info = {
+      spring: [],
+      summer: [],
+      autumn: [],
+      winter: [],
+    };
+    picPaths.forEach(({ season, path, code, takenBy, time, location }) => {
       if (!paths[season]) {
         paths[season] = { path: [], code: [] };
       }
+      info[season].push({ takenBy, time, location });
 
       paths[season].path.push(path);
       paths[season].code.push(code ?? "N/A");
@@ -373,6 +385,10 @@ const InfoDatabase = (search) => {
     setAutumnPathsArray(paths.autumn);
     setWinterPathsArray(paths.winter);
     setSpringPathsArray(paths.spring);
+    setSpringInfo(info.spring);
+    setSummerInfo(info.summer);
+    setAutumnInfo(info.autumn);
+    setWinterInfo(info.winter);
     setSpringLeftover(paths.spring.path.length % 4);
     setSummerLeftover(paths.summer.path.length % 4);
     setAutumnLeftover(paths.autumn.path.length % 4);
@@ -395,6 +411,7 @@ const InfoDatabase = (search) => {
     seasonCheck,
     seasonIndex,
     seasonLeft,
+    seasonInfo,
   }) {
     if (seasonPaths?.path?.length === 0) {
       return null;
@@ -408,7 +425,7 @@ const InfoDatabase = (search) => {
               className={styles.databaseImg}
               src={path}
               alt={`${index + 1}`}
-              onClick={() => handleZoom(path, codes[index])}
+              onClick={() => handleZoom(path, seasonInfo[index])}
             />
             {admin && <p style={{ margin: 0 }}>Code: {code}</p>}
           </div>
@@ -666,6 +683,7 @@ const InfoDatabase = (search) => {
           seasonCheck={springCheck}
           seasonIndex={springPicsArrayIndex}
           seasonLeft={springLeftover}
+          seasonInfo={springInfo}
         />
         <Season
           seasonPaths={summerPathsArray}
@@ -673,6 +691,7 @@ const InfoDatabase = (search) => {
           seasonCheck={summerCheck}
           seasonIndex={summerPicsArrayIndex}
           seasonLeft={summerLeftover}
+          seasonInfo={summerInfo}
         />
         <Season
           seasonPaths={autumnPathsArray}
@@ -680,6 +699,7 @@ const InfoDatabase = (search) => {
           seasonCheck={autumnCheck}
           seasonIndex={autumnPicsArrayIndex}
           seasonLeft={autumnLeftover}
+          seasonInfo={autumnInfo}
         />
         <Season
           seasonPaths={winterPathsArray}
@@ -687,6 +707,7 @@ const InfoDatabase = (search) => {
           seasonCheck={winterCheck}
           seasonIndex={winterPicsArrayIndex}
           seasonLeft={winterLeftover}
+          seasonInfo={winterInfo}
         />
 
         {springPathsArray?.path?.length !== 0 ||
@@ -694,44 +715,57 @@ const InfoDatabase = (search) => {
           autumnPathsArray?.path?.length !== 0 ||
           (winterPathsArray?.path?.length !== 0 && <div className="hline1" />)}
       </body>
-      <div className="zoomPicBox">
+      <div className={styles.zoomPicBox}>
         {zoomPicLink && (
-          <div className="zoomBox">
-            <img className="zoomPic" src={zoomPicLink} alt={zoomPicLink} />
+          <div className={styles.zoomBox}>
+            <img
+              className={styles.zoomPic}
+              src={zoomPicLink}
+              alt={zoomPicLink}
+            />
             <button
-              className="xButton"
+              className={styles.xButton}
               onClick={() => {
                 setZoomPicLink();
               }}
             >
-              X
+              Back
             </button>
             {status === "authenticated" && zoomPicLink && (
-              <button
-                className="featurePicBtn"
-                onClick={() => {
-                  featureSingleHandle(zoomPicLink);
-                }}
-              >
-                {featureBtnMsg}
-              </button>
+              <div className={styles.featureInfo}>
+                <p>Taken by: {curSeasonInfo.takenBy}&nbsp;&nbsp;</p>
+                <p>Time: {curSeasonInfo.time}&nbsp;&nbsp;</p>
+                <p>Location: {curSeasonInfo.location}&nbsp;&nbsp;</p>
+                <button
+                  className={styles.featurePicBtn}
+                  onClick={() => {
+                    featureSingleHandle(zoomPicLink);
+                  }}
+                >
+                  <p>{featureBtnMsg}</p>
+                </button>
+              </div>
             )}
           </div>
         )}
         {zoomArtLink && (
-          <div className="zoomBox">
-            <img className="zoomPic" src={zoomArtLink} alt={zoomArtLink} />
+          <div className={styles.zoomBox}>
+            <img
+              className={styles.zoomPic}
+              src={zoomArtLink}
+              alt={zoomArtLink}
+            />
             <button
-              className="xButton"
+              className={styles.xButton}
               onClick={() => {
                 setZoomArtLink();
               }}
             >
-              X
+              Back
             </button>
             {username && zoomArtLink && (
               <button
-                className="featureBtn"
+                className={styles.featureBtn}
                 onClick={() => {
                   featureSingleArtHandle(zoomArtLink);
                 }}

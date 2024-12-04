@@ -62,7 +62,6 @@ const EditPage = (props) => {
         }
         setAuth(true);
       } else if (status === "unauthenticated") {
-        alert("Please login to access this page");
         navigate("/");
       }
     };

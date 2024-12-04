@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import styles from "./galleryDatabase.module.css";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
+import ArrowIcon from "./buttons/arrow.svg";
 
 const GalleryDatabase = (props) => {
   const seasons = useMemo(() => ["spring", "summer", "autumn", "winter"], []);
@@ -15,6 +16,9 @@ const GalleryDatabase = (props) => {
   const [pics, setPics] = useState([]);
   const [displays, setDisplays] = useState([true, false, false, false]);
   const [zoomPicLink, setZoomPicLink] = useState("");
+  const [zoomTakenBy, setZoomTakenBy] = useState("");
+  const [zoomTime, setZoomTime] = useState("");
+  const [zoomLocation, setZoomLocation] = useState("");
   const [featureBtnMsg, setFeatureBtnMsg] = useState("Feature");
 
   useEffect(() => {
@@ -24,8 +28,11 @@ const GalleryDatabase = (props) => {
     }
   }, []);
 
-  const zoom = (input) => {
+  const zoom = (input, takenBy, time, location) => {
     setZoomPicLink(input);
+    setZoomTakenBy(takenBy);
+    setZoomTime(time);
+    setZoomLocation(location);
   };
 
   const change = (season) => {
@@ -44,7 +51,7 @@ const GalleryDatabase = (props) => {
           { plant: plant },
         );
         let newArray = [];
-        seasons.map((season, index) => {
+        seasons.forEach((season, index) => {
           newArray[index] = response.data[`${season}Pics`];
         });
         setPics(newArray);
@@ -114,6 +121,11 @@ const GalleryDatabase = (props) => {
       try {
         const response = await axios.get(
           `${process.env.REACT_APP_Source_URL}/userInfo`,
+          {
+            headers: {
+              Authorization: `${localStorage.getItem("askanything")}`,
+            },
+          },
         );
         setUsername(response.data.username);
         setAdmin(response.data.admin);
@@ -144,41 +156,53 @@ const GalleryDatabase = (props) => {
         </div>
       </div>
       <div className={styles.lowerPart}>
-        <button onClick={handleBack} className={styles.backBtn}>
-          Back
-        </button>
-        <h1 className={styles.lowerTitle}>Image Gallery 图库</h1>
+        <div className={styles.lowerTop}>
+          <button onClick={handleBack} className={styles.backBtn}>
+            Back
+          </button>
+          <h1 className={styles.lowerTitle}>Image Gallery 图库</h1>
+        </div>
         <div className={styles.seasons}>
           <button
             id="springBtn"
-            className={styles.seasonBtn}
+            className={`${styles.seasonBtn} ${displays[0] ? styles.focussed : ""}`}
             onClick={() => change("spring")}
           >
             Spring
           </button>
           <div className={styles.lineB} />
-          <button className={styles.seasonBtn} onClick={() => change("summer")}>
+          <button
+            className={`${styles.seasonBtn} ${displays[1] ? styles.focussed : ""}`}
+            onClick={() => change("summer")}
+          >
             Summer
           </button>
           <div className={styles.lineB} />
-          <button className={styles.seasonBtn} onClick={() => change("autumn")}>
+          <button
+            className={`${styles.seasonBtn} ${displays[2] ? styles.focussed : ""}`}
+            onClick={() => change("autumn")}
+          >
             Autumn
           </button>
           <div className={styles.lineB} />
-          <button className={styles.seasonBtn} onClick={() => change("winter")}>
+          <button
+            className={`${styles.seasonBtn} ${displays[3] ? styles.focussed : ""}`}
+            onClick={() => change("winter")}
+          >
             Winter
           </button>
         </div>
+        <br />
         <div className={styles.underSeasons}>
           <button
             id="springBtn"
-            className={styles.seasonBtn}
+            className={styles.monthBtn}
             onClick={() => change("spring")}
           >
             Spring
           </button>
-          <div className={styles.lineB} />
-          <button className={styles.seasonBtn} onClick={() => change("summer")}>
+          <img src={ArrowIcon} alt="arrow" className={styles.arrowIcon} />
+          <button className={styles.monthBtn} onClick={() => change("summer")}>
             Summer
           </button>
         </div>
@@ -195,11 +219,19 @@ const GalleryDatabase = (props) => {
                           src={p.path}
                           alt=""
                           className={styles.summerPic}
-                          onClick={() => zoom(p.path)}
+                          onClick={() =>
+                            zoom(p.path, p.takenBy, p.time, p.location)
+                          }
                         />
                         <div className={styles.summerPicWords}>
                           <p className={styles.SPW}>
-                            {p.takenBy} {p.time} {p.description}
+                            {p.takenBy}{" "}
+                            {p.time.split(" ")[1] +
+                              "/" +
+                              p.time.split(" ")[2] +
+                              "/" +
+                              p.time.split(" ")[3]}{" "}
+                            {p.location}
                           </p>
                         </div>
                       </div>
@@ -239,15 +271,30 @@ const GalleryDatabase = (props) => {
                 className={styles.xButton}
                 onClick={() => setZoomPicLink("")}
               >
-                X
+                Back
               </button>
               {username && (
-                <button
-                  className={styles.featureBtn}
-                  onClick={() => featureSingleHandle(zoomPicLink)}
-                >
-                  {featureBtnMsg}
-                </button>
+                <div className={styles.featureInfo}>
+                  <p>Taken by: {zoomTakenBy}&nbsp;&nbsp;</p>
+                  <p>
+                    Time:{" "}
+                    {zoomTime.split(" ")[1] +
+                      "/" +
+                      zoomTime.split(" ")[2] +
+                      "/" +
+                      zoomTime.split(" ")[3]}
+                    &nbsp;&nbsp;
+                  </p>
+                  <p>Location: {zoomLocation}&nbsp;&nbsp;</p>
+                  <button
+                    className={styles.featurePicBtn}
+                    onClick={() => {
+                      featureSingleHandle(zoomPicLink);
+                    }}
+                  >
+                    <p>{featureBtnMsg}</p>
+                  </button>
+                </div>
               )}
             </div>
           </div>

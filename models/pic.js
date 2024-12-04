@@ -28,9 +28,6 @@ const picSchema = new Schema({
   season: {
     type: String,
   },
-  description: {
-    type: String,
-  },
   path: {
     type: String,
   },

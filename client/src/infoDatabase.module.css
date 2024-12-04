@@ -271,14 +271,13 @@ div.artPicContainer {
 }
 
 .zoomBox {
-  border: solid 20px black;
   position: fixed;
   display: inline-block;
   width: 100vw;
   height: 100vh;
   top: 0;
   left: 0;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: #f4fae8;
 }
 
 .zoomPic {
@@ -295,21 +294,31 @@ div.artPicContainer {
   position: absolute;
   right: 12vw;
   top: 3vw;
+  text-decoration: underline;
+  color: #2d4228;
   font-size: 1.7vw;
 }
 
 button.featurePicBtn {
+  cursor: pointer;
+  color: white;
+  text-decoration: underline;
+}
+div.featureInfo {
   all: initial;
   display: flex;
-  z-index: 10000;
-  cursor: pointer;
   position: fixed;
   right: 4rem;
   bottom: 3rem;
   background-color: #739666;
   color: white;
   font-size: 1.5rem;
-  padding: 0.5rem 1rem 0.5rem 1rem;
+  font-family: "Noto Sans TC", sans-serif;
+  padding: 0.7rem 1rem 0.7rem 1rem;
+  z-index: 10000;
+}
+div.featureInfo p {
+  margin: 0;
 }
 button.editBtn {
   position: absolute;

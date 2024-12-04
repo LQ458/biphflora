@@ -280,7 +280,6 @@ app.post("/adminToggle", async (req, res) => {
 
 app.get("/userInfo", verifyToken, async (req, res) => {
   const featureLists = await FeatureHome.find().lean();
-
   if (req.user) {
     res.json({
       success: true,
@@ -617,7 +616,6 @@ app.post(
             art: req.body.picArt,
             modifiedBy: username,
             season: req.body.picSeason,
-            description: req.body.picDescription,
             takenBy: req.body.picPhotographer,
             location: req.body.picSetting,
             path: "/plantspic/" + file.filename,
