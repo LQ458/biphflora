@@ -29,6 +29,10 @@ const EditPage = (props) => {
     if (props?.editKey?.[1]) {
       setPics(props.editKey[1]);
     }
+
+    if (!props?.editKey) {
+      return null;
+    }
   }, [props]);
 
   const deletePic = async (id) => {
@@ -67,10 +71,6 @@ const EditPage = (props) => {
     };
     authUser();
   }, [navigate, status, props]);
-
-  if (!props?.editKey) {
-    return null;
-  }
 
   const clearSubpage = () => {
     setSubpage(null);
@@ -158,62 +158,66 @@ const EditPage = (props) => {
         </div>
         <br />
         <br />
-        <div className="picEditBox">
-          <h1 className="photoTitle">Photography Edit</h1>
-          <h2>
-            {"Season: " + props.editKey[1][0].season + " "}
-            {"Time: " + props.editKey[1][0].time}
-          </h2>
-          {pics &&
-            pics.map((item, index) => (
-              <>
-                <img
-                  src={item.path}
-                  key={index}
-                  alt="pic"
-                  style={{ maxWidth: "25%" }}
-                />
-                <button onClick={() => deletePic(item._id)}>x</button>
-              </>
-            ))}
-          <br />
-          <button
-            onClick={() => {
-              handleEdit("pic");
-            }}
-            className="editTextBtn"
-          >
-            Edit
-          </button>
-        </div>
+        {pics?.length !== 0 && (
+          <div className="picEditBox">
+            <h1 className="photoTitle">Photography Edit</h1>
+            <h2>
+              {"Season: " + props?.editKey[1][0]?.season + " "}
+              {"Time: " + props?.editKey[1][0]?.time}
+            </h2>
+            {pics &&
+              pics.map((item, index) => (
+                <>
+                  <img
+                    src={item.path}
+                    key={index}
+                    alt="pic"
+                    style={{ maxWidth: "25%" }}
+                  />
+                  <button onClick={() => deletePic(item._id)}>x</button>
+                </>
+              ))}
+            <br />
+            <button
+              onClick={() => {
+                handleEdit("pic");
+              }}
+              className="editTextBtn"
+            >
+              Edit
+            </button>
+          </div>
+        )}
         <br />
         <br />
-        <div className="artEditBox">
-          <h1 className="artEditTitle">Artwork Edit</h1>
-          <h2>
-            By {props.editKey[2].artist} Location: {props.editKey[2].location}
-          </h2>
-          {props.editKey[2] &&
-            props.editKey[2].map((item, index) => (
-              <>
-                <img
-                  src={item.path}
-                  key={index}
-                  alt="pic"
-                  style={{ maxWidth: "25%" }}
-                />
-              </>
-            ))}
-          <br />
-          <button
-            onClick={() => {
-              handleEdit("art");
-            }}
-            className="editTextBtn"
-          >
-            Edit
-          </button>
-        </div>
+        {props?.editKey[2]?.length !== 0 && (
+          <div className="artEditBox">
+            <h1 className="artEditTitle">Artwork Edit</h1>
+            <h2>
+              By {props.editKey[2].artist} Location: {props.editKey[2].location}
+            </h2>
+            {props.editKey[2] &&
+              props.editKey[2].map((item, index) => (
+                <>
+                  <img
+                    src={item.path}
+                    key={index}
+                    alt="pic"
+                    style={{ maxWidth: "25%" }}
+                  />
+                </>
+              ))}
+            <br />
+            <button
+              onClick={() => {
+                handleEdit("art");
+              }}
+              className="editTextBtn"
+            >
+              Edit
+            </button>
+          </div>
+        )}
       </div>
       <br />
     </section>
