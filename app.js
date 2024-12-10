@@ -961,3 +961,21 @@ app.post("/editPageDelete", async (req, res) => {
   await Pic.deleteOne({ _id: req.body.id });
   res.json({ success: true, message: "pic deleted" });
 });
+
+app.delete("/editPageDeletePlant", async (req, res) => {
+  try {
+    const plant = (await Post.findOne({ _id: req.body.id })).latinName;
+    await Promise.all([
+      Pic.deleteMany({ plant: plant }),
+      Art.deleteMany({ plant: plant }),
+      Post.deleteOne({ _id: req.body.id }),
+    ]);
+    res.json({
+      success: true,
+      message: "plant and related data(including pics and arts) deleted",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "plant not deleted" });
+  }
+});

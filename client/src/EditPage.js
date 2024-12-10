@@ -86,6 +86,24 @@ const EditPage = (props) => {
     navigate("/upload?section=auth");
   };
 
+  const deletePlant = async (id) => {
+    try {
+      const response = await axios.delete(
+        `${process.env.REACT_APP_Source_URL}/editPageDeletePlant`,
+        {
+          data: {
+            id: props.editKey[0]._id,
+          },
+        },
+      );
+      console.log(response.data);
+      alert("Plant deleted");
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return auth ? (
     <section className="editPage">
       <Navbar />
@@ -144,6 +162,13 @@ const EditPage = (props) => {
                 className="editTextBtn"
               >
                 Edit
+              </button>
+              <button
+                onClick={() => deletePlant(props.editKey[0]._id)}
+                className="editTextBtn"
+                style={{ marginLeft: "10px" }}
+              >
+                Delete
               </button>
             </div>
             <div className="editSubpage">
