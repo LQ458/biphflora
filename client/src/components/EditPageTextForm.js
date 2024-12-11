@@ -6,6 +6,7 @@ import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
 import "../styles/editPageTextForm.css";
+import urls from "../tools/url.js";
 
 const EditPageTextForm = (prop) => {
   const { clearSubpage, post: plant } = prop;
@@ -51,7 +52,7 @@ const EditPageTextForm = (prop) => {
     setLoadingMessage("loading...");
 
     try {
-      await axios.post(`${process.env.REACT_APP_Source_URL}/updateText`, {
+      await axios.post(urls.updateText, {
         latinName,
         chineseName,
         commonName,

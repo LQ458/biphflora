@@ -7,6 +7,7 @@ import styles from "../styles/infoDatabase.module.css";
 import { UserContext } from "../UserContext.js";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
+import urls from "../tools/url.js";
 
 const InfoDatabase = (search) => {
   const { user } = useContext(UserContext);
@@ -74,7 +75,7 @@ const InfoDatabase = (search) => {
         path: zoomArtLink,
       };
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadFeatureArtSingle`,
+        urls.uploadFeatureArtSingle,
         newFeature,
         {
           headers: {
@@ -98,7 +99,7 @@ const InfoDatabase = (search) => {
         path: zoomPicLink,
       };
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadFeatureSingle`,
+        urls.uploadFeatureSingle,
         newFeature,
         {
           headers: {
@@ -230,10 +231,9 @@ const InfoDatabase = (search) => {
     const startTime = Date.now();
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/syncPlantInfo`,
-        { postName: searchName },
-      );
+      const response = await axios.post(urls.syncPlantInfo, {
+        postName: searchName,
+      });
 
       const endTime = Date.now();
       const loadTime = endTime - startTime;
@@ -282,9 +282,7 @@ const InfoDatabase = (search) => {
   useEffect(() => {
     const numOfPlants = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/numOFPlants`,
-        );
+        const response = await axios.get(urls.numOFPlants);
         setNumOfPlants(response.data.numOfPlants);
       } catch (error) {
         console.log(error);
@@ -297,9 +295,7 @@ const InfoDatabase = (search) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
+        const response = await axios.get(urls.searchNames);
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
       } catch (error) {
@@ -331,10 +327,9 @@ const InfoDatabase = (search) => {
     const sendName = getName;
     setSearchName(sendName);
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/syncPlantInfo`,
-        { postName: sendName },
-      );
+      const response = await axios.post(urls.syncPlantInfo, {
+        postName: sendName,
+      });
       setLatin(response.data.resultPost[0].latinName);
       setName(
         response.data.resultPost[0].commonName +

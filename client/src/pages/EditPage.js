@@ -5,6 +5,7 @@ import EditPageTextForm from "../components/EditPageTextForm.js";
 import "../styles/editPage.css";
 import { useContext } from "react";
 import { UserContext } from "../UserContext";
+import urls from "../tools/url.js";
 import Navbar from "../components/Navbar.js";
 
 const EditPage = (props) => {
@@ -39,10 +40,7 @@ const EditPage = (props) => {
     console.log("deletePic");
     console.log(id);
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/editPageDelete`,
-        { id },
-      );
+      const response = await axios.post(urls.editPageDelete, { id });
       console.log(response.data);
       setPics((prevPosts) => prevPosts.filter((post) => post._id !== id));
     } catch (error) {
@@ -88,14 +86,11 @@ const EditPage = (props) => {
 
   const deletePlant = async (id) => {
     try {
-      const response = await axios.delete(
-        `${process.env.REACT_APP_Source_URL}/editPageDeletePlant`,
-        {
-          data: {
-            id: props.editKey[0]._id,
-          },
+      const response = await axios.delete(urls.editPageDeletePlant, {
+        data: {
+          id: props.editKey[0]._id,
         },
-      );
+      });
       console.log(response.data);
       alert("Plant deleted");
       navigate("/");

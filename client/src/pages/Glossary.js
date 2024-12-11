@@ -5,6 +5,7 @@ import LetterButton from "../components/LetterButton.js";
 import { Link } from "react-router-dom";
 import styles from "../styles/glossary.module.css";
 import Navbar from "../components/Navbar.js";
+import urls from "../tools/url.js";
 
 const Glossary = ({ handleGets }) => {
   const navigate = useNavigate();
@@ -22,9 +23,7 @@ const Glossary = ({ handleGets }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfoGlossary`,
-        );
+        const response = await axios.get(urls.userInfoGlossary);
         setUsername(response.data.username);
         setAdmin(response.data.admin);
         let newArray = [];

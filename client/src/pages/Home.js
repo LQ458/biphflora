@@ -6,7 +6,9 @@ import styles from "../styles/home.module.css";
 import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.js";
 import SearchBar from "../components/SearchBar.js";
+import urls from "../tools/url.js";
 import SearchPlant from "../components/SearchPlant.js";
+import useData from "../hooks/useData.js";
 
 const Home = ({ handleGets }) => {
   const navigate = useNavigate();
@@ -21,6 +23,7 @@ const Home = ({ handleGets }) => {
   const [query, setQuery] = useState("");
   const [namesArray, setNamesArray] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const [noFeature, setNoFeature] = useState(true);
 
   const handleGet = (search) => {
     handleGets(search);
@@ -31,21 +34,26 @@ const Home = ({ handleGets }) => {
     document.title = "BIPH FLORA 识草木";
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
-        const fetchedNamesArray = response.data.returnNames;
-        setNamesArray(fetchedNamesArray);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axios.get(urls.searchNames);
+  //       const fetchedNamesArray = response.data.returnNames;
+  //       setNamesArray(fetchedNamesArray);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
 
-    fetchData();
-  }, []);
+  //   fetchData();
+  // }, []);
+
+  useData({
+    url: urls.searchNames,
+    setVariables: (response) => {
+      setNamesArray(response.data.returnNames);
+    },
+  }); // fetch searching pattern from the server
 
   const handleSearch = (e) => {
     const inputValue = e.target.value;
@@ -61,56 +69,68 @@ const Home = ({ handleGets }) => {
     setSearchResults(finalResults);
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
-        );
-        setUsername(response.data.username);
-        setAdmin(response.data.admin);
-        setFeaturedPicsArray(
-          response.data.featureLists.map((work) => {
-            return work.works.pic.path;
-          }),
-        );
-        setArtPaths(
-          response.data.featureLists.map((work) => {
-            return work.works.art.path;
-          }),
-        );
-        setPlants(
-          response.data.featureLists
-            .map((work) => {
-              const plant = work.works.pic;
-              const art = work.works.art;
-              if (plant && art) {
-                return {
-                  plant: plant.plant,
-                  season: plant.season,
-                  takenBy: plant.takenBy,
-                  time: plant.time,
-                  setting: plant.location,
-                  postingtime: plant.time,
-                  location: art.location,
-                  artist: art.artist,
-                };
-              }
-              return null;
-            })
-            .filter(Boolean),
-        );
-        if (response.data.featureLists.length > 0) {
-          setLoading(false);
-        }
-      } catch (error) {
-        console.log(error);
+  useData({
+    url: urls.userInfo,
+    setVariables: (response) => {
+      // 确保 response.data 存在
+      if (!response.data) {
+        console.error("No data found in response");
+        return;
       }
-    };
-
-    fetchData();
-  }, []); //fecth data from the server
+  
+      setUsername(response.data.username);
+      setAdmin(response.data.admin);
+      
+      const featureLists = response.data.featureLists || []; // 确保 featureLists 是数组
+  
+      setNoFeature(featureLists.length === 0);
+  
+      setFeaturedPicsArray(
+        featureLists.map((work) => {
+          if (work.works && work.works.pic) { // 检查 works 和 pic 是否存在
+            return work.works.pic.path;
+          } else {
+            console.warn("Missing works or pic in:", work); // 记录警告
+            return null; // 返回 null 如果 pic 不可用
+          }
+        }).filter(Boolean) // 过滤掉 null 值
+      );
+  
+      setArtPaths(
+        featureLists.map((work) => {
+          if (work.works && work.works.art) { // 检查 works 和 art 是否存在
+            return work.works.art.path;
+          } else {
+            console.warn("Missing works or art in:", work); // 记录警告
+            return null; // 返回 null 如果 art 不可用
+          }
+        }).filter(Boolean) // 过滤掉 null 值
+      );
+  
+      setPlants(
+        featureLists
+          .map((work) => {
+            const plant = work.works?.pic; // 使用可选链
+            const art = work.works?.art; // 使用可选链
+            if (plant && art) {
+              return {
+                plant: plant.plant,
+                season: plant.season,
+                takenBy: plant.takenBy,
+                time: plant.time,
+                setting: plant.location,
+                postingtime: plant.time,
+                location: art.location,
+                artist: art.artist,
+              };
+            }
+            return null;
+          })
+          .filter(Boolean), // 过滤掉 null 值
+      );
+    },
+    setLoading: setLoading,
+  }); // fetch home page data
 
   useEffect(() => {
     if (featuredPicsArray.length > 0) {
@@ -157,7 +177,7 @@ const Home = ({ handleGets }) => {
                   <PreviousIcon width={70} height={70} />
                 </button>
                 <div className={styles.posts} id="posta">
-                  {loading ? (
+                  {loading || noFeature ? (
                     <div className={styles.picLoad}>
                       <div
                         style={{
@@ -195,7 +215,7 @@ const Home = ({ handleGets }) => {
                   )}
                 </div>
                 <div className={styles.posts} id="posta">
-                  {loading ? (
+                  {loading || noFeature ? (
                     <div className={styles.artLoad}>
                       <div
                         style={{

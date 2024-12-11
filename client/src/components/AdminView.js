@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import urls from "../tools/url.js";
 
 const AdminView = (previewKey) => {
   const [plant, setPlant] = useState();
@@ -20,7 +21,7 @@ const AdminView = (previewKey) => {
   const fetchAdmin = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_Source_URL}/userInfo`,
+        urls.userInfo,
       );
       setAdmin(response.data.admin);
       if (!response.data.admin) {
@@ -47,7 +48,7 @@ const AdminView = (previewKey) => {
     setFeatureStatus("Loading....");
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/makeFeatured`,
+        urls.makeFeatured,
         { pic: cBT.Pic, art: cBT.Art, plant: search },
       );
       setFeatureStatus("Done!");
@@ -64,7 +65,7 @@ const AdminView = (previewKey) => {
       try {
         await fetchAdmin();
         const response = await axios.post(
-          `${process.env.REACT_APP_Source_URL}/adminView`,
+          urls.adminView,
           { search: search },
         );
         setPlant(response.data.resultPlant);

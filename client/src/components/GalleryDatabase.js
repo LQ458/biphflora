@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import styles from "../styles/galleryDatabase.module.css";
 import SearchPlant from "./SearchPlant.js";
 import ArrowIcon from "../src/buttons/arrow.svg";
+import urls from "../tools/url.js";
 
 const GalleryDatabase = (props) => {
   const seasons = useMemo(() => ["spring", "summer", "autumn", "winter"], []);
@@ -89,10 +90,7 @@ const GalleryDatabase = (props) => {
     const plant = props.customKey;
     const getPics = async () => {
       try {
-        const response = await axios.post(
-          `${process.env.REACT_APP_Source_URL}/getPics`,
-          { plant: plant },
-        );
+        const response = await axios.post(urls.getPics, { plant: plant });
         let newArray = [];
         seasons.forEach((season, index) => {
           newArray[index] = response.data[`${season}Pics`];
@@ -109,9 +107,7 @@ const GalleryDatabase = (props) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
+        const response = await axios.get(urls.searchNames);
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
       } catch (error) {
@@ -147,7 +143,7 @@ const GalleryDatabase = (props) => {
         path: zoomPicLink,
       };
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadFeatureSingle`,
+        urls.uploadFeatureSingle,
         newFeature,
         {
           headers: {
@@ -163,14 +159,11 @@ const GalleryDatabase = (props) => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
-          {
-            headers: {
+        const response = await axios.get(urls.userInfo, {
+          headers: {
               Authorization: `${localStorage.getItem("askanything")}`,
-            },
           },
-        );
+        });
         setUsername(response.data.username);
         setAdmin(response.data.admin);
       } catch (error) {

@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import "../styles/homeDatabase.css";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
+import urls from "../tools/url.js";
+
 const DatabaseTwo = ({ handleGet, setLoading }) => {
   const [query, setQuery] = useState("");
   const [namesArray, setNamesArray] = useState([]);
@@ -16,9 +18,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
   useEffect(() => {
     const getDb2Pic = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/getDb2Pic`,
-        );
+        const response = await axios.get(urls.getDb2Pic);
         setPics(response.data.pics);
       } catch (error) {
         console.log(error);
@@ -31,9 +31,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
+        const response = await axios.get(urls.searchNames);
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
         setNumOfPlants(response.data.numOfPlants);

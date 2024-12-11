@@ -2,6 +2,7 @@
 import { createContext, useReducer, useEffect } from "react";
 import { Map, fromJS } from "immutable";
 import axios from "axios";
+import urls from "./tools/url.js";
 
 axios.defaults.withCredentials = true;
 
@@ -26,14 +27,11 @@ export const UserProvider = ({ children }) => {
   const refresh = async () => {
     try {
       const token = localStorage.getItem("askanything");
-      const response = await axios.get(
-        `${process.env.REACT_APP_Source_URL}/refresh`,
-        {
-          headers: {
-            authorization: token,
-          },
+      const response = await axios.get(urls.refresh, {
+        headers: {
+          authorization: token,
         },
-      );
+      });
       if (response.data.user) {
         dispatch({ type: "LOGIN", payload: response.data.user });
       } else {
@@ -51,16 +49,13 @@ export const UserProvider = ({ children }) => {
   const login = async (username, password) => {
     try {
       const token = localStorage.getItem("askanything");
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/login`,
-        {
-          username,
-          password,
-          headers: {
-            authorization: token,
-          },
+      const response = await axios.post(urls.login, {
+        username,
+        password,
+        headers: {
+          authorization: token,
         },
-      );
+      });
       switch (response.data.message) {
         case "Login successful":
           dispatch({ type: "LOGIN", payload: response.data.user });
@@ -83,14 +78,11 @@ export const UserProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("askanything");
       localStorage.removeItem("askanything");
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/logout`,
-        {
-          headers: {
-            authorization: token,
-          },
+      const response = await axios.post(urls.logout, {
+        headers: {
+          authorization: token,
         },
-      );
+      });
       if (response.data.message === "Logout successful") {
         dispatch({ type: "LOGOUT" });
       } else {

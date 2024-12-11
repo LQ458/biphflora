@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
 import "../styles/AdminAuth.css";
+import urls from "../tools/url.js";
 
 const AdminAuth = ({ admin }) => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const AdminAuth = ({ admin }) => {
   const handleEditDecision = async (id, decision) => {
     try {
       const response = axios.put(
-        `${process.env.REACT_APP_Source_URL}/handleEditDecision`,
+        urls.handleEditDecision,
         { id: id, decision: decision },
       );
       setUnAuthPosts((prevPosts) =>
@@ -32,7 +33,7 @@ const AdminAuth = ({ admin }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/adminAuth`,
+          urls.adminAuth,
         );
         if (!admin) {
           alert("You are not an admin, redirecting to home page...");
@@ -52,7 +53,7 @@ const AdminAuth = ({ admin }) => {
   const handleNewCreationDecision = async (decision, id) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/newCreationAuth`,
+        urls.newCreationAuth,
         {
           id: id,
           decision: decision,
@@ -70,7 +71,7 @@ const AdminAuth = ({ admin }) => {
   const handleNewPostDecision = async (decision, id) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/newPostAuth`,
+        urls.newPostAuth,
         {
           id: id,
           decision: decision,

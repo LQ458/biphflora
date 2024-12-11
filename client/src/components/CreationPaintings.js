@@ -4,7 +4,7 @@ import SubBox from "./SubBox.js";
 import "../styles/creationPaint.css";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
-
+import urls from "../tools/url.js";
 const CreationPaintings = (props) => {
   const [pics, setPics] = useState([]);
   const [posts, setPosts] = useState([]);
@@ -32,7 +32,7 @@ const CreationPaintings = (props) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/creationDocumentary`,
+          urls.creationDocumentary,
         );
         const allDisplays = response.data.allDisplays;
         setDisplayObjectList(allDisplays);

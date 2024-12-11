@@ -355,6 +355,13 @@ app.post("/featureToHome", verifyToken, upload, async (req, res) => {
   const display1 = await Pic.findOne({ code: serial1 }); //Find picture
   const display2 = await Art.findOne({ code: serial2 }); //Find art
 
+  if (!display1 || !display2) {
+    return res.status(404).json({
+      message: "Serial number not found",
+      success: false,
+    });
+  }
+
   if (display1 && display2) {
     if (display1.plant !== display2.plant) {
       return res.json({

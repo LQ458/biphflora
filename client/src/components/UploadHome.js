@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState, useEffect } from "react";
+import urls from "../tools/url.js";
 import "../styles/uploadHome.css";
 
 const UploadHome = () => {
@@ -11,10 +12,7 @@ const UploadHome = () => {
 
   const handleUnfeature = async (id) => {
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/unFeatureHome`,
-        { id },
-      );
+      const response = await axios.post(urls.unFeatureHome, { id });
       setHomeEntries(response.data.f);
     } catch (error) {
       console.log(error);
@@ -24,9 +22,7 @@ const UploadHome = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/uploadHome`,
-        );
+        const response = await axios.get(urls.uploadHome);
         setHomeEntries(response.data.entries);
         console.log(response.data.entries);
       } catch (error) {
@@ -48,15 +44,11 @@ const UploadHome = () => {
     formData.append("serial2", serial2);
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/featureToHome`,
-        formData,
-        {
+      const response = await axios.post(urls.featureToHome, formData, {
           headers: {
-            "Content-Type": "multipart/form-data",
-          },
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       setReturnMessage(response.data.message);
     } catch (error) {
       console.log(error);

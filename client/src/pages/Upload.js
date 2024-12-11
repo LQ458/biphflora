@@ -10,6 +10,7 @@ import UploadHome from "../components/UploadHome.js";
 import Navbar from "../components/Navbar.js";
 import { useLocation } from "react-router-dom";
 import AdminAuth from "../components/AdminAuth.js";
+import urls from "../tools/url.js";
 
 const Upload = () => {
   const navigate = useNavigate();
@@ -66,9 +67,7 @@ const Upload = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
+        const response = await axios.get(urls.searchNames);
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
       } catch (error) {

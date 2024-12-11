@@ -5,6 +5,7 @@ import { TailSpin } from "react-loader-spinner";
 import { useContext } from "react";
 import { UserContext } from "../UserContext";
 import Navbar from "../components/Navbar";
+import urls from "../tools/url.js";
 import "../styles/login.css";
 
 const Login = () => {
@@ -49,9 +50,7 @@ const Login = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
-        );
+        const response = await axios.get(urls.userInfo);
         setAdmin(response.data.admin);
       } catch (error) {
         console.log(error);

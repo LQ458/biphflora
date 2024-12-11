@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
 import { useEffect } from "react";
 import Navbar from "../components/Navbar";
+import urls from "../tools/url.js";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -24,11 +25,9 @@ const Register = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/register`,
-        {
-          username,
-          password,
+      const response = await axios.post(urls.register, {
+        username,
+        password,
         },
       );
       setMessage(response.data.message);
@@ -53,9 +52,7 @@ const Register = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
-        );
+        const response = await axios.get(urls.userInfo);
         setAdmin(response.data.admin);
       } catch (error) {
         console.log(error);

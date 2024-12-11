@@ -10,6 +10,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import imageCompression from "browser-image-compression";
+import urls from "../tools/url.js";
 
 const UploadPlants = () => {
   const [latinName, setLatinName] = useState("");
@@ -48,12 +49,8 @@ const UploadPlants = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userInfoResponse = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
-        );
-        const searchNamesResponse = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
+        const userInfoResponse = await axios.get(urls.userInfo);
+        const searchNamesResponse = await axios.get(urls.searchNames);
         const fetchedNamesArray = searchNamesResponse.data.returnNames.map(
           (result) => {
             return {
@@ -215,15 +212,11 @@ const UploadPlants = () => {
     formData.append("otherNames", otherNames);
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/upload`,
-        formData,
-        {
+      const response = await axios.post(urls.upload, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
-          },
         },
-      );
+      });
       toast.current.show({
         severity: "success",
         summary: "创建成功",
@@ -349,10 +342,7 @@ const UploadPlants = () => {
       });
 
       // 上传文件
-      await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadPic`,
-        formData,
-        {
+      await axios.post(urls.uploadPic, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
@@ -429,10 +419,7 @@ const UploadPlants = () => {
     }
 
     try {
-      await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadArt`,
-        formData,
-        {
+      await axios.post(urls.uploadArt, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },

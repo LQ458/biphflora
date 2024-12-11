@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
+import urls from "../tools/url.js";
 import "../styles/uploadCreation.css";
 
 const UploadCreation = () => {
@@ -38,10 +39,7 @@ const UploadCreation = () => {
     const temp = input;
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/unFeatureCreation`,
-        { temp },
-      );
+      const response = await axios.post(urls.unFeatureCreation, { temp });
       setCreationEntries(response.data.temp);
     } catch (error) {
       console.log(error);
@@ -52,10 +50,7 @@ const UploadCreation = () => {
     const temp = input;
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/featureToHome`,
-        { temp },
-      );
+      const response = await axios.post(urls.featureToHome, { temp });
     } catch (error) {
       console.log(error);
     }
@@ -64,9 +59,7 @@ const UploadCreation = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/uploadCreation`,
-        );
+        const response = await axios.get(urls.uploadCreation);
         setCreationEntries(response.data.temp);
       } catch (error) {
         console.log(error);
@@ -79,9 +72,7 @@ const UploadCreation = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
-        );
+        const response = await axios.get(urls.userInfo);
         setAdmin(response.data.admin);
         setUsername(response.data.username);
       } catch (error) {
@@ -95,9 +86,7 @@ const UploadCreation = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
+        const response = await axios.get(urls.searchNames);
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
       } catch (error) {
@@ -160,7 +149,7 @@ const UploadCreation = () => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadCreation`,
+        urls.uploadCreation,
         formData,
         {
           headers: {
