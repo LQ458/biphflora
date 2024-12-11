@@ -1,0 +1,181 @@
+body.registerbd {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: url("../../public/intro.jpg") no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  height: 100vh;
+}
+.form-box-register {
+  position: fixed;
+  width: 32vw;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  height: 65vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.form-box-register::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 20px;
+  position: absolute;
+  -webkit-backdrop-filter: blur(15px);
+  backdrop-filter: blur(15px);
+}
+h2.regtitle {
+  font-size: 2.5rem;
+  bottom: 4vh;
+  font-weight: 500;
+  position: relative;
+  color: #fff;
+  text-align: center;
+}
+.inputboxRegister {
+  position: relative;
+  margin: 30px 0;
+  bottom: 2vh;
+  font-size: 1.1rem;
+  width: 18rem;
+  border-bottom: 2px solid #fff;
+}
+.inputboxRegister label {
+  position: absolute;
+  top: 50%;
+  left: 5px;
+  transform: translateY(-50%);
+  color: #fff;
+  pointer-events: none;
+  transition: 0.5s;
+}
+input:focus ~ label,
+input:valid ~ label {
+  top: -5px;
+}
+.inputboxRegister input {
+  width: 100%;
+  height: 50px;
+  font-size: 1.2rem;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0 35px 0 5px;
+  color: #fff;
+}
+.inputboxRegister ion-icon {
+  position: absolute;
+  right: 8px;
+  color: #fff;
+  top: 20px;
+}
+.forget {
+  margin: -15px 0 15px;
+  font-size: 0.9em;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+}
+
+.forget label input {
+  margin-right: 3px;
+}
+.forget label a {
+  color: #fff;
+  text-decoration: none;
+}
+.forget label a:hover {
+  text-decoration: underline;
+}
+button.registerBtn {
+  width: 100%;
+  background-color: #739667;
+  color: white;
+  height: 40px;
+  position: relative;
+  border-radius: 40px;
+  bottom: 2vh;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+}
+.register {
+  font-size: 0.95rem;
+  color: #fff;
+  text-align: center;
+  margin: 0 auto;
+}
+.register p a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 400;
+}
+.register p a:hover {
+  text-decoration: underline;
+}
+footer.dbC {
+  background-color: white;
+  text-align: center;
+  position: relative;
+  margin-left: -10;
+  margin-right: -10;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
+#topbar1 {
+  display: flex;
+}
+div.reglinks {
+  display: flex;
+  position: absolute;
+  top: 2.5vh;
+  font-weight: 600;
+  right: 2vw; /* Changed from -21vw to 0 */
+  padding: 0.5rem;
+  min-width: 43vw;
+  max-width: 100%; /* Added to limit the width */
+  overflow: auto; /* Added to handle content that might exceed the width */
+  justify-content: center;
+  background-color: #e2e8d1;
+  border: 2px solid transparent;
+  border-radius: 10px;
+}
+h1 {
+  text-align: center;
+}
+h.title {
+  position: relative;
+  text-align: left;
+  left: 1vw;
+  padding-right: 4vw;
+  top: 1.7rem;
+  border-right: 6px solid white;
+  font-size: 3rem;
+  font-weight: 550;
+}
+
+div.loading {
+  position: relative;
+  display: flex;
+  color: white;
+  text-align: center;
+  left: 4rem;
+}
+div.err {
+  position: relative;
+  display: flex;
+  color: white;
+  justify-content: center;
+}

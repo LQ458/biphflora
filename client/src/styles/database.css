@@ -1,0 +1,46 @@
+section.db {
+  color: #ffffff;
+  background: url("../../public/homescreen.jpg") no-repeat;
+  background-size: cover;
+  height: 100vh;
+  background-attachment: fixed;
+  background-position: top center;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+section.db::-webkit-scrollbar {
+  display: none;
+}
+.dbAdd {
+  overflow: hidden;
+}
+.db2spec {
+  display: flex;
+  flex-direction: column;
+}
+div.infoDatabase {
+  background-color: #f4fae8;
+  text-align: center;
+  position: relative;
+  margin: 0 auto;
+  width: 93vw;
+  color: black;
+  align-items: center;
+  justify-content: center;
+  min-height: 40rem;
+  padding-bottom: 5rem;
+}
+div.homeDatabase {
+  background: url("../../public/homescreen1.jpg") no-repeat;
+  background-attachment: fixed;
+  background-position: center -2rem;
+  background-size: cover;
+  position: relative;
+  margin: 0 auto;
+  margin-top: 8px;
+  width: 93vw;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}

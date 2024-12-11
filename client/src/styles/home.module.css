@@ -1,0 +1,323 @@
+section.home {
+  color: #ffffff;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+.featuredColumn {
+  position: relative;
+  height: 39vw;
+  flex-grow: 1;
+  border-bottom: 0.25rem solid white;
+  background-color: #e0e9d4;
+}
+
+.postlayout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+/* Style the buttons */
+button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+}
+
+/* Style the ionicons */
+
+.searchtitleHome {
+  position: relative;
+  left: 10vw;
+  font-size: calc(var(--bloom-title) - 0.5rem);
+  text-align: left;
+  font-weight: 500;
+}
+.featuredTopBar {
+  background-color: #506d4e;
+  height: var(--top-bar-height);
+  width: 92vw;
+  position: relative;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+}
+h4.plantInBloom {
+  font-size: calc(var(--bloom-title) - 0.3rem);
+  position: relative;
+  font-weight: 600;
+  left: 4.5vw;
+  margin: 0;
+}
+div.part1 {
+  background: url("../../public/homescreen.jpg") no-repeat;
+  border: none;
+  background-position: top center;
+  position: relative;
+  overflow: hidden;
+  background-size: 100vw 60rem;
+  background-attachment: scroll;
+  margin: 0;
+}
+
+div.part2 {
+  background-color: #516d4e;
+  border: none;
+  position: relative;
+  background-position: center center;
+  background-size: cover;
+  overflow: hidden;
+  background-attachment: scroll;
+  margin: 0;
+}
+
+.hline2 {
+  background-color: white;
+  height: 0.25rem;
+  position: relative;
+  width: 92vw;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+div.activity {
+  background: url("../../public/activity.jpg") no-repeat;
+  border: none;
+  position: relative;
+  background-size: 100vw auto;
+  background-attachment: scroll;
+  margin: 0;
+  padding: 0;
+}
+
+div.activityBox {
+  position: relative;
+  display: flex;
+  margin: 0 12rem 0 12rem;
+  padding: 2rem 0 2rem 0;
+  flex-direction: column;
+}
+
+div.activityTop {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+div.activityTop div {
+  background-color: #516d4e;
+  font-size: calc(var(--bloom-title) - 0.6rem);
+  font-weight: 600;
+  text-align: center;
+  padding: 1rem 0 1rem 0;
+  width: 34vw;
+}
+
+div.activityBtm {
+  position: relative;
+  display: flex;
+  background-color: #f0f6e3;
+  align-items: center;
+  justify-content: space-between;
+}
+div.activityBtm div img {
+  height: 31vw;
+}
+
+div.activityBtm div {
+  position: relative;
+  display: inline-flex;
+  margin-top: 1.2rem;
+  margin-bottom: 1.2rem;
+  justify-content: center;
+  align-items: center;
+  width: 37vw;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.currentPics {
+  position: relative;
+  height: 19vw;
+  width: 36vw;
+  object-fit: cover;
+}
+
+div.description {
+  position: absolute;
+  bottom: 0;
+  color: var(--font-color);
+  width: 100%;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  background-color: #9eb894;
+}
+
+button.prevBtn {
+  position: relative;
+  fill: #739667;
+  left: 4vw;
+}
+
+button.nextBtn {
+  position: relative;
+  fill: #739667;
+  left: 24vw;
+}
+
+div.featuredPics {
+  display: flex;
+  position: relative;
+}
+form.submitForm {
+  display: flex;
+}
+button.homeSearchButton {
+  position: relative;
+  right: 1vw;
+  bottom: 0.2vh;
+  color: black;
+}
+button.homeSearchButton:hover {
+  color: #516d4e;
+}
+button.searchResultsButton {
+  margin-bottom: 0.5vh;
+  height: 4vh;
+}
+nav.featureBox {
+  width: 92vw;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  margin-top: 8px !important;
+  margin: 0 auto;
+}
+button.forDetail {
+  display: flex;
+  position: relative;
+  font-weight: bold;
+  padding: 0;
+  text-decoration: underline;
+  font-size: calc(var(--des-size));
+  color: var(--font-color);
+  margin: 0;
+}
+.currentArts {
+  position: relative;
+  height: 25.5vw;
+  width: 18.5vw;
+  object-fit: cover;
+}
+div.currentPicLabel {
+  min-height: 3.4vw;
+  background-color: #80a074;
+  display: grid;
+  width: 36vw;
+  grid-template-columns: repeat(3, 1fr);
+  justify-content: center;
+  text-align: center;
+  font-size: var(--label-size);
+  align-items: center;
+  font-weight: 700;
+}
+div.currentPicLabel p {
+  margin: 0;
+}
+div.picContainer {
+  left: 6vw;
+  top: 4vw;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+div.artContainer {
+  position: relative;
+  left: var(--art-shift);
+  top: 1vw;
+  display: flex;
+  flex-direction: column;
+}
+div.artLabel {
+  height: 5vw;
+  display: flex;
+  display: grid;
+  width: 18.5vw;
+  grid-template-rows: repeat(3, 1fr);
+  font-weight: 700;
+  font-size: var(--label-size);
+  background-color: #80a074;
+}
+div.picLoad {
+  left: 6vw;
+  top: 4vw;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+div.picLabelLoad {
+  height: 3.4vw;
+  background-color: #80a074;
+  width: 36vw;
+}
+div.artLabelLoad {
+  height: 5vw;
+  width: 18.5vw;
+  background-color: #80a074;
+}
+div.artLoad {
+  position: relative;
+  left: var(--art-shift);
+  top: 1vw;
+  display: flex;
+  flex-direction: column;
+}
+
+h2.descriptionH2 {
+  font-size: var(--des-size);
+  position: relative;
+  margin: 0 !important;
+  display: flex;
+}
+
+h2.descriptionH2 p {
+  margin: 0 !important;
+}
+
+div.descriptionContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 10vw;
+  margin-right: 10vw;
+}
+
+div.descriptionLeft {
+  display: flex;
+  flex-direction: column;
+}
+
+div.contribution {
+  width: 100%;
+  position: relative;
+  padding: 1rem;
+  padding-left: 2rem;
+  background-color: #516d4e;
+}
+div.contribution p {
+  color: white;
+  margin: 0;
+  font-size: calc(var(--des-size) - 0.3rem);
+  font-weight: 600;
+}
