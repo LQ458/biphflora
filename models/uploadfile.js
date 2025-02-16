@@ -29,8 +29,11 @@ const middleware = function (req, res, next) {
       // A Multer error occurred during file upload
       return res.status(500).json({ message: "File upload error" });
     } else if (err) {
+      console.log("err", err);
       // An unknown error occurred during file upload
-      return res.status(500).json({ message: "Unknown error occurred" });
+      return res
+        .status(500)
+        .json({ message: "Unknown error occurred", error: err });
     }
 
     // Set the file count to the number of uploaded files at the moment

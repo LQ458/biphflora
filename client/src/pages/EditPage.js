@@ -29,10 +29,6 @@ const EditPage = (props) => {
     if (props?.editKey?.[1]) {
       setPics(props.editKey[1]);
     }
-
-    if (!props?.editKey) {
-      return null;
-    }
   }, [props]);
 
   const deletePic = async (id) => {
@@ -194,7 +190,7 @@ const EditPage = (props) => {
               pics.map((item, index) => (
                 <>
                   <img
-                    src={item.path}
+                    src={`${process.env.REACT_APP_Source_URL}/public${item.path}`}
                     key={index}
                     alt="pic"
                     style={{ maxWidth: "25%" }}
@@ -225,7 +221,7 @@ const EditPage = (props) => {
               props.editKey[2].map((item, index) => (
                 <>
                   <img
-                    src={item.path}
+                    src={`${process.env.REACT_APP_Source_URL}/public${item.path}`}
                     key={index}
                     alt="pic"
                     style={{ maxWidth: "25%" }}

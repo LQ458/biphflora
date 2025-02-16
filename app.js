@@ -21,10 +21,10 @@ const artmiddleware = uploadart.middleware;
 const path = require("path");
 const fs = require("fs").promises; // Node.js file system module with promise support
 const bcrypt = require("bcrypt");
+const multer = require("multer");
 const featureList = require("./models/featureList");
 const post = require("./models/post");
 const creationBottom = require("./models/creationBottom");
-const multer = require("multer");
 const FeatureHome = require("./models/featureHome");
 const redis = require("redis");
 const Code = require("./models/code");
@@ -32,8 +32,9 @@ const crypto = require("crypto");
 dotenv.config();
 
 app.use(compression()); //gzip compression for faster speed
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/public/plantspic", express.static("public/plantspic"));
 
 app.use(
   cors({
@@ -73,6 +74,8 @@ const upload = multer({
   { name: "pic", maxCount: 1 },
   { name: "art", maxCount: 1 },
 ]); // Set up multer upload
+
+const globalUpload = multer({});
 
 app.listen(process.env.PORT, "0.0.0.0", () => {
   console.log("Server is running on port 3001");
@@ -329,7 +332,7 @@ app.get("/userInfoGlossary", verifyToken, async (req, res) => {
   res.json(response);
 });
 
-app.post("/edit", artmiddleware, async function (req, res) {
+app.post("/edit", async function (req, res) {
   try {
     res.json({ success: true });
   } catch (error) {
@@ -379,7 +382,7 @@ app.post("/uploadCreation", verifyToken, upload, async (req, res) => {
   try {
     const { body, files } = req;
     const inputFiles = [];
-    const outputFolderPath = "client/public/plantspic/";
+    const outputFolderPath = "public/plantspic/";
     const plant = await Post.findOne({ latinName: body.plant });
 
     if (!plant) {
@@ -454,38 +457,43 @@ app.post("/uploadCreation", verifyToken, upload, async (req, res) => {
   }
 });
 
-app.post("/upload", artmiddleware, verifyToken, async function (req, res) {
-  try {
-    var username = "admin";
+app.post(
+  "/upload",
+  globalUpload.none(),
+  verifyToken,
+  async function (req, res) {
+    try {
+      var username = "admin";
 
-    if (req.user?.admin) {
-      authorization = true;
-    } else if (req.user) {
-      username = req.user?.username;
-      authorization = false;
+      if (req.user?.admin) {
+        authorization = true;
+      } else if (req.user) {
+        username = req.user?.username;
+        authorization = false;
+      }
+
+      const post = new Post({
+        latinName: req.body.latinName,
+        chineseName: req.body.chineseName,
+        commonName: req.body.commonName,
+        location: req.body.location,
+        additionalInfo: req.body.bloomingSeason,
+        link: JSON.parse(req.body.link),
+        chineseLink: JSON.parse(req.body.chineseLink),
+        editor: req.body.editor,
+        username: username,
+        otherNames: req.body.otherNames,
+        authorization: false,
+      });
+
+      await post.save();
+
+      res.json({ success: true });
+    } catch (error) {
+      console.log(error, "uploading problems");
     }
-
-    const post = new Post({
-      latinName: req.body.latinName,
-      chineseName: req.body.chineseName,
-      commonName: req.body.commonName,
-      location: req.body.location,
-      additionalInfo: req.body.bloomingSeason,
-      link: JSON.parse(req.body.link),
-      chineseLink: JSON.parse(req.body.chineseLink),
-      editor: req.body.editor,
-      username: username,
-      otherNames: req.body.otherNames,
-      authorization: false,
-    });
-
-    await post.save();
-
-    res.json({ success: true });
-  } catch (error) {
-    console.log(error, "uploading problems");
-  }
-});
+  },
+);
 
 app.post("/newCreationAuth", verifyToken, upload, async (req, res) => {
   try {
@@ -522,7 +530,7 @@ app.post("/newCreationAuth", verifyToken, upload, async (req, res) => {
 
 app.post("/uploadArt", artmiddleware, verifyToken, async function (req, res) {
   const inputFiles = [];
-  const outputFolderPath = "client/public/plantspic/";
+  const outputFolderPath = "public/plantspic/";
 
   try {
     const plant = await Post.findOne({ latinName: req.body.plant });
@@ -585,7 +593,7 @@ app.post(
   verifyToken,
   async function (req, res) {
     const inputFiles = [];
-    const outputFolderPath = "client/public/plantspic/";
+    const outputFolderPath = "public/plantspic/";
 
     try {
       const plant = await Post.findOne({ latinName: req.body.picEnglishName });

@@ -261,7 +261,7 @@ const GalleryDatabase = (props) => {
                     .map((p, index) => (
                       <div className={styles.summerPic} key={index}>
                         <img
-                          src={p.path}
+                          src={`${process.env.REACT_APP_Source_URL}/public${p.path}`}
                           alt=""
                           className={styles.summerPic}
                           onClick={() =>
@@ -312,7 +312,7 @@ const GalleryDatabase = (props) => {
                       .map((pic, picIndex) => (
                         <div className={styles.summerPic} key={picIndex}>
                           <img
-                            src={pic.path}
+                            src={`${process.env.REACT_APP_Source_URL}/public${pic.path}`}
                             alt=""
                             className={styles.summerPic}
                             onClick={() =>
@@ -365,7 +365,7 @@ const GalleryDatabase = (props) => {
             <div className={styles.zoomBox}>
               <img
                 className={styles.zoomPic}
-                src={zoomPicLink}
+                src={`${process.env.REACT_APP_Source_URL}/public${zoomPicLink}`}
                 alt={zoomPicLink}
               />
               <button

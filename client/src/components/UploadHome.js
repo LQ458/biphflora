@@ -107,13 +107,13 @@ const UploadHome = () => {
               <img
                 className="img1"
                 key={index}
-                src={item.works?.pic?.path}
+                src={`${process.env.REACT_APP_Source_URL}/public${item.works?.pic?.path}`}
                 alt={item.works?.pic?.plant}
               />
               <img
                 className="img1"
                 key={index}
-                src={item.works?.art?.path}
+                src={`${process.env.REACT_APP_Source_URL}/public${item.works?.art?.path}`}
                 alt={item.works?.art?.plant}
               />
 

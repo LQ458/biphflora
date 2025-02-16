@@ -398,7 +398,7 @@ const InfoDatabase = (search) => {
   useEffect(() => {
     setLoad(true);
     const img = new Image();
-    img.src = displayArtPath;
+    img.src = `${process.env.REACT_APP_Source_URL}/public${displayArtPath}`;
     img.onload = () => {
       setLoad(false);
       setLoadedSrc(displayArtPath);
@@ -423,7 +423,7 @@ const InfoDatabase = (search) => {
           <div key={index}>
             <img
               className={styles.databaseImg}
-              src={path}
+              src={`${process.env.REACT_APP_Source_URL}/public${path}`}
               alt={`${index + 1}`}
               onClick={() => handleZoom(path, seasonInfo[index])}
             />
@@ -631,7 +631,7 @@ const InfoDatabase = (search) => {
                 ) : (
                   <div style={{ position: "relative" }}>
                     <img
-                      src={loadedSrc}
+                      src={`${process.env.REACT_APP_Source_URL}/public${loadedSrc}`}
                       id="artPic"
                       onClick={() => handleArtZoom(displayArtPath)}
                       alt="art"
@@ -722,7 +722,7 @@ const InfoDatabase = (search) => {
           <div className={styles.zoomBox}>
             <img
               className={styles.zoomPic}
-              src={zoomPicLink}
+              src={`${process.env.REACT_APP_Source_URL}/public${zoomPicLink}`}
               alt={zoomPicLink}
             />
             <button
@@ -754,7 +754,7 @@ const InfoDatabase = (search) => {
           <div className={styles.zoomBox}>
             <img
               className={styles.zoomPic}
-              src={zoomArtLink}
+              src={`${process.env.REACT_APP_Source_URL}/public${zoomArtLink}`}
               alt={zoomArtLink}
             />
             <button

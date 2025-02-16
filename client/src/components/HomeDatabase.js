@@ -65,10 +65,10 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
     setLoad(newArray);
     pics.forEach((pic, index) => {
       const img = new Image();
-      img.src = pic.path;
+      img.src = `${process.env.REACT_APP_Source_URL}/public${pic.path}`;
       img.onload = () => {
         newArray[index] = false;
-        srcs[index] = pic.path;
+        srcs[index] = `${process.env.REACT_APP_Source_URL}/public${pic.path}`;
         setLoadedSrc([...srcs]);
         setLoad([...newArray]);
       };
@@ -76,10 +76,11 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
         try {
           const response = await axios.get("/db2Alt");
           const altImg = new Image();
-          altImg.src = response.data.pic.path;
+          altImg.src = `${process.env.REACT_APP_Source_URL}/public${response.data.pic.path}`;
           altImg.onload = () => {
             newArray[index] = false;
-            srcs[index] = response.data.pic.path;
+            srcs[index] =
+              `${process.env.REACT_APP_Source_URL}/public${response.data.pic.path}`;
             setLoadedSrc([...srcs]);
             setLoad([...newArray]);
           };
@@ -157,8 +158,14 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
                       alt="plant"
                       className="picImg"
                       onClick={() =>
-                        handleGet(loadedSrc[index].split("/")[2].split("-")[0])
+                        handleGet(
+                          loadedSrc[index]
+                            .split("//")[1]
+                            .split("/")[3]
+                            .split("-")[0],
+                        )
                       }
+                      // 从url中分离plant name
                     />
                   )}
                 </div>
@@ -176,8 +183,14 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
                       alt="plant"
                       className="picImg"
                       onClick={() =>
-                        handleGet(loadedSrc[index].split("/")[2].split("-")[0])
+                        handleGet(
+                          loadedSrc[index]
+                            .split("//")[1]
+                            .split("/")[3]
+                            .split("-")[0],
+                        )
                       }
+                      // 从url中分离plant name
                     />
                   )}
                 </div>
