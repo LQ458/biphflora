@@ -7,7 +7,8 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.js";
 import SearchBar from "../components/SearchBar.js";
 import SearchPlant from "../components/SearchPlant.js";
-
+import { Toast } from "primereact/toast";
+import { useRef } from "react";
 const Home = ({ handleGets }) => {
   const navigate = useNavigate();
   const [plants, setPlants] = useState([]); // [plant1, plant2, plant3, ...
@@ -21,6 +22,7 @@ const Home = ({ handleGets }) => {
   const [query, setQuery] = useState("");
   const [namesArray, setNamesArray] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const toast = useRef(null);
 
   const handleGet = (search) => {
     handleGets(search);
@@ -68,49 +70,62 @@ const Home = ({ handleGets }) => {
         const response = await axios.get(
           `${process.env.REACT_APP_Source_URL}/userInfo`,
         );
+
         setUsername(response.data.username);
         setAdmin(response.data.admin);
-        setFeaturedPicsArray(
-          response.data.featureLists.map((work) => {
-            return work.works.pic.path;
-          }),
-        );
-        setArtPaths(
-          response.data.featureLists.map((work) => {
-            return work.works.art.path;
-          }),
-        );
-        setPlants(
-          response.data.featureLists
-            .map((work) => {
-              const plant = work.works.pic;
-              const art = work.works.art;
-              if (plant && art) {
-                return {
-                  plant: plant.plant,
-                  season: plant.season,
-                  takenBy: plant.takenBy,
-                  time: plant.time,
-                  setting: plant.location,
-                  postingtime: plant.time,
-                  location: art.location,
-                  artist: art.artist,
-                };
-              }
-              return null;
-            })
-            .filter(Boolean),
-        );
-        if (response.data.featureLists.length > 0) {
+
+        if (
+          !response.data.featureLists ||
+          response.data.featureLists.length === 0
+        ) {
+          setFeaturedPicsArray([]);
+          setArtPaths([]);
+          setPlants([]);
+        } else {
+          setFeaturedPicsArray(
+            response.data.featureLists.map((work) => work.works.pic.path),
+          );
+          setArtPaths(
+            response.data.featureLists.map((work) => work.works.art.path),
+          );
+          setPlants(
+            response.data.featureLists
+              .map((work) => {
+                const plant = work.works.pic;
+                const art = work.works.art;
+                if (plant && art) {
+                  return {
+                    plant: plant.plant,
+                    season: plant.season,
+                    takenBy: plant.takenBy,
+                    time: plant.time,
+                    setting: plant.location,
+                    postingtime: plant.time,
+                    location: art.location,
+                    artist: art.artist,
+                  };
+                }
+                return null;
+              })
+              .filter(Boolean),
+          );
           setLoading(false);
         }
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching data:", error);
+        setFeaturedPicsArray([]);
+        setArtPaths([]);
+        setPlants([]);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to load featured content",
+        });
       }
     };
 
     fetchData();
-  }, []); //fecth data from the server
+  }, []);
 
   useEffect(() => {
     if (featuredPicsArray.length > 0) {

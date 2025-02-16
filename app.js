@@ -352,30 +352,41 @@ app.post("/newPostAuth", verifyToken, upload, async (req, res) => {
   res.json({ success: true });
 });
 
-app.post("/featureToHome", verifyToken, upload, async (req, res) => {
-  const { serial1, serial2 } = req.body;
+app.post("/featureToHome", verifyToken, async (req, res) => {
+  try {
+    const { picId, artId } = req.body;
 
-  const display1 = await Pic.findOne({ code: serial1 }); //Find picture
-  const display2 = await Art.findOne({ code: serial2 }); //Find art
+    const pic = await Pic.findById(picId);
+    const art = await Art.findById(artId);
 
-  if (display1 && display2) {
-    if (display1.plant !== display2.plant) {
-      return res.json({
-        message: "Two features have to be of the same plant",
+    if (!pic || !art) {
+      return res.status(404).json({
         success: false,
+        message: "Picture or artwork not found",
       });
     }
+
+    if (pic.plant !== art.plant) {
+      return res.status(400).json({
+        success: false,
+        message: "Picture and artwork must be from the same plant",
+      });
+    }
+
     const newFeatureHome = new FeatureHome({
       works: {
-        pic: display1,
-        art: display2,
+        pic,
+        art,
       },
     });
 
     await newFeatureHome.save();
-    res.json({ message: "success", success: true });
+
+    const entries = await FeatureHome.find();
+    res.json({ success: true, entries });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
-  res.json({ message: "failed", success: false });
 });
 
 app.post("/uploadCreation", verifyToken, upload, async (req, res) => {
@@ -928,9 +939,15 @@ app.get("/uploadHome", upload, async (req, res) => {
 });
 
 app.post("/unFeatureHome", upload, async (req, res) => {
-  await FeatureHome.deleteOne({ _id: req.body.id });
-  const f = await FeatureHome.find();
-  res.json({ success: true, f });
+  try {
+    // 使用 _id 来精确删除特定的 feature
+    await FeatureHome.deleteOne({ _id: req.body.id });
+    const entries = await FeatureHome.find();
+    res.json({ success: true, entries });
+  } catch (error) {
+    console.error("Error in unFeatureHome:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 app.get("/uploadCreation", upload, async (req, res) => {
@@ -985,5 +1002,15 @@ app.delete("/editPageDeletePlant", async (req, res) => {
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: "plant not deleted" });
+  }
+});
+
+app.post("/getPicsAndArts", async (req, res) => {
+  try {
+    const pics = await Pic.find({ plant: req.body.plant });
+    const arts = await Art.find({ plant: req.body.plant });
+    res.json({ success: true, pics, arts });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 });
