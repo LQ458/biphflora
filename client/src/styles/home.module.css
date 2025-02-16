@@ -1,3 +1,11 @@
+#page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
 section.home {
   color: #ffffff;
   overflow: hidden;
@@ -63,6 +71,9 @@ div.part1 {
   background-size: 100vw 60rem;
   background-attachment: scroll;
   margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 div.part2 {
@@ -71,9 +82,13 @@ div.part2 {
   position: relative;
   background-position: center center;
   background-size: cover;
-  overflow: hidden;
+  overflow: visible;
   background-attachment: scroll;
   margin: 0;
+  padding: 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .hline2 {
@@ -93,6 +108,7 @@ div.activity {
   background-attachment: scroll;
   margin: 0;
   padding: 0;
+  z-index: 0;
 }
 
 div.activityBox {

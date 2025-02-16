@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.js";
 import SearchBar from "../components/SearchBar.js";
 import SearchPlant from "../components/SearchPlant.js";
-import { Toast } from "primereact/toast";
 import { useRef } from "react";
 const Home = ({ handleGets }) => {
   const navigate = useNavigate();

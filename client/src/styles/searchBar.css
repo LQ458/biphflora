@@ -17,6 +17,11 @@
   height: 2rem;
   padding: 0 0.6rem 0 0.6rem;
   background-color: white;
+  border: none;
+  transition: background-color 0.2s;
+}
+.searchResultsButton:hover {
+  background-color: #f0f6e3;
 }
 h2.db1h2 {
   font-size: 17px;
@@ -33,14 +38,18 @@ form.db2SubmitForm {
   align-items: center;
   position: relative;
   overflow: hidden;
+  width: inherit;
 }
 .db2Results {
   position: absolute;
-  z-index: 9999;
+  z-index: 1000;
   top: var(--search-bar-height);
   display: flex;
   gap: 3px;
   flex-direction: column;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: inherit;
 }
 .db2SearchBar {
   position: relative;
