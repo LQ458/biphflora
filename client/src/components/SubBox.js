@@ -25,7 +25,7 @@ const SubBox = ({
           <div className="artCodeT">
             <img
               className="art"
-              src={displayObjectList[currentDisplayIndexes[index]].art}
+              src={`${process.env.REACT_APP_Source_URL}/public${displayObjectList[currentDisplayIndexes[index]].art}`}
               alt="art"
             />
             {admin && (
@@ -104,7 +104,7 @@ const SubBox = ({
               <div style={{ position: "relative", marginTop: "1.5rem" }}>
                 <img
                   className="pic"
-                  src={displayObjectList[currentDisplayIndexes[index]].pic}
+                  src={`${process.env.REACT_APP_Source_URL}/public${displayObjectList[currentDisplayIndexes[index]].pic}`}
                   alt="pic"
                 />
                 {admin && (
@@ -134,7 +134,7 @@ const SubBox = ({
           <div className="artCodeT">
             <img
               className="art"
-              src={displayObjectList[currentDisplayIndexes[index + 1]].art}
+              src={`${process.env.REACT_APP_Source_URL}/public${displayObjectList[currentDisplayIndexes[index + 1]].art}`}
               alt="art"
             />
             {admin && (
@@ -220,7 +220,7 @@ const SubBox = ({
               <div style={{ position: "relative", marginTop: "1.5rem" }}>
                 <img
                   className="pic"
-                  src={displayObjectList[currentDisplayIndexes[index + 1]].pic}
+                  src={`${process.env.REACT_APP_Source_URL}/public${displayObjectList[currentDisplayIndexes[index + 1]].pic}`}
                   alt="pic"
                 />
                 {admin && (

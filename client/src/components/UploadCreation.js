@@ -2,9 +2,15 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/uploadCreation.css";
+import { InputText } from "primereact/inputtext";
+import { Button } from "primereact/button";
+import { Toast } from "primereact/toast";
+import { Dialog } from "primereact/dialog";
+import { FileUpload } from "primereact/fileupload";
+import { Dropdown } from "primereact/dropdown";
 
 const UploadCreation = () => {
-  const [namesArray, setNamesArray] = useState("");
+  const [namesArray, setNamesArray] = useState([]);
   const [username, setUsername] = useState("");
   const [admin, setAdmin] = useState("");
   const [photographer, setPhotographer] = useState("");
@@ -17,47 +23,67 @@ const UploadCreation = () => {
   const [temp2, setTemp2] = useState();
   const [photoDate, setPhotoDate] = useState();
   const [artDate, setArtDate] = useState();
-
-  const inputRef1 = useRef(null);
-  const inputRef2 = useRef(null);
-  const inputRef3 = useRef(null);
-  const inputRef4 = useRef(null);
-  const inputRef5 = useRef(null);
-  const inputRef6 = useRef(null);
+  const [creationLoading, setCreationLoading] = useState(false);
+  const [showPreviewDialog, setShowPreviewDialog] = useState(false);
+  const [selectedEntry, setSelectedEntry] = useState(null);
+  const toast = useRef(null);
 
   const clearInput = () => {
-    inputRef1.current.value = "";
-    inputRef2.current.value = "";
-    inputRef3.current.value = "";
-    inputRef4.current.value = "";
-    inputRef5.current.value = "";
-    inputRef6.current.value = "";
+    setCreationPlant("");
+    setCreationPicFile(null);
+    setCreationArtFile(null);
+    setTemp1("");
+    setTemp2("");
+    setPhotoDate("");
+    setArtDate("");
   };
 
-  const unFeature = async (input) => {
-    const temp = input;
-
+  const handleFeature = async (entry) => {
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/unFeatureCreation`,
-        { temp },
-      );
-      setCreationEntries(response.data.temp);
+      await axios.post(`${process.env.REACT_APP_Source_URL}/featureToHome`, {
+        picId: entry._id,
+        artId: entry._id,
+        isCreation: true,
+      });
+
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Featured successfully",
+        life: 3000,
+      });
+
+      setShowPreviewDialog(false);
     } catch (error) {
-      console.log(error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to feature",
+        life: 3000,
+      });
     }
   };
 
-  const featureOnHome = async (input) => {
-    const temp = input;
-
+  const unFeature = async (input) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/featureToHome`,
-        { temp },
+        `${process.env.REACT_APP_Source_URL}/unFeatureCreation`,
+        { temp: input },
       );
+      setCreationEntries(response.data.temp);
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Unfeatured successfully",
+        life: 3000,
+      });
     } catch (error) {
-      console.log(error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to unfeature",
+        life: 3000,
+      });
     }
   };
 
@@ -98,7 +124,11 @@ const UploadCreation = () => {
         const response = await axios.get(
           `${process.env.REACT_APP_Source_URL}/searchNames`,
         );
-        const fetchedNamesArray = response.data.returnNames;
+        const fetchedNamesArray = response.data.returnNames.map((result) => {
+          return {
+            value: result.latinName,
+          };
+        });
         setNamesArray(fetchedNamesArray);
       } catch (error) {
         console.log(error);
@@ -126,6 +156,7 @@ const UploadCreation = () => {
 
   const handleCreationSubmit = async (e) => {
     e.preventDefault();
+    setCreationLoading(true);
     const formData = new FormData();
     formData.append("plant", creationPlant);
     formData.append("artDate", artDate);
@@ -133,33 +164,11 @@ const UploadCreation = () => {
     formData.append("photoDate", photoDate);
     formData.append("photographer", photographer);
 
-    const addFileToFormData = (file, fieldName) => {
-      if (!file) {
-        return false;
-      }
-      const fileExtension = file.name.split(".").pop();
-      if (
-        fileExtension !== "jpg" &&
-        fileExtension !== "jpeg" &&
-        fileExtension !== "png" &&
-        fileExtension !== "webp"
-      ) {
-        alert("Please Upload a jpg, jpeg, png or webp file");
-        return false;
-      }
-      formData.append(fieldName, file);
-      return true;
-    };
-
-    if (creationPicFile && !addFileToFormData(creationPicFile, "pic")) {
-      return;
-    }
-    if (creationArtFile && !addFileToFormData(creationArtFile, "art")) {
-      return;
-    }
+    if (creationPicFile) formData.append("pic", creationPicFile);
+    if (creationArtFile) formData.append("art", creationArtFile);
 
     try {
-      const response = await axios.post(
+      await axios.post(
         `${process.env.REACT_APP_Source_URL}/uploadCreation`,
         formData,
         {
@@ -168,110 +177,139 @@ const UploadCreation = () => {
           },
         },
       );
+      toast.current.show({
+        severity: "success",
+        summary: "Success",
+        detail: "Creation uploaded successfully",
+        life: 3000,
+      });
       clearInput();
     } catch (error) {
       console.log(error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "Failed to upload creation",
+        life: 3000,
+      });
+    } finally {
+      setCreationLoading(false);
     }
   };
 
-  const handleCreationPicChange = (e) => {
-    setCreationPicFile(e.target.files[0]);
+  const selectedPicEnglishNameTemplate = (option, props) => {
+    if (option) {
+      return (
+        <div className="flex align-items-center">
+          <div>{option.value}</div>
+        </div>
+      );
+    }
+
+    return <span>{props.placeholder}</span>;
   };
 
-  const handleCreationArtChange = (e) => {
-    setCreationArtFile(e.target.files[0]);
+  const picEnglishNameOptionTemplate = (option) => {
+    return (
+      <div className="flex align-items-center">
+        <div>{option.value}</div>
+      </div>
+    );
   };
 
   return (
     <>
+      <Toast ref={toast} />
       <div className="creationUpload">
         <h1 className="dUpTitle">Creation</h1>
         <form encType="multipart/form-data" onSubmit={handleCreationSubmit}>
           <h2 className="uploadTitle">Documentary Upload</h2>
-          <div
-            className="creationPic"
-            onDragEnter={(e) => e.preventDefault()}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              setCreationPicFile(e.dataTransfer.files[0]);
-            }}
-          >
-            <input
+          <div className="creationPic">
+            <InputText
               type="text"
               placeholder="Photographer + Creation Date (John Doe, 10-12-07)"
               id="creationPhotographer"
               name="creationPhotographer"
               className="inputBox leftInput"
+              style={{
+                borderRadius: "0",
+                border: "2px solid #516d4e",
+              }}
               onChange={(e) => setTemp1(e.target.value)}
               value={temp1}
-              ref={inputRef2}
             />
 
-            <label htmlFor="creationPicFile" className="fileLabel">
-              {creationPicFile ? "1 pic selected" : "Click to upload pic"}
-            </label>
-
-            <input
-              type="file"
-              id="creationPicFile"
-              name="creationPicFile"
-              className="file"
-              onChange={handleCreationPicChange}
+            <FileUpload
+              mode="basic"
+              name="pic"
+              accept="image/*"
+              maxFileSize={10000000}
+              chooseLabel={
+                creationPicFile ? "1 pic selected" : "Click to upload pic"
+              }
+              className="p-button-outlined"
+              onSelect={(e) => setCreationPicFile(e.files[0])}
             />
           </div>
 
           <br />
 
-          <div
-            className="creationArt"
-            onDragEnter={(e) => e.preventDefault()}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={(e) => {
-              e.preventDefault();
-              setCreationArtFile(e.dataTransfer.files[0]);
-            }}
-          >
-            <input
+          <div className="creationArt">
+            <InputText
               type="text"
               placeholder="Artist + Creation Date (John Doe, 10-12-07)"
               id="creationArtist"
               name="creationArtist"
               className="inputBox leftInput"
+              style={{
+                borderRadius: "0",
+                border: "2px solid #516d4e",
+              }}
               onChange={(e) => setTemp2(e.target.value)}
               value={temp2}
-              ref={inputRef3}
             />
 
-            <label htmlFor="creationArtFile" className="fileLabel">
-              {creationArtFile ? "1 art selected" : "Click to upload art"}
-            </label>
-            <input
-              type="file"
-              id="creationArtFile"
-              name="creationArtFile"
-              className="file"
-              onChange={handleCreationArtChange}
+            <FileUpload
+              mode="basic"
+              name="art"
+              accept="image/*"
+              maxFileSize={10000000}
+              chooseLabel={
+                creationArtFile ? "1 art selected" : "Click to upload art"
+              }
+              className="p-button-outlined"
+              onSelect={(e) => setCreationArtFile(e.files[0])}
             />
           </div>
 
           <br />
 
-          <input
-            placeholder="Plant (Latin name)"
-            type="text"
-            id="creationPlant"
-            name="creationPlant"
+          <Dropdown
+            style={{
+              borderRadius: "0",
+              border: "2px solid #516d4e",
+              padding: "0",
+            }}
             value={creationPlant}
             className="inputBox creationUpPlant"
-            onChange={(e) => setCreationPlant(e.target.value)}
-            ref={inputRef1}
+            onChange={(e) => setCreationPlant(e.value)}
+            options={namesArray}
+            optionLabel="value"
+            placeholder="Plant (Latin name) Type to search"
+            filter
+            valueTemplate={selectedPicEnglishNameTemplate}
+            itemTemplate={picEnglishNameOptionTemplate}
           />
           <br />
           <br />
-          <button className="formSubmit" type="submit">
-            Submit
-          </button>
+          <Button
+            className="formSubmit"
+            type="submit"
+            label="Submit"
+            icon="pi pi-check"
+            style={{ borderRadius: "0" }}
+            loading={creationLoading}
+          />
         </form>
 
         <br />
@@ -279,39 +317,87 @@ const UploadCreation = () => {
 
         <div className="listCreations">
           <h2 className="uploadTitle">Creation Preview</h2>
-          {Array.isArray(creationEntries) &&
-            creationEntries.map((item, index) => (
-              <div key={index}>
-                <h3 className="creationTitle">{item.plant}</h3>
-                <div className="creationEntry">
-                  <img src={item.pic} alt="pic" className="upCreationPic" />
-                  <img src={item.art} alt="art" className="upCreationArt" />
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      position: "relative",
-                      marginTop: "4.5rem",
-                    }}
-                  >
-                    <button
-                      className="featureBtn"
-                      onClick={() => featureOnHome(item._id)}
-                    >
-                      Feature on Home
-                    </button>
-                    <button
-                      className="featureBtn"
-                      onClick={() => unFeature(item._id)}
-                    >
-                      Unfeature
-                    </button>
+          <div className="grid">
+            {Array.isArray(creationEntries) &&
+              creationEntries.map((item, index) => (
+                <div key={index} className="col-12 md:col-6 lg:col-4">
+                  <div className="creation-entry p-4">
+                    <h3 className="creationTitle">{item.plant}</h3>
+                    <div className="flex gap-3">
+                      <div className="flex-1">
+                        <img
+                          src={`${process.env.REACT_APP_Source_URL}/public${item.pic}`}
+                          alt="pic"
+                          className="w-full"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <img
+                          src={`${process.env.REACT_APP_Source_URL}/public${item.art}`}
+                          alt="art"
+                          className="w-full"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex gap-2 mt-3">
+                      <Button
+                        label="Feature on Home"
+                        icon="pi pi-star"
+                        onClick={() => {
+                          setSelectedEntry(item);
+                          setShowPreviewDialog(true);
+                        }}
+                        className="p-button-success"
+                      />
+                      <Button
+                        label="Delete"
+                        icon="pi pi-times"
+                        onClick={() => unFeature(item._id)}
+                        className="p-button-danger"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+          </div>
         </div>
       </div>
+
+      <Dialog
+        visible={showPreviewDialog}
+        onHide={() => setShowPreviewDialog(false)}
+        header="Preview and Confirm Feature"
+        style={{ width: "50vw" }}
+      >
+        {selectedEntry && (
+          <div>
+            <div className="flex gap-3 mb-3">
+              <div className="flex-1">
+                <img
+                  src={`${process.env.REACT_APP_Source_URL}/public${selectedEntry.pic}`}
+                  alt="pic"
+                  className="w-full"
+                />
+              </div>
+              <div className="flex-1">
+                <img
+                  src={`${process.env.REACT_APP_Source_URL}/public${selectedEntry.art}`}
+                  alt="art"
+                  className="w-full"
+                />
+              </div>
+            </div>
+            <div className="flex justify-content-end">
+              <Button
+                label="Confirm Feature"
+                icon="pi pi-check"
+                onClick={() => handleFeature(selectedEntry)}
+                className="p-button-success"
+              />
+            </div>
+          </div>
+        )}
+      </Dialog>
     </>
   );
 };

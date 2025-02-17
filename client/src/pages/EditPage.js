@@ -32,8 +32,6 @@ const EditPage = (props) => {
   }, [props]);
 
   const deletePic = async (id) => {
-    console.log("deletePic");
-    console.log(id);
     try {
       const response = await axios.post(
         `${process.env.REACT_APP_Source_URL}/editPageDelete`,

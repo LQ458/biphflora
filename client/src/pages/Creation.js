@@ -9,7 +9,8 @@ import Navbar from "../components/Navbar.js";
 const Creation = (props) => {
   const [currentSubpage, setCurrentSubpage] = useState("paintings");
   const [viewKey, setViewKey] = useState("");
-  const [load, setLoad] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [hasData, setHasData] = useState(false);
 
   const titleMapping = {
     paintings: "Creation Paintings 绘画",
@@ -18,8 +19,13 @@ const Creation = (props) => {
   };
 
   useEffect(() => {
-    document.title = titleMapping["paintings"];
-  }, []);
+    document.title = titleMapping[currentSubpage];
+  }, [currentSubpage]);
+
+  const handleDataLoad = (hasEntries) => {
+    setHasData(hasEntries);
+    setLoading(!hasEntries);
+  };
 
   let currentComponent;
   const handleView = (viewKeyInput) => {
@@ -35,6 +41,7 @@ const Creation = (props) => {
       <CreationPaintings
         handleView={handleView}
         handleGets={props.handleGets}
+        onDataLoad={handleDataLoad}
       />
     );
   } else if (currentSubpage === "notes") {
@@ -47,8 +54,8 @@ const Creation = (props) => {
   };
 
   return (
-    <section onLoad={() => setLoad(false)} className="creationPart1">
-      {load && (
+    <section className="creationPart1">
+      {loading && (
         <section className="loadingCreation">
           <div className="dots-container">
             <div className="dots"></div>
@@ -69,25 +76,10 @@ const Creation = (props) => {
         >
           Paintings
         </button>
-        {/* <button
-          className={`subPageButton ${currentSubpage === "paintings" && "active"}`}
-          onClick={() => {
-            handleClick("paintings");
-          }}
-        >
-          Paintings
-        </button>
-        <button
-          className={`subPageButton ${currentSubpage === "notes" && "active"}`}
-          onClick={() => {
-            handleClick("notes");
-          }}
-        >
-          Notes of Nature
-        </button> */}
       </div>
       <div className="creationBody">{currentComponent}</div>
     </section>
   );
 };
+
 export default Creation;

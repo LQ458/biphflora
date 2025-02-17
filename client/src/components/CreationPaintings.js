@@ -5,7 +5,7 @@ import "../styles/creationPaint.css";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
 
-const CreationPaintings = (props) => {
+const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
   const [pics, setPics] = useState([]);
   const [posts, setPosts] = useState([]);
   const [arts, setArts] = useState([]);
@@ -25,9 +25,6 @@ const CreationPaintings = (props) => {
   const [topLoc, setTopLoc] = useState([]);
   const [topTimes, setTopTimes] = useState([]);
 
-  const handleGets = props.handleGets;
-  const handleView = props.handleView;
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,23 +33,43 @@ const CreationPaintings = (props) => {
         );
         const allDisplays = response.data.allDisplays;
         setDisplayObjectList(allDisplays);
-        console.log(allDisplays);
-        for (let i = 0; i < 3; i++) {
-          if (allDisplays[i]) {
-            setTopPics((prev) => [...prev, allDisplays[i].pic ?? ""]);
-            setTopArts((prev) => [...prev, allDisplays[i].art ?? ""]);
-            setTopBys((prev) => [...prev, allDisplays[i].artist ?? ""]);
-            setTopLoc((prev) => [...prev, allDisplays[i].location ?? ""]);
-            setTopTimes((prev) => [...prev, allDisplays[i].artDate ?? ""]);
-          }
+
+        if (allDisplays && allDisplays.length > 0) {
+          const topThreeDisplays = allDisplays.slice(0, 3);
+          const newTopPics = [];
+          const newTopArts = [];
+          const newTopBys = [];
+          const newTopLoc = [];
+          const newTopTimes = [];
+
+          topThreeDisplays.forEach((display) => {
+            newTopPics.push(display.pic || "");
+            newTopArts.push(display.art || "");
+            newTopBys.push(display.artist || "");
+            newTopLoc.push(display.location || "");
+            newTopTimes.push(display.artDate || "");
+          });
+
+          setTopPics(newTopPics);
+          setTopArts(newTopArts);
+          setTopBys(newTopBys);
+          setTopLoc(newTopLoc);
+          setTopTimes(newTopTimes);
+
+          // Notify parent that we have data
+          onDataLoad(true);
+        } else {
+          // Notify parent that we don't have data
+          onDataLoad(false);
         }
       } catch (error) {
-        console.log(error);
+        console.error("Error fetching creation data:", error);
+        onDataLoad(false);
       }
     };
 
     fetchData();
-  }, []);
+  }, [onDataLoad]);
 
   const setSubIndex = (index) => {
     setSubPgIndex(index);
@@ -104,6 +121,10 @@ const CreationPaintings = (props) => {
     }
   };
 
+  if (!displayObjectList || displayObjectList.length === 0) {
+    return null;
+  }
+
   return (
     <>
       <h1 className="documentarytitle">
@@ -112,12 +133,20 @@ const CreationPaintings = (props) => {
       </h1>
       {topArts.length > 0 && topPics.length > 0 && (
         <div className="docTop">
-          <button className="shift" onClick={() => handleLeft()}>
+          <button className="shift" onClick={handleLeft}>
             <PreviousIcon width={60} height={60} className="icons" />
           </button>
-          <img src={topPics[topIndex]} alt="pic" className="topImgs" />
+          <img
+            src={`${process.env.REACT_APP_Source_URL}/public${topPics[topIndex]}`}
+            alt="pic"
+            className="topImgs"
+          />
           <div className="artBox">
-            <img src={topArts[topIndex]} alt="art" className="topArts" />
+            <img
+              src={`${process.env.REACT_APP_Source_URL}/public${topArts[topIndex]}`}
+              alt="art"
+              className="topArts"
+            />
             <div className="artDes">
               <div className="artInfos">
                 <p className="artInfo">
@@ -135,7 +164,7 @@ const CreationPaintings = (props) => {
               <p className="recArt">Recent Artworks</p>
             </div>
           </div>
-          <button className="shift" onClick={() => handleRight()}>
+          <button className="shift" onClick={handleRight}>
             <NextIcon width={60} height={60} className="icons" />
           </button>
         </div>
@@ -143,29 +172,20 @@ const CreationPaintings = (props) => {
       <div className="docBottom">
         <div className="bottomBox">
           <button
-            onClick={() => {
-              changeOrder(true);
-            }}
+            onClick={() => changeOrder(true)}
             className={`btn ${orderIsBold1 && "crFocused"}`}
           >
             Newest
           </button>
           <button
-            onClick={() => {
-              changeOrder(false);
-            }}
+            onClick={() => changeOrder(false)}
             className={`btn ${orderIsBold2 && "crFocused"}`}
           >
             Oldest
           </button>
           {numOfPages > 0 &&
             Array.from({ length: numOfPages }, (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => {
-                  setSubIndex(index + 1);
-                }}
-              >
+              <button key={index + 1} onClick={() => setSubIndex(index + 1)}>
                 {index + 1}
               </button>
             ))}
@@ -176,7 +196,7 @@ const CreationPaintings = (props) => {
           (_, index) =>
             (displayObjectList[currentDisplayIndexes[2 * index]] ||
               displayObjectList[currentDisplayIndexes[2 * index + 1]]) && (
-              <div className="subBox1">
+              <div key={index} className="subBox1">
                 <SubBox
                   displayObjectList={displayObjectList}
                   currentDisplayIndexes={currentDisplayIndexes}

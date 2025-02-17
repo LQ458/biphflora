@@ -25,7 +25,6 @@ const EditPageTextForm = (prop) => {
   const [chineseLinkArray, setChineseLinkArray] = useState([]);
   const [loadingMessage, setLoadingMessage] = useState("Submit");
   const originalLatin = useState(plant.latinName);
-
   useEffect(() => {
     if (Array.isArray(links) && links.length > 0) {
       const formattedString = links
