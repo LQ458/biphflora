@@ -17,7 +17,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
     const getDb2Pic = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/getDb2Pic`,
+          `${process.env.REACT_APP_Source_URL}/getDb2Pic`
         );
         setPics(response.data.pics);
       } catch (error) {
@@ -32,7 +32,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
+          `${process.env.REACT_APP_Source_URL}/searchNames`
         );
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
@@ -159,10 +159,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
                       className="picImg"
                       onClick={() =>
                         handleGet(
-                          loadedSrc[index]
-                            .split("//")[1]
-                            .split("/")[3]
-                            .split("-")[0],
+                          loadedSrc[index].split("/").pop().split("-")[0]
                         )
                       }
                       // 从url中分离plant name
@@ -184,10 +181,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
                       className="picImg"
                       onClick={() =>
                         handleGet(
-                          loadedSrc[index]
-                            .split("//")[1]
-                            .split("/")[3]
-                            .split("-")[0],
+                          loadedSrc[index].split("/").pop().split("-")[0]
                         )
                       }
                       // 从url中分离plant name
