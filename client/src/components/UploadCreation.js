@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/uploadCreation.css";
 import { InputText } from "primereact/inputtext";

@@ -966,16 +966,20 @@ app.put("/handleEditDecision", verifyToken, async function (req, res) {
         .json({ success: false, message: "Request not found" });
     }
 
+    const originalLatin = request.originalLatin;
+    const newLatin = request.latinName;
+
     if (!req.body.decision) {
       await EditTextRequest.deleteOne({ _id: request._id });
       return res.json({ success: true, message: "request denied" });
     }
 
+    // Update the post first
     const postToEdit = await Post.findOneAndUpdate(
-      { latinName: request.originalLatin },
+      { latinName: originalLatin },
       {
         $set: {
-          latinName: request.latinName,
+          latinName: newLatin,
           chineseName: request.chineseName,
           commonName: request.commonName,
           location: request.location,
@@ -998,6 +1002,62 @@ app.put("/handleEditDecision", verifyToken, async function (req, res) {
       return res
         .status(404)
         .json({ success: false, message: "Post not found" });
+    }
+
+    // Handle pics
+    const pics = await Pic.find({ plant: originalLatin });
+    for (const pic of pics) {
+      try {
+        // Generate new filename
+        const oldPath = path.join(__dirname, "public", pic.path);
+        const fileExt = path.extname(oldPath);
+        const newFilename = `${newLatin}-${crypto.randomBytes(16).toString("hex").slice(0, 16)}${fileExt}`;
+        const newRelativePath = path.join("/plantspic", newFilename);
+        const newFullPath = path.join(
+          __dirname,
+          "public",
+          "plantspic",
+          newFilename,
+        );
+
+        // Move and rename file
+        await fs.rename(oldPath, newFullPath);
+
+        // Update database record
+        pic.plant = newLatin;
+        pic.path = newRelativePath;
+        await pic.save();
+      } catch (error) {
+        console.error(`Error processing pic ${pic._id}:`, error);
+      }
+    }
+
+    // Handle arts
+    const arts = await Art.find({ plant: originalLatin });
+    for (const art of arts) {
+      try {
+        // Generate new filename
+        const oldPath = path.join(__dirname, "public", art.path);
+        const fileExt = path.extname(oldPath);
+        const newFilename = `${newLatin}-${crypto.randomBytes(16).toString("hex").slice(0, 16)}${fileExt}`;
+        const newRelativePath = path.join("/plantspic", newFilename);
+        const newFullPath = path.join(
+          __dirname,
+          "public",
+          "plantspic",
+          newFilename,
+        );
+
+        // Move and rename file
+        await fs.rename(oldPath, newFullPath);
+
+        // Update database record
+        art.plant = newLatin;
+        art.path = newRelativePath;
+        await art.save();
+      } catch (error) {
+        console.error(`Error processing art ${art._id}:`, error);
+      }
     }
 
     await EditTextRequest.deleteOne({ _id: request._id });
