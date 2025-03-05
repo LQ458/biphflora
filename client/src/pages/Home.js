@@ -21,6 +21,9 @@ const Home = ({ handleGets }) => {
   const [query, setQuery] = useState("");
   const [namesArray, setNamesArray] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  // show or hide prev and next button
+  const [showPrevBtn, setShowPrevBtn] = useState(false);
+  const [showNextBtn, setShowNextBtn] = useState(true);
   const toast = useRef(null);
 
   const handleGet = (search) => {
@@ -136,11 +139,25 @@ const Home = ({ handleGets }) => {
     if (picsArrayIndex > 0) {
       setPicsArrayIndex(picsArrayIndex - 1);
     }
+    if (picsArrayIndex - 1 === 0) {
+      setShowPrevBtn(false);
+      setShowNextBtn(true);
+    } else {
+      setShowPrevBtn(true);
+      setShowNextBtn(false);
+    }
   };
 
   const handleNext = () => {
     if (picsArrayIndex < featuredPicsArray.length - 1) {
       setPicsArrayIndex(picsArrayIndex + 1);
+    }
+    if (picsArrayIndex + 1 === featuredPicsArray.length - 1) {
+      setShowNextBtn(false);
+      setShowPrevBtn(true);
+    } else {
+      setShowNextBtn(true);
+      setShowPrevBtn(false);
     }
   };
 
@@ -167,10 +184,14 @@ const Home = ({ handleGets }) => {
             </div>
             <div className={styles.featuredColumn}>
               <div className={styles.featuredPics}>
-                <button className={styles.prevBtn} onClick={handlePrevious}>
+                <button
+                  className={styles.prevBtn}
+                  style={{ visibility: showPrevBtn ? "visible" : "hidden" }}
+                  onClick={handlePrevious}
+                >
                   <PreviousIcon width={70} height={70} />
                 </button>
-                <div className={styles.posts} id="posta">
+                <div style={{ flexGrow: 2 }}>
                   {loading ? (
                     <div className={styles.picLoad}>
                       <div
@@ -208,7 +229,7 @@ const Home = ({ handleGets }) => {
                     )
                   )}
                 </div>
-                <div className={styles.posts} id="posta">
+                <div style={{ flexGrow: 2 }}>
                   {loading ? (
                     <div className={styles.artLoad}>
                       <div
@@ -244,7 +265,11 @@ const Home = ({ handleGets }) => {
                     )
                   )}
                 </div>
-                <button className={styles.nextBtn} onClick={handleNext}>
+                <button
+                  className={styles.nextBtn}
+                  style={{ visibility: showNextBtn ? "visible" : "hidden" }}
+                  onClick={handleNext}
+                >
                   <NextIcon width={70} height={70} />
                 </button>
               </div>

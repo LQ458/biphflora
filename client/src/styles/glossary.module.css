@@ -6,6 +6,7 @@ body.glossary {
   background-position: center;
   overflow-x: hidden;
   display: flex;
+  height: 100vh;
   flex-direction: column;
   margin: 0;
   padding: 0;

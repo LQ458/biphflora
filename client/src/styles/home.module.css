@@ -184,17 +184,23 @@ div.description {
 button.prevBtn {
   position: relative;
   fill: #739667;
-  left: 4vw;
+  padding: 0;
+  flex-grow: 1;
+  width: fit-content;
 }
 
 button.nextBtn {
   position: relative;
   fill: #739667;
-  left: 24vw;
+  padding: 0;
+  flex-grow: 1;
+  width: fit-content;
 }
 
 div.featuredPics {
   display: flex;
+  gap: 1rem;
+  align-items: center;
   position: relative;
 }
 form.submitForm {
@@ -253,17 +259,16 @@ div.currentPicLabel p {
   margin: 0;
 }
 div.picContainer {
-  left: 6vw;
-  top: 4vw;
   display: flex;
   flex-direction: column;
+  align-items: center;
   position: relative;
 }
 div.artContainer {
   position: relative;
-  left: var(--art-shift);
-  top: 1vw;
   display: flex;
+  margin-top: 8px;
+  align-items: center;
   flex-direction: column;
 }
 div.artLabel {
@@ -277,8 +282,6 @@ div.artLabel {
   background-color: #80a074;
 }
 div.picLoad {
-  left: 6vw;
-  top: 4vw;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -295,8 +298,6 @@ div.artLabelLoad {
 }
 div.artLoad {
   position: relative;
-  left: var(--art-shift);
-  top: 1vw;
   display: flex;
   flex-direction: column;
 }
