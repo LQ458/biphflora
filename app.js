@@ -575,7 +575,13 @@ app.post(
 
       res.json({ success: true });
     } catch (error) {
-      console.log(error, "uploading problems");
+      if (error.code === 11000) {
+        res
+          .status(400)
+          .json({ success: false, message: "Plant already exists" });
+      } else {
+        console.log(error, "uploading problems");
+      }
     }
   },
 );

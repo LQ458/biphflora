@@ -215,15 +215,11 @@ const UploadPlants = () => {
     formData.append("otherNames", otherNames);
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/upload`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      await axios.post(`${process.env.REACT_APP_Source_URL}/upload`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       toast.current.show({
         severity: "success",
         summary: "创建成功",
@@ -240,7 +236,15 @@ const UploadPlants = () => {
       setChineseLinks("");
       setEditor("");
     } catch (error) {
-      console.log(error);
+      if (error.response.status === 400) {
+        toast.current.show({
+          severity: "error",
+          summary: "上传失败",
+          detail: "植物已存在",
+          life: 3000,
+        });
+      }
+      setPlantLoading(false);
     } finally {
       setPlantLoading(false);
     }
