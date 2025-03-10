@@ -190,7 +190,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             {aboutFloraClub}
           </pre>
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/1.JPG`}
+            src={`${process.env.REACT_APP_Source_URL}/public/1.jpg`}
             alt="picture of bird"
             className="birdPic"
           />
@@ -209,7 +209,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             className="flowerIcon"
           />
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/6.JPG`}
+            src={`${process.env.REACT_APP_Source_URL}/public/6.jpg`}
             alt="bottomB"
             className="flowerBottom"
           />
@@ -326,7 +326,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
         >
           <h2 className="contactUsTitle">III. Contact Us</h2>
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/2.JPG`}
+            src={`${process.env.REACT_APP_Source_URL}/public/2.jpg`}
             alt="flower"
             className="whiteFlower"
           />
