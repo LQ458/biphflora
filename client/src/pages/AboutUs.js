@@ -4,8 +4,8 @@ import Navbar from "../components/Navbar.js";
 
 const AboutUs = () => {
   const [loading, setLoading] = useState(true);
-  const [aboutUs, setAboutUs] = useState("-关于我们-");
-  const [curLang, setCurLang] = useState("cn");
+  const [aboutUs, setAboutUs] = useState("-About Us-");
+  const [curLang, setCurLang] = useState("en");
 
   const floraClubInfoChin = `
           首先，我们先介绍一下Flora Club识草木社团。本社团成立于2023年9月，社团的主要工作包括物种识别、创建校园植物与鸟类信息档案，创作绘画作品、策划自然书展与摄影绘画作品展览、组织校园植物导赏、录制关于校园物种的介绍视频，以及制作季节纪录片。
@@ -46,72 +46,14 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
 
   `;
 
-  const floraContactLabelChin = `
-  指导老师： <br /> Doris Sander
-  `;
-  const floraContactLabelEng = `
-  `;
-  const floraContactInfoChin = `
-  联系方式：doris.sander-biph@basischina.com
-  `;
-  const floraContactInfoEng = `
-  `;
-  const floraContactLabel3Chin = `
-  BIPH FLORA 社团创始人:
-  `;
-  const floraContactLabel3Eng = `
-  `;
-  const floraContactInfo3Chin = `
-  联系方式：yihao.qin17311-biph@basischina.com <br />
-  联系方式：kashun.chen15091-biph@basischina.com
-  `;
-  const floraContactInfo3Eng = `
-  `;
-  const floraContactInfo4Chin = `
-  联系方式：zoe.he41172-biph@basischina.com
-  `;
-  const floraContactInfo4Eng = `
-  `;
-  const floraContactLabel4Chin = `
-  绘画小组成员：
-  `;
-  const floraContactLabel4Eng = `
-  `;
-  const floraContactLabel5Chin = `
-  植物信息档案创建及管理小组成员：
-  `;
-  const floraContactLabel5Eng = `
-  `;
-  const floraContactInfo5Chin = `
-  `;
-  const floraContactInfo5Eng = `
-  `;
-  const floraContactLabel6Chin = `
-  社员作品刊登期刊方：
-  `;
-  const floraContactLabel6Eng = `
-  `;
-  const floraContactInfo6Chin = `
-  `;
-  const floraContactInfo6Eng = `
-  `;
-
-  const [aboutFloraClub, setAboutFloraClub] = useState(floraClubInfoChin);
-  const [aboutFloraWeb, setAboutFloraWeb] = useState(floraWebInfoChin);
-  const [aboutFloraClubEng, setAboutFloraClubEng] = useState(floraClubInfoEng);
-  const [aboutFloraWebEng, setAboutFloraWebEng] = useState(floraWebInfoEng);
-  const [contactLabel1, setContactLabel1] = useState(floraContactLabelChin);
-  const [contactLabel2, setContactLabel2] = useState(floraContactLabelEng);
-  const [contactInfo1, setContactInfo1] = useState(floraContactInfoChin);
-  const [contactInfo2, setContactInfo2] = useState(floraContactInfoEng);
-  const [contactLabel3, setContactLabel3] = useState(floraContactLabelChin);
-  const [contactInfo3, setContactInfo3] = useState(floraContactInfoChin);
-  const [advisor, setAdvisor] = useState("指导老师：");
-  const [contact, setContact] = useState("联系方式：");
-  const [techSupport, setTechSupport] = useState("技术支持：");
-  const [founder, setFounder] = useState("BIPH FLORA 社团创始人：");
+  const [aboutFloraClub, setAboutFloraClub] = useState(floraClubInfoEng);
+  const [aboutFloraWeb, setAboutFloraWeb] = useState(floraWebInfoEng);
+  const [advisor, setAdvisor] = useState("Club Advisor:");
+  const [contact, setContact] = useState("Email:");
+  const [techSupport, setTechSupport] = useState("Tech Support:");
+  const [founder, setFounder] = useState("Club Leader:");
   const [additional, setAdditional] = useState(
-    "(联动及投稿相关可以直接通过teams或邮箱联系)",
+    "(For collaboration and work submissions, feel free to contact me via Teams or email.)"
   );
 
   useEffect(() => {
@@ -133,8 +75,9 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
     setAdditional(
       lang === "cn"
         ? "(联动及投稿相关可以直接通过teams或邮箱联系)"
-        : "(For collaboration and work submissions, feel free to contact me via Teams or email.)",
+        : "(For collaboration and work submissions, feel free to contact me via Teams or email.)"
     );
+    setAboutUs(lang === "cn" ? "-关于我们-" : "-About Us-");
   };
 
   return (
@@ -185,7 +128,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
           <h2 className="clubLabel">I. Flora Club</h2>
           <pre
             className="clubContent"
-            style={{ fontSize: curLang === "cn" ? "" : "17px" }}
+            style={{ fontSize: curLang === "cn" ? "" : "18px" }}
           >
             {aboutFloraClub}
           </pre>
