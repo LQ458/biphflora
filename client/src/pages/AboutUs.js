@@ -5,30 +5,114 @@ import Navbar from "../components/Navbar.js";
 const AboutUs = () => {
   const [loading, setLoading] = useState(true);
   const [aboutUs, setAboutUs] = useState("-关于我们-");
+  const [curLang, setCurLang] = useState("cn");
 
   const floraClubInfoChin = `
-  首先，我们先介绍一下Flora Club识草木社团。本社团成立于2023年9月，社团的主要工作包括创建以识别校园植物以及录入相关的百科知识链接为基础的校园植物信息档案、创建网站、创作以校园植物、昆虫和鸟类等为素材的绘画作品和撰写相关的自然笔记，并定期在图书馆或校园的其它区域展出、在图书馆举办以大自然为主题的书展、向老师和同学们征集朗诵大自然著作的作品、组织校园植物导赏以及制作关于校园生物多样性的纪录片等。
-  
-  识别校园植物和录入相关的百科知识链接是创建校园植物信息档案的基础，也是Flora Club识草木社团的一项基础工作。识别植物指的是辨别植物的种和属以及明确它们的拉丁名，在此基础上，通过搜索和筛选专业网站，录入相关的百科知识链接，为同学们提供了解校园植物百科知识的平台。此外，社员们将通过不同焦距的镜头，拍摄和录制每一种植物的叶、花、果、茎等部位在四季变迁中的不同状态；记录栖息在这些植物上的昆虫和鸟类等；用录音设备捕捉大自然的声音，例如，风声、鸟声、树叶的声音等，这些共同构成了校园植物信息档案的内容。
-  
-  创作以校园植物、昆虫和鸟类为素材的绘画作品和撰写相关的自然笔记是社员们通过画笔和文字展现他们在不同视角下对动植物的观察、理解和热爱。绘画作品选用水彩、素描和油画等表现手法；自然笔记采用诗歌、散文或者学术论文的书写形式。
-  
-  Flora Club识草木社团将积累上述工作的成果，并从过往的摄影、绘画和自然笔记等作品中精心挑选出最优秀的那部分，每年在图书馆或三楼的open area进行展出。以这些作品为载体，我们希望能够向同学们打开一扇通往缤纷世界的窗户。
-  
-  本社团每年也会在图书馆举办以大自然为主题的书展，鼓励同学们在阅读中走进自然。
-  
-  我们将持续地向同学们征集以大自然为主题的名著的朗诵作品，这些著作有《物种起源》、《寂静的春天》、《瓦尔登湖》、《沙乡年鉴》、《缤纷的生命》、《给植物命名的故事》和《The Future We Choose ：Solving Climate Crisis》等，朗诵的语种既可以是英语，也可以是中文、法语、西班班牙语等。目前本社团已经和校内的西班牙语社团联动，他们将为同学们带来精彩的朗诵音频。
-  
-  植物导赏是Flora Club识草木社团所有成员参与的最为重要的一项工作。本社团计划在校园内设置2-3条植物观赏线路，同学们通过在 Flora网站上预约，社员将带领大家行走在校园内，领略校园的植物风光，并沿路向大家介绍身边植物的百科知识以及它们的有趣故事。我们将在网站上发布植物导赏的预约规则。
-  
-  制作关于校园植物和生物多样性的纪录片是Flora Club识草木社团所有成员参与的最为重要的另一项工作。我们会围绕不同的主题，从录制短视频过渡到录制专题纪录片。
-  `;
-  const floraWebInfoChin = `其次，我们想介绍一下BIPH Flora网站。BIPH Flora网站创建于2023年10月，由Leo Qin、Jess Chen和Zoe He共同开发。创建与经营BIPH Flora网站是Flora Club识草木社团的另一项基础工作。
+          首先，我们先介绍一下Flora Club识草木社团。本社团成立于2023年9月，社团的主要工作包括物种识别、创建校园植物与鸟类信息档案，创作绘画作品、策划自然书展与摄影绘画作品展览、组织校园植物导赏、录制关于校园物种的介绍视频，以及制作季节纪录片。
 
-  BIPH FLORA设有“关于我们”、“植物信息档案”、“创作”、“植物导赏”、“纪录片”等板块，其中“创作”板块又包含“绘画”、“自然笔记”、“校园展览”、“朗诵音频”等次板块，社员们在工作中所获取的成果将全部放入到这些板块中，因此，BIPH FLORA网站将成为本社团向老师和同学们展现校园生物多样性的一个网络平台。`;
+        识别校园植物和录入相关的百科知识是创建校园植物信息档案的基础，也是Flora Club识草木社团的一项基础工作。识别植物指的是辨别植物的种和属以及明确它们的拉丁名，在此基础上，通过搜索和筛选专业网站，搜索该植物的资料，包括其特征，拉丁词源，与其他生物的互作，历史来源和药用价值等等。然后选取部分网站上的信息，并结合自己的观察，作为植物的介绍信息。当然，也会提供所参考的网站链接，方便其他学生使用这些线上资源更进一步的探索此植物的相关信息。同时，社员们将使用不同焦距的镜头，拍摄和录制每一种植物的叶、花、果、茎等部位在四季变迁中的不同状态，记录栖息在这些植物上的昆虫和鸟类。这些共同构成了校园植物信息档案的内容。此外，在与观鸟爱好者的合作下，我们将增添校内鸟类物种的信息档案，介绍其栖息的植物，与推荐观察的地点。
+
+        通过创作以校园植物、昆虫和鸟类为素材的绘画作品，社员们用水彩、彩铅、线上绘画等不同形式展现他们在不同视角下对动植物的观察、理解和热爱。
+
+        Flora Club识草木社团将积累上述工作的成果，并从过往的摄影和绘画作品中精心挑选出最优秀的那部分，在图书馆进行展出。以这些作品为载体，我们希望能够向同学们打开一扇通往缤纷生命的窗户。本社团也会在图书馆举办以大自然为主题的书展，鼓励同学们在阅读中走进自然。
+
+        植物导赏是Flora Club识草木社团所有成员参与的最为重要的工作之一。本社团计划在校园内设置3条时长为半小时至一小时的植物观赏线路，社员将带领大家行走在校园内，领略校园的植物风光，并沿路向大家介绍身边植物的百科知识以及它们的有趣故事。我们将会为幼儿园和小学学生单独设计植物观赏的活动，并且会在之后开放给所有学生和老师参与，我们将在网站的主页上公布植物导赏的预约信息。
+
+        制作关于校园植物和生物多样性的纪录片是Flora Club识草木社团所有成员参与的最为重要的另一项工作。根据影像资料与整理的信息档案，成员们使用视频编辑和录音去制作介绍单个物种的短视频与以不同季节为主题的专题纪录片。
+`;
+  const floraWebInfoChin = `       其次，我们想介绍一下BIPH Flora网站。BIPH Flora网站创建于2023年10月，由Leo Qin、Jess Chen和 Zoe He共同开发。 创建与经营BIPH Flora 网站是Flora Club识草木社团的另一项基础工作。
+
+       BIPH FLORA设有“主页”、“校内植物检索数据库”、和“创作”板块，其中“创作”板块包含“绘画”、“视频与纪录片”等次板块，社员们在工作中所获取的成果将全部放入到这些板块中，因此，BIPH FLORA网站将成为本社团向老师和同学们展现校园生物多样性的一个网络平台。
+
+
+`;
+
+  const floraClubInfoEng = `
+  Flora Club was founded in September 2023. The club’s main activities include species identification, compiling information profiles for campus plants and birds, creating artworks, organizing book fairs and exhibitions of photographs and artworks, designing botany guided tours, and producing videos and seasonal documentaries introducing campus species.
+
+Species Identification and Information Profiles: Species identification involves determining the genus and species of plants and recording their Latin names. Members search for information about each plant on reliable websites, covering aspects such as its characteristics, etymology, interactions with other organisms, historical background, and medicinal value. They then select relevant details from these sources and combine them with their own observations to create plant introductions. Additionally, they provide links to the referenced websites, allowing other students to further explore the plant using these sources. Meanwhile, members document different parts of each plant—foliage, flowers, fruits, and stems—throughout the seasons using various camera lenses. They also record insects and birds that interact with these plants. All this information is compiled into plant profiles featured in the website’s database. In collaboration with campus birdwatching enthusiasts, the club will expand the database to include bird species, detailing their preferred plant habitats and recommended observation spots.
+
+Artworks: Club members create artwork inspired by campus plants, insects, and birds, using techniques such as watercolor, colored pencils, and digital painting. Through their work, they express their observations, understanding, and appreciation of nature.
+
+Themed Book Fairs and Exhibitions of Photographs and Paintings: The club will regularly showcase photographs and artworks in the library, offering students a window into the diversity of life on campus. Additionally, the club will organize nature-themed book fairs in the library, encouraging students to connect with nature through reading.
+
+Botany Guided Tours: The club plans to design three guided tour routes across campus, each lasting 30 minutes to an hour. Club members will lead participants along these routes, introducing the unique characteristics of plants and sharing fascinating stories about them. Tour registration will be available on the homepage of the website.
+
+Videos Introducing Plant Species and Seasonal Documentaries: Members write scripts based on plant information profiles, then record and edit videos to introduce various species on campus. These videos will serve as valuable educational resources for pre-K and primary school students. Additionally, members produce documentaries focused on specific seasons and broader ecological themes.
+  `;
+  const floraWebInfoEng = `
+  The BIPH Flora website was launched in October 2023 and co-created by Leo Qin, Jess Chen, and Zoe He. Managing and maintaining this website is a key responsibility of the Flora Club. The website features three main sections: "Home," "Database of Plant Species on Campus," and "Creations." The "Creations" section is further divided into "Artwork," "Videos & Documentaries," and other subsections. All work produced by club members will be uploaded to these sections, making BIPH Flora an online platform that showcases the campus’s biodiversity to both students and faculty.
+
+
+  `;
+
+  const floraContactLabelChin = `
+  指导老师： <br /> Doris Sander
+  `;
+  const floraContactLabelEng = `
+  `;
+  const floraContactInfoChin = `
+  联系方式：doris.sander-biph@basischina.com
+  `;
+  const floraContactInfoEng = `
+  `;
+  const floraContactLabel3Chin = `
+  BIPH FLORA 社团创始人:
+  `;
+  const floraContactLabel3Eng = `
+  `;
+  const floraContactInfo3Chin = `
+  联系方式：yihao.qin17311-biph@basischina.com <br />
+  联系方式：kashun.chen15091-biph@basischina.com
+  `;
+  const floraContactInfo3Eng = `
+  `;
+  const floraContactInfo4Chin = `
+  联系方式：zoe.he41172-biph@basischina.com
+  `;
+  const floraContactInfo4Eng = `
+  `;
+  const floraContactLabel4Chin = `
+  绘画小组成员：
+  `;
+  const floraContactLabel4Eng = `
+  `;
+  const floraContactLabel5Chin = `
+  植物信息档案创建及管理小组成员：
+  `;
+  const floraContactLabel5Eng = `
+  `;
+  const floraContactInfo5Chin = `
+  `;
+  const floraContactInfo5Eng = `
+  `;
+  const floraContactLabel6Chin = `
+  社员作品刊登期刊方：
+  `;
+  const floraContactLabel6Eng = `
+  `;
+  const floraContactInfo6Chin = `
+  `;
+  const floraContactInfo6Eng = `
+  `;
 
   const [aboutFloraClub, setAboutFloraClub] = useState(floraClubInfoChin);
   const [aboutFloraWeb, setAboutFloraWeb] = useState(floraWebInfoChin);
+  const [aboutFloraClubEng, setAboutFloraClubEng] = useState(floraClubInfoEng);
+  const [aboutFloraWebEng, setAboutFloraWebEng] = useState(floraWebInfoEng);
+  const [contactLabel1, setContactLabel1] = useState(floraContactLabelChin);
+  const [contactLabel2, setContactLabel2] = useState(floraContactLabelEng);
+  const [contactInfo1, setContactInfo1] = useState(floraContactInfoChin);
+  const [contactInfo2, setContactInfo2] = useState(floraContactInfoEng);
+  const [contactLabel3, setContactLabel3] = useState(floraContactLabelChin);
+  const [contactInfo3, setContactInfo3] = useState(floraContactInfoChin);
+  const [advisor, setAdvisor] = useState("指导老师：");
+  const [contact, setContact] = useState("联系方式：");
+  const [techSupport, setTechSupport] = useState("技术支持：");
+  const [founder, setFounder] = useState("BIPH FLORA 社团创始人：");
+  const [additional, setAdditional] = useState(
+    "(联动及投稿相关可以直接通过teams或邮箱联系)",
+  );
 
   useEffect(() => {
     const handleLoad = () => {
@@ -37,6 +121,21 @@ const AboutUs = () => {
 
     handleLoad();
   }, []);
+
+  const handleLangChange = (lang) => {
+    setCurLang(lang);
+    setAboutFloraClub(lang === "cn" ? floraClubInfoChin : floraClubInfoEng);
+    setAboutFloraWeb(lang === "cn" ? floraWebInfoChin : floraWebInfoEng);
+    setAdvisor(lang === "cn" ? "指导老师：" : "Club Advisor:");
+    setContact(lang === "cn" ? "联系方式：" : "Email:");
+    setTechSupport(lang === "cn" ? "技术支持：" : "Tech Support:");
+    setFounder(lang === "cn" ? "BIPH FLORA 社团创始人：" : "Club Leader:");
+    setAdditional(
+      lang === "cn"
+        ? "(联动及投稿相关可以直接通过teams或邮箱联系)"
+        : "(For collaboration and work submissions, feel free to contact me via Teams or email.)",
+    );
+  };
 
   return (
     <section className="aboutUs">
@@ -54,80 +153,228 @@ const AboutUs = () => {
           </div>
         </section>
       )}
-      <div className="aboutUsContent">
+      <div
+        className="aboutUsContent"
+        style={{
+          height: curLang === "cn" ? "" : "130vw",
+        }}
+      >
         <h1 className="aboutUsTitle">{aboutUs}</h1>
+        <div className="aboutUsLang">
+          <button
+            className="aboutUsLangButton"
+            style={{ textDecoration: curLang === "cn" ? "underline" : "none" }}
+            onClick={() => handleLangChange("cn")}
+          >
+            中
+          </button>
+          <p
+            style={{ color: "#2d4228", fontSize: "1.2rem", fontWeight: "bold" }}
+          >
+            /
+          </p>
+          <button
+            className="aboutUsLangButton"
+            style={{ textDecoration: curLang === "en" ? "underline" : "none" }}
+            onClick={() => handleLangChange("en")}
+          >
+            En
+          </button>
+        </div>
         <div className="aboutClubBox">
           <h2 className="clubLabel">I. Flora Club</h2>
-          <pre className="clubContent">{aboutFloraClub}</pre>
-          <img src="/1.JPG" alt="picture of bird" className="birdPic" />
-          <div className="greenBox"></div>
+          <pre
+            className="clubContent"
+            style={{ fontSize: curLang === "cn" ? "" : "17px" }}
+          >
+            {aboutFloraClub}
+          </pre>
+          <img
+            src={`${process.env.REACT_APP_Source_URL}/public/1.JPG`}
+            alt="picture of bird"
+            className="birdPic"
+          />
+          <div className="greenBox" />
         </div>
 
-        <div className="aboutWebBox">
+        <div
+          className="aboutWebBox"
+          style={{ top: curLang === "cn" ? "12vw" : "15vw" }}
+        >
           <h2 className="webLabel">II. BIPH FLORA Website</h2>
           <pre className="webContent">{aboutFloraWeb}</pre>
-          <img src="/favicon.ico" alt="flowerIcon" className="flowerIcon" />
-          <img src="/6.JPG" alt="bottomB" className="flowerBottom" />
-          <p className="subLabel1">BIPH FLORA网站创建成员：</p>
-          <p className="subSubLabel1">
-            Leo Qin （负责网站的编程工作）
-            <br />
-            Jess Chen（负责网站的编程工作）
-            <br />
-            Zoe He （负责网站的设计工作）
-          </p>
-          <p className="subLabel2">绘画小组成员:</p>
-          <p className="subSubLabel2">
-            Rachel Zhang <br />
-            Sophia Zhang <br />
-            Kaitlyn <br />
-            Tyler <br />
-            Michelle Feng <br />
-            Yvonne Wang <br />
-          </p>
-          <p className="subLabel3">
-            绘画小组植物数据库信息档案创建及管理小组成员:
-          </p>
-          <p className="subSubLabel3">
-            Kaitlyn <br />
-            Rachel
-            <br />
-            Zoe He <br />
-          </p>
-          <p className="subLabel4">社员作品刊登期刊方：</p>
-          <p className="subSubLabel4">《山海》， 《行者人文》</p>
-          <p className="caption">Logo designed by Yvonne Wang</p>
+          <img
+            src={`${process.env.REACT_APP_Source_URL}/public/favicon.ico`}
+            alt="flowerIcon"
+            className="flowerIcon"
+          />
+          <img
+            src={`${process.env.REACT_APP_Source_URL}/public/6.JPG`}
+            alt="bottomB"
+            className="flowerBottom"
+          />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <p className="subLabel1">
+                {curLang === "cn"
+                  ? "BIPH FLORA网站创建成员"
+                  : "Website Development Team"}
+              </p>
+              <p
+                className="subSubLabel1"
+                style={{ left: curLang === "cn" ? "" : "1.5rem" }}
+              >
+                Leo Qin{" "}
+                {curLang === "cn"
+                  ? "（负责网站的编程工作）"
+                  : "(Web Developer)"}
+                <br />
+                Jess Chen{" "}
+                {curLang === "cn"
+                  ? "（负责网站的编程工作）"
+                  : "(Web Developer)"}
+                <br />
+                Zoe He{" "}
+                {curLang === "cn" ? "（负责网站的设计工作）" : "(Web Designer)"}
+              </p>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <p className="subLabel2">
+                {curLang === "cn" ? "绘画小组成员" : "Artwork Team"}
+              </p>
+              <p
+                className="subSubLabel2"
+                style={{ left: curLang === "cn" ? "" : "21.5vw" }}
+              >
+                Rachel Zhang
+                <br />
+                Sophia Zhou
+                <br />
+                Kaitlyn Xu
+                <br />
+                Tyler Lin
+                <br />
+                Michelle Feng
+                <br />
+                Yvonne Wang
+                <br />
+                Phyllis Li
+                <br />
+                Vivienne Su
+              </p>
+            </div>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <p className="subLabel3">
+                {curLang === "cn"
+                  ? "植物信息档案创建及管理小组成员"
+                  : "Species Profile Upload & Management Team"}
+              </p>
+              <p
+                className="subSubLabel3"
+                style={{ left: curLang === "cn" ? "" : "38.5vw" }}
+              >
+                Rachel Zhang
+                <br />
+                Kaitlyn Xu
+                <br />
+                Jarita Wen
+                <br />
+                Genevieve Li
+                <br />
+                Henry Zhu
+                <br />
+                Zoe He
+                <br />
+                Helen Nie
+                <br />
+                Jenny Nie
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="contactUs">
+        <div
+          className="contactUs"
+          style={{ top: curLang === "cn" ? "" : "12vw" }}
+        >
           <h2 className="contactUsTitle">III. Contact Us</h2>
-          <img src="/2.JPG" alt="flower" className="whiteFlower" />
+          <img
+            src={`${process.env.REACT_APP_Source_URL}/public/2.JPG`}
+            alt="flower"
+            className="whiteFlower"
+          />
           <div className="greenBox2" />
           <p className="contactLabel1">
-            指导老师： <br /> Doris Sander
+            {advisor} <br /> Doris Sander
           </p>
-          <p className="contactInfo1">
-            联系方式：doris.sander-biph@basischina.com
+          <p
+            className="contactInfo1"
+            style={{ left: curLang === "cn" ? "" : "59vw" }}
+          >
+            {contact}doris.sander-biph@basischina.com
           </p>
           <p className="contactLabel2">
-            技术支持：
+            {techSupport}
             <br /> Leo Qin <br /> Jess Chen{" "}
           </p>
-          <p className="contactInfo2">
-            联系方式：yihao.qin17311-biph@basischina.com <br />
-            联系方式：kashun.chen15091-biph@basischina.com
+          <p
+            className="contactInfo2"
+            style={{ left: curLang === "cn" ? "" : "59vw" }}
+          >
+            {contact}yihao.qin17311-biph@basischina.com <br />
+            {contact}kashun.chen15091-biph@basischina.com
           </p>
           <p className="contactLabel3">
-            社团创始人：
+            {founder}
             <br />
             Zoe He
           </p>
-          <p className="contactInfo3">
-            联系方式：zoe.he41172-biph@basischina.com
+          <p
+            className="contactInfo3"
+            style={{ left: curLang === "cn" ? "" : "49vw" }}
+          >
+            {contact}zoe.he41172-biph@basischina.com
             <br />
-            (联动及投稿相关可以直接通过teams或邮箱联系)
+            {additional}
           </p>
-          <img src="/9.PNG" className="cssHell" />
+          <img
+            src={`${process.env.REACT_APP_Source_URL}/public/${curLang === "cn" ? "9.PNG" : "9-en.png"}`}
+            className="cssHell"
+            style={{
+              scale: curLang === "cn" ? "1" : "0.8",
+              left: curLang === "cn" ? "" : "30vw",
+              top: curLang === "cn" ? "" : "19vw",
+              width: curLang === "cn" ? "" : "65vw",
+            }}
+            alt="additional"
+          />
         </div>
       </div>
       <div className="bottomBart" />

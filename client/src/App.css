@@ -136,14 +136,13 @@ section.aboutUs {
   padding: 0;
   white-space: pre-wrap;
   word-wrap: break-word;
-
   position: absolute;
   overflow: auto;
   width: 64.04vw;
   right: 1.46vw;
   height: 55.09vw;
   top: 1.7vw;
-  font-size: 1rem;
+  font-size: 19px;
   color: #2d4228;
   font-family: poppins sans-serif;
 }
@@ -170,7 +169,7 @@ section.aboutUs {
   position: absolute;
   overflow: auto;
   width: 59.15vw;
-  font-size: 1rem;
+  font-size: 18px;
   color: #2d4228;
   top: 6.94vw;
   font-family: poppins sans-serif;
@@ -201,10 +200,10 @@ section.aboutUs {
   display: inline-block;
   height: 36.09vw;
   border-top: solid #516d4e 5px;
-
   align-items: center;
   width: 90vw;
   position: relative;
+  font-size: 18px;
   left: 50%;
   transform: translate(-50%, 0%);
   top: 12vw;
@@ -221,6 +220,7 @@ section.aboutUs {
   width: 90vw;
   position: relative;
   left: 50%;
+  margin-top: 70px;
   transform: translate(-50%, 0%);
   top: 8vw;
 }
@@ -228,7 +228,6 @@ section.aboutUs {
 .subLabel1 {
   font-family: poppins sans-serif;
   color: #2d4228;
-  font-size: 1rem;
   left: 2rem;
   position: absolute;
   top: 18.28vw;
@@ -238,8 +237,8 @@ section.aboutUs {
 .subSubLabel1 {
   font-family: poppins sans-serif;
   color: #2d4228;
-  font-size: 1rem;
-  left: 2rem;
+  left: 0rem;
+  text-align: center;
   position: absolute;
   top: 20.8vw;
 }
@@ -247,7 +246,6 @@ section.aboutUs {
 .subLabel2 {
   font-family: poppins sans-serif;
   color: #2d4228;
-  font-size: 1rem;
   position: absolute;
   top: 18.28vw;
   text-decoration: underline;
@@ -259,6 +257,7 @@ section.aboutUs {
   color: #2d4228;
   font-size: 1rem;
   position: absolute;
+  text-align: center;
   top: 20.8vw;
   left: 21.15vw;
 }
@@ -276,10 +275,11 @@ section.aboutUs {
 .subSubLabel3 {
   font-family: poppins sans-serif;
   color: #2d4228;
+  text-align: center;
   font-size: 1rem;
   position: absolute;
   top: 20.8vw;
-  left: 31.65vw;
+  left: 35.5vw;
 }
 
 .subLabel4 {
@@ -353,7 +353,7 @@ section.aboutUs {
   position: absolute;
   left: 38.82vw;
   top: 4vw;
-  left: 49.82vw;
+  left: 54vw;
 }
 
 .contactLabel2 {
@@ -370,7 +370,7 @@ section.aboutUs {
   position: absolute;
   left: 38.82vw;
   top: 9.2vw;
-  left: 49.82vw;
+  left: 54vw;
 }
 
 .contactLabel3 {
@@ -386,7 +386,8 @@ section.aboutUs {
   color: #2d4228;
   position: absolute;
   top: 16vw;
-  left: 49.82vw;
+  text-align: center;
+  left: 54vw;
 }
 
 .bottomBar {
@@ -405,4 +406,17 @@ section.aboutUs {
     --des-size: 1.2rem !important;
     --label-size: 0.9rem !important;
   }
+}
+
+.aboutUsLang {
+  position: absolute;
+  top: 1.4rem;
+  display: flex;
+  flex-direction: row;
+  right: 2rem;
+}
+
+.aboutUsLangButton {
+  color: #2d4228;
+  font-weight: bold;
 }

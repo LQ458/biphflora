@@ -35,6 +35,7 @@ app.use(compression()); //gzip compression for faster speed
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/public/plantspic", express.static("public/plantspic"));
+app.use("/public", express.static("public"));
 
 app.use(
   cors({
@@ -570,6 +571,23 @@ app.post(
         otherNames: req.body.otherNames,
         authorization: false,
       });
+
+      // 确保链接数据格式一致性
+      if (!Array.isArray(post.link)) {
+        post.link = [];
+      }
+
+      if (!Array.isArray(post.chineseLink)) {
+        post.chineseLink = [];
+      }
+
+      // 过滤掉无效的链接
+      post.link = post.link.filter(
+        (item) => item && item.linkTitle && item.link,
+      );
+      post.chineseLink = post.chineseLink.filter(
+        (item) => item && item.linkTitle && item.link,
+      );
 
       await post.save();
 

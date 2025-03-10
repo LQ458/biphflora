@@ -26,8 +26,10 @@ const UploadPlants = () => {
   const [picSetting, setPicSetting] = useState("");
   const [picArt, setPicArt] = useState("photography");
   const [namesArray, setNamesArray] = useState([]);
-  const [linkArray, setLinkArray] = useState([]);
-  const [chineseLinkArray, setChineseLinkArray] = useState([]);
+  const [linkTitles, setLinkTitles] = useState([]);
+  const [linkUrls, setLinkUrls] = useState([]);
+  const [chineseLinkTitles, setChineseLinkTitles] = useState([]);
+  const [chineseLinkUrls, setChineseLinkUrls] = useState([]);
   const [username, setUsername] = useState("");
   const [admin, setAdmin] = useState("");
   const [otherNames, setOtherNames] = useState("");
@@ -105,60 +107,22 @@ const UploadPlants = () => {
     splittedLinks.forEach((splittedLink) => {
       const linkParts = splittedLink.split(":");
       const linkTitle = linkParts[0];
-      const link = linkParts.slice(1).join(":"); // Rejoin the remaining parts into the link
+      const link = linkParts.slice(1).join(":").trim(); // Rejoin the remaining parts into the link and trim whitespace
+
+      // 确保链接包含协议前缀
+      let formattedLink = link;
+      if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
+        formattedLink = "https://" + link;
+      }
+
       linkArray.push({
         linkTitle: linkTitle,
-        link: link,
+        link: formattedLink,
       });
     });
-    setLinkArray(linkArray);
+    setLinkTitles(linkArray.map((item) => item.linkTitle));
+    setLinkUrls(linkArray.map((item) => item.link));
   }, [links]);
-
-  // const handleCreationSubmit = async (e) => {
-  //   e.preventDefault();
-  //   const formData = new FormData();
-  //   formData.append("plant", creationPlant);
-  //   formData.append("creator", creationCreator);
-
-  //   const addFileToFormData = (file, fieldName) => {
-  //     if (!file) {
-  //       return false;
-  //     }
-  //     const fileExtension = file.name.split(".").pop();
-  //     if (
-  //       fileExtension !== "jpg" &&
-  //       fileExtension !== "jpeg" &&
-  //       fileExtension !== "png" &&
-  //       fileExtension !== "webp"
-  //     ) {
-  //       alert("Please Upload a jpg, jpeg, png or webp file");
-  //       return false;
-  //     }
-  //     formData.append(fieldName, file);
-  //     return true;
-  //   };
-
-  //   if (creationPicFile && !addFileToFormData(creationPicFile, "pic")) {
-  //     return;
-  //   }
-  //   if (creationArtFile && !addFileToFormData(creationArtFile, "art")) {
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await axios.post(
-  //       `${process.env.REACT_APP_Source_URL}/uploadCreation`,
-  //       formData,
-  //       {
-  //         headers: {
-  //           "Content-Type": "multipart/form-data",
-  //         },
-  //       },
-  //     );
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
 
   useEffect(() => {
     const splittedLinks = chineseLinks.split(", ");
@@ -166,13 +130,21 @@ const UploadPlants = () => {
     splittedLinks.forEach((splittedLink) => {
       const linkParts = splittedLink.split(":");
       const linkTitle = linkParts[0];
-      const link = linkParts.slice(1).join(":"); // Rejoin the remaining parts into the link
+      const link = linkParts.slice(1).join(":").trim(); // Rejoin the remaining parts into the link and trim whitespace
+
+      // 确保链接包含协议前缀
+      let formattedLink = link;
+      if (link && !link.startsWith("http://") && !link.startsWith("https://")) {
+        formattedLink = "https://" + link;
+      }
+
       linkArray.push({
         linkTitle: linkTitle,
-        link: link,
+        link: formattedLink,
       });
     });
-    setChineseLinkArray(linkArray);
+    setChineseLinkTitles(linkArray.map((item) => item.linkTitle));
+    setChineseLinkUrls(linkArray.map((item) => item.link));
   }, [chineseLinks]);
 
   const handleArtFileChange = (e) => {
@@ -203,6 +175,35 @@ const UploadPlants = () => {
     e.preventDefault();
     setPlantLoading(true);
 
+    // 在提交前更新链接
+    addEnglishLink();
+    addChineseLink();
+
+    // 处理链接数据
+    const processedLinkArray = linkTitles.map((title, idx) => {
+      let url = linkUrls[idx] || "";
+      // 确保链接包含协议前缀
+      if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
+        url = "https://" + url;
+      }
+      return {
+        linkTitle: title,
+        link: url,
+      };
+    });
+
+    const processedChineseLinkArray = chineseLinkTitles.map((title, idx) => {
+      let url = chineseLinkUrls[idx] || "";
+      // 确保链接包含协议前缀
+      if (url && !url.startsWith("http://") && !url.startsWith("https://")) {
+        url = "https://" + url;
+      }
+      return {
+        linkTitle: title,
+        link: url,
+      };
+    });
+
     const formData = new FormData();
     formData.append("latinName", latinName);
     formData.append("chineseName", chineseName);
@@ -210,8 +211,8 @@ const UploadPlants = () => {
     formData.append("bloomingSeason", bloomingSeason);
     formData.append("commonName", commonName);
     formData.append("editor", editor);
-    formData.append("link", JSON.stringify(linkArray));
-    formData.append("chineseLink", JSON.stringify(chineseLinkArray));
+    formData.append("link", JSON.stringify(processedLinkArray));
+    formData.append("chineseLink", JSON.stringify(processedChineseLinkArray));
     formData.append("otherNames", otherNames);
 
     try {
@@ -235,6 +236,11 @@ const UploadPlants = () => {
       setLinks("");
       setChineseLinks("");
       setEditor("");
+      // 重置链接数组
+      setLinkTitles([]);
+      setLinkUrls([]);
+      setChineseLinkTitles([]);
+      setChineseLinkUrls([]);
     } catch (error) {
       if (error.response.status === 400) {
         toast.current.show({
@@ -495,6 +501,87 @@ const UploadPlants = () => {
     }
   };
 
+  // 添加链接处理函数
+  const addEnglishLink = () => {
+    if (!linkTitles.length) return;
+
+    // 创建链接字符串并更新到links
+    const newLinks = linkTitles
+      .map((title, idx) => {
+        const url = linkUrls[idx] || "";
+        return `${title}: ${url}`;
+      })
+      .join(", ");
+
+    setLinks(newLinks);
+  };
+
+  const addChineseLink = () => {
+    if (!chineseLinkTitles.length) return;
+
+    // 创建链接字符串并更新到chineseLinks
+    const newLinks = chineseLinkTitles
+      .map((title, idx) => {
+        const url = chineseLinkUrls[idx] || "";
+        return `${title}: ${url}`;
+      })
+      .join(", ");
+
+    setChineseLinks(newLinks);
+  };
+
+  // 添加英文链接标题和URL
+  const addEnglishLinkField = () => {
+    setLinkTitles([...linkTitles, ""]);
+    setLinkUrls([...linkUrls, ""]);
+  };
+
+  // 添加中文链接标题和URL
+  const addChineseLinkField = () => {
+    setChineseLinkTitles([...chineseLinkTitles, ""]);
+    setChineseLinkUrls([...chineseLinkUrls, ""]);
+  };
+
+  // 更新英文链接标题
+  const updateEnglishLinkTitle = (index, value) => {
+    const newTitles = [...linkTitles];
+    newTitles[index] = value;
+    setLinkTitles(newTitles);
+  };
+
+  // 更新英文链接URL
+  const updateEnglishLinkUrl = (index, value) => {
+    const newUrls = [...linkUrls];
+    newUrls[index] = value;
+    setLinkUrls(newUrls);
+  };
+
+  // 更新中文链接标题
+  const updateChineseLinkTitle = (index, value) => {
+    const newTitles = [...chineseLinkTitles];
+    newTitles[index] = value;
+    setChineseLinkTitles(newTitles);
+  };
+
+  // 更新中文链接URL
+  const updateChineseLinkUrl = (index, value) => {
+    const newUrls = [...chineseLinkUrls];
+    newUrls[index] = value;
+    setChineseLinkUrls(newUrls);
+  };
+
+  // 删除英文链接
+  const removeEnglishLink = (index) => {
+    setLinkTitles(linkTitles.filter((_, idx) => idx !== index));
+    setLinkUrls(linkUrls.filter((_, idx) => idx !== index));
+  };
+
+  // 删除中文链接
+  const removeChineseLink = (index) => {
+    setChineseLinkTitles(chineseLinkTitles.filter((_, idx) => idx !== index));
+    setChineseLinkUrls(chineseLinkUrls.filter((_, idx) => idx !== index));
+  };
+
   return (
     <>
       <div className="upload">
@@ -590,34 +677,127 @@ const UploadPlants = () => {
                 <br />
                 <br />
 
-                <InputText
-                  type="text"
-                  id="links"
-                  name="links"
-                  placeholder="百科网站与链接（English）, 格式为 Website name: websitename.com"
-                  className="iPTLinks"
-                  style={{
-                    borderRadius: "0",
-                    border: "2px solid #516d4e",
-                  }}
-                  value={links}
-                  onChange={(e) => setLinks(e.target.value)}
-                />
+                <div className="linkSection">
+                  <h4 style={{ color: "#516d4e" }}>
+                    百科网站与链接（English）
+                  </h4>
+                  {linkTitles.map((title, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        display: "flex",
+                        marginBottom: "10px",
+                        alignItems: "center",
+                      }}
+                    >
+                      <InputText
+                        type="text"
+                        placeholder="Website name"
+                        style={{
+                          borderRadius: "0",
+                          border: "2px solid #516d4e",
+                          marginRight: "10px",
+                          width: "30%",
+                        }}
+                        value={title}
+                        onChange={(e) =>
+                          updateEnglishLinkTitle(index, e.target.value)
+                        }
+                      />
+                      <InputText
+                        type="text"
+                        placeholder="Website URL (e.g., website.com)"
+                        style={{
+                          borderRadius: "0",
+                          border: "2px solid #516d4e",
+                          width: "60%",
+                        }}
+                        value={linkUrls[index] || ""}
+                        onChange={(e) =>
+                          updateEnglishLinkUrl(index, e.target.value)
+                        }
+                      />
+                      <Button
+                        icon="pi pi-times"
+                        className="p-button-rounded p-button-danger p-button-outlined"
+                        style={{ marginLeft: "10px" }}
+                        onClick={() => removeEnglishLink(index)}
+                      />
+                    </div>
+                  ))}
+                  <Button
+                    label="添加英文链接"
+                    icon="pi pi-plus"
+                    style={{
+                      background: "#516d4e",
+                      border: "none",
+                      marginTop: "10px",
+                    }}
+                    onClick={addEnglishLinkField}
+                  />
+                </div>
+
                 <br />
                 <br />
-                <InputText
-                  type="text"
-                  id="chineseLinks"
-                  name="chineseLinks"
-                  placeholder="百科网站与链接（中文）, 格式为 网站名: 网站名.com"
-                  className="iPTLinks"
-                  style={{
-                    borderRadius: "0",
-                    border: "2px solid #516d4e",
-                  }}
-                  value={chineseLinks}
-                  onChange={(e) => setChineseLinks(e.target.value)}
-                />
+
+                <div className="linkSection">
+                  <h4 style={{ color: "#516d4e" }}>百科网站与链接（中文）</h4>
+                  {chineseLinkTitles.map((title, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        display: "flex",
+                        marginBottom: "10px",
+                        alignItems: "center",
+                      }}
+                    >
+                      <InputText
+                        type="text"
+                        placeholder="网站名"
+                        style={{
+                          borderRadius: "0",
+                          border: "2px solid #516d4e",
+                          marginRight: "10px",
+                          width: "30%",
+                        }}
+                        value={title}
+                        onChange={(e) =>
+                          updateChineseLinkTitle(index, e.target.value)
+                        }
+                      />
+                      <InputText
+                        type="text"
+                        placeholder="网站链接 (例如: website.com)"
+                        style={{
+                          borderRadius: "0",
+                          border: "2px solid #516d4e",
+                          width: "60%",
+                        }}
+                        value={chineseLinkUrls[index] || ""}
+                        onChange={(e) =>
+                          updateChineseLinkUrl(index, e.target.value)
+                        }
+                      />
+                      <Button
+                        icon="pi pi-times"
+                        className="p-button-rounded p-button-danger p-button-outlined"
+                        style={{ marginLeft: "10px" }}
+                        onClick={() => removeChineseLink(index)}
+                      />
+                    </div>
+                  ))}
+                  <Button
+                    label="添加中文链接"
+                    icon="pi pi-plus"
+                    style={{
+                      background: "#516d4e",
+                      border: "none",
+                      marginTop: "10px",
+                    }}
+                    onClick={addChineseLinkField}
+                  />
+                </div>
+
                 <br />
                 <br />
                 <InputText

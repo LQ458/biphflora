@@ -590,36 +590,50 @@ const InfoDatabase = (search) => {
             {Array.isArray(link) && link.length > 0 && (
               <>
                 <h3 className={styles.db1Infos}>(English)</h3>
-                {link.map((item, index) => (
-                  <div key={index}>
-                    <li className={styles.Eng}>
-                      {item.linkTitle}: <a href={item.link}>{item.link}</a>
-                    </li>
-                  </div>
-                ))}
+                {link.map((item, index) => {
+                  if (!item || !item.linkTitle || !item.link) return null;
+
+                  return (
+                    <div key={index}>
+                      <li className={styles.Eng}>
+                        {item.linkTitle}:{" "}
+                        <a
+                          href={item.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {item.link}
+                        </a>
+                      </li>
+                    </div>
+                  );
+                })}
               </>
             )}
 
-            {chineseLink.length > 0 &&
-              chineseLink.some(
-                (item) => item.link !== "" && item.linkTitle !== "",
-              ) && (
-                <>
-                  <h3 className={styles.db1Infos}>(中文)</h3>
-                  {chineseLink.map(
-                    (item, index) =>
-                      item.link !== "" &&
-                      item.linkTitle !== "" && (
-                        <div key={index}>
-                          <li className={styles.CN}>
-                            {item.linkTitle}:{" "}
-                            <a href={item.link}>{item.link}</a>
-                          </li>
-                        </div>
-                      ),
-                  )}
-                </>
-              )}
+            {Array.isArray(chineseLink) && chineseLink.length > 0 && (
+              <>
+                <h3 className={styles.db1Infos}>(中文)</h3>
+                {chineseLink.map((item, index) => {
+                  if (!item || !item.linkTitle || !item.link) return null;
+
+                  return (
+                    <div key={index}>
+                      <li className={styles.CN}>
+                        {item.linkTitle}:{" "}
+                        <a
+                          href={item.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {item.link}
+                        </a>
+                      </li>
+                    </div>
+                  );
+                })}
+              </>
+            )}
           </div>
 
           {artPathsArray.length > 0 && (
