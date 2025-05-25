@@ -6,6 +6,20 @@ import ArrowIcon from "../src/buttons/arrow.svg";
 
 const GalleryDatabase = (props) => {
   const seasons = useMemo(() => ["spring", "summer", "autumn", "winter"], []);
+  const month2NumMap = {
+    'Jan':'01/',
+    'Feb':'02/',
+    'Mar':'03/',
+    'Apr':'04/',
+    'May':'05/',
+    'Jun':'06/',
+    'Jul':'07/',
+    'Aug':'08/',
+    'Sep':'09/',
+    'Oct':'10/',
+    'Nov':'11/',
+    'Dec':'12/',
+  };
   const [curIndex, setCurIndex] = useState(0);
   const [username, setUsername] = useState("");
   const [admin, setAdmin] = useState("");
@@ -23,6 +37,16 @@ const GalleryDatabase = (props) => {
   const [curMonth, setCurMonth] = useState("");
   const [curMode, setCurMode] = useState("season");
   const [monthPics, setMonthPics] = useState([]);
+  const [seasonMonthMap, setSeasonMonthMap] = useState({});
+  // also set allSeasonPics so you can page later
+  const [allSeasonPics, setAllSeasonPics] = useState({});
+
+
+  // Which season is selected (e.g. "spring", or "" if none yet)
+  const [selectedSeason, setSelectedSeason] = useState("");
+  // Which month‐year is selected within that season (e.g. "Mar 2025")
+  const [selectedMonth, setSelectedMonth] = useState("");
+
 
   useEffect(() => {
     const springBtn = document.getElementById("springBtn");
@@ -97,8 +121,25 @@ const GalleryDatabase = (props) => {
         seasons.forEach((season, index) => {
           newArray[index] = response.data[`${season}Pics`];
         });
+
+        const seasonMonthMap = seasons.reduce((acc, season, i) => {
+          const pics = newArray[i];
+          const monthMap = {};
+          pics.forEach(pic => {
+            // assume pic.time === "Day Mon DD YYYY …"
+            const [, mon, , year] = pic.time.split(" ");
+            const key = `${mon} ${year}`;
+            if (!monthMap[key]) monthMap[key] = [];
+            monthMap[key].push(pic);
+          });
+          acc[season] = monthMap;
+          return acc;
+        }, {});
+
         setPics(newArray);
         sortPicMonth(newArray.flat());
+        setSeasonMonthMap(seasonMonthMap);
+        setAllSeasonPics(newArray);
       } catch (error) {
         console.log(error);
       }
@@ -190,7 +231,8 @@ const GalleryDatabase = (props) => {
           </button>
           <h1 className={styles.lowerTitle}>Image Gallery 图库</h1>
         </div>
-        <div className={styles.seasons}>
+
+        {/* <div className={styles.seasons}>
           <button
             id="springBtn"
             className={`${styles.seasonBtn} ${displays[0] ? styles.focussed : ""}`}
@@ -219,9 +261,53 @@ const GalleryDatabase = (props) => {
           >
             Winter
           </button>
+        </div> */}
+        <div className={styles.seasons}>
+          {seasons.map(s => (
+            <>
+              <button
+                key={s}
+                className={`${styles.seasonBtn} ${s === selectedSeason ? styles.focussed : ""}` }
+                onClick={() => {
+                  setSelectedSeason(s);
+                  setSelectedMonth((Object.keys(seasonMonthMap[s])[0] || ""));
+                  setCurIndex(0);
+                }}
+              >
+                {s[0].toUpperCase() + s.slice(1)}
+              </button>
+              {s != "winter" && <div className={styles.lineB} />}
+            </>
+            
+          ))}
         </div>
+
         <br />
-        <div className={styles.underSeasons}>
+
+        {selectedSeason && (
+          <div className="Month selector">
+            {Object.keys(seasonMonthMap[selectedSeason] || {})
+              .sort((a, b) => new Date(a) - new Date(b))
+              .map((m, index) => (
+                <>
+                  <button
+                    key={m}
+                    className={`${styles.seasonBtn} ${m === selectedMonth ? styles.focussed : ""}`}
+                    onClick={() => {
+                      setSelectedMonth(m);
+                      setCurIndex(0);
+                    }}
+                  >
+                  {month2NumMap[m.slice(0,3)]+m.slice(4,8)}
+                  </button>
+                </>
+              ))}
+          </div>
+        )}
+
+        <br />
+
+        {/* <div className={styles.underSeasons}>
           {month.reduce((acc, m, index) => {
             // 添加当前月份按钮
             acc.push(
@@ -249,8 +335,13 @@ const GalleryDatabase = (props) => {
 
             return acc;
           }, [])}
-        </div>
-        {pics.map(
+        </div> */}
+
+
+
+
+
+        {/* {pics.map(
           (pic, index) =>
             displays[index] &&
             curMode === "season" && (
@@ -300,8 +391,63 @@ const GalleryDatabase = (props) => {
                 )}
               </>
             ),
-        )}
-        {curMode === "month" &&
+        )} */}
+        {selectedSeason && selectedMonth && (() => {
+          const picsToShow = seasonMonthMap[selectedSeason][selectedMonth] || [];
+          const pageSize = 12;
+          const start = curIndex * pageSize;
+          const end = start + pageSize;
+          return (
+            // 
+            <>
+                <div className={styles.summerPics}>
+                  {picsToShow
+                    .slice(curIndex * 12, (curIndex + 1) * 12)
+                    .map((p, index) => (
+                      <div className={styles.summerPic} key={index}>
+                        <img
+                          src={`${process.env.REACT_APP_Source_URL}/public${p.path}`}
+                          alt=""
+                          className={styles.summerPic}
+                          onClick={() =>
+                            zoom(p.path, p.takenBy, p.time, p.location)
+                          }
+                        />
+                        <div className={styles.summerPicWords}>
+                          <p className={styles.SPW}>
+                            {p.takenBy}{" "}
+                            {p.time.split(" ")[1] +
+                              "/" +
+                              p.time.split(" ")[2] +
+                              "/" +
+                              p.time.split(" ")[3]}{" "}
+                            {p.location}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+                {picsToShow.length > 12 && (
+                  <div className={styles.pageBtns}>
+                    {Array.from(
+                      { length: Math.ceil(picsToShow.length / 12) },
+                      (_, i) => (
+                        <button
+                          key={i}
+                          className={`${styles.pageBtn} ${i === curIndex ? styles.pageBtnA : ""}`}
+                          onClick={() => setCurIndex(i)}
+                        >
+                          {i + 1}
+                        </button>
+                      ),
+                    )}
+                  </div>
+                )}
+              </>
+          );
+        })()}
+
+        {/* {curMode === "month" &&
           monthPics.map(
             (monthData, index) =>
               monthData.month === curMonth && (
@@ -356,7 +502,7 @@ const GalleryDatabase = (props) => {
                   )}
                 </>
               ),
-          )}
+          )} */}
       </div>
       <div className={styles.btmLine} />
       <div className={styles.zoomPicBox}>

@@ -152,7 +152,7 @@ const AdminAuth = ({ admin }) => {
         {Array.isArray(item.link) &&
           item.link.map((link, index) => (
             <div key={index}>
-              <li className="Eng">
+              <li className="Chi">
                 {link.linkTitle}: {link.link}
               </li>
             </div>
@@ -167,6 +167,12 @@ const AdminAuth = ({ admin }) => {
               </li>
             </div>
           ))}
+          <h3>
+            Editor: {item.editor}
+          </h3>
+          <h3>
+            Date: {item.postingtime}
+          </h3>
       </div>
       <div className="flex justify-content-end gap-2 mt-3">
         <Button
@@ -182,6 +188,7 @@ const AdminAuth = ({ admin }) => {
           className="p-button-success"
         />
       </div>
+      
     </Card>
   );
 
@@ -196,7 +203,7 @@ const AdminAuth = ({ admin }) => {
         <h3>Additional Info: {item.additionalInfo}</h3>
         <h3>Encyclopedia 百科介绍</h3>
         <h3>(English)</h3>
-        {item.link.length === 0 && <h3>No entries</h3>}
+        {item.link.length === 0 && <li className="Chi">No Entries</li>}
         {Array.isArray(item.link) &&
           item.link.map((link, index) => (
             <div key={index}>
@@ -206,7 +213,7 @@ const AdminAuth = ({ admin }) => {
             </div>
           ))}
         <h3>(Chinese)</h3>
-        {item.chineseLink.length === 0 && <h3>No entries</h3>}
+        {item.chineseLink.length === 0 && <li className="Chi">No Entries</li>}
         {Array.isArray(item.chineseLink) &&
           item.chineseLink.map((link, index) => (
             <div key={index}>
@@ -215,8 +222,11 @@ const AdminAuth = ({ admin }) => {
               </li>
             </div>
           ))}
-        <h3 style={{ fontWeight: 400, fontSize: "1.1rem" }}>
-          Editor: {item.editor} Date: {item.postingtime}
+        <h3>
+          Editor: {item.editor}
+        </h3>
+        <h3>
+          Date: {item.postingtime}
         </h3>
       </div>
       <div className="flex justify-content-end gap-2 mt-3">

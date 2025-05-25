@@ -17,7 +17,8 @@ const EditPageTextForm = (prop) => {
   const [otherNames, setOtherNames] = useState(plant.otherNames);
   const [additionalInfo, setAdditionalInfo] = useState(plant.additionalInfo);
   const [links, setLinks] = useState(plant.link);
-  const [chineseLinks, setChineseLinks] = useState(plant.chineseLinks);
+  const [chineseLinks, setChineseLinks] = useState(plant.chineseLink);
+  const [editor, setEditor] = useState(plant.editor);
   const [location, setLocation] = useState(plant.location);
   const [linksStringify, setLinksStringify] = useState();
   const [chineseLinksStringify, setChineseLinksStringify] = useState();
@@ -25,6 +26,7 @@ const EditPageTextForm = (prop) => {
   const [chineseLinkArray, setChineseLinkArray] = useState([]);
   const [loadingMessage, setLoadingMessage] = useState("Submit");
   const originalLatin = useState(plant.latinName);
+
   useEffect(() => {
     if (Array.isArray(links) && links.length > 0) {
       const formattedString = links
@@ -60,6 +62,7 @@ const EditPageTextForm = (prop) => {
         chineseLink: chineseLinkArray,
         otherNames,
         originalLatin,
+        editor: editor
       });
 
       toast.current.show({
@@ -195,6 +198,14 @@ const EditPageTextForm = (prop) => {
               value={chineseLinksStringify}
               onChange={(e) => setChineseLinksStringify(e.target.value)}
               placeholder="Chinese Links (Format: Title:Link, Title:Link)"
+            />
+          </div>
+
+          <div className="col-12">
+            <InputText
+              value={editor}
+              onChange={(e) => setEditor(e.target.value)}
+              placeholder="Editor: Name Grade"
             />
           </div>
 

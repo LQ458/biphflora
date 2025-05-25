@@ -953,6 +953,7 @@ app.post("/updateText", verifyToken, async function (req, res) {
     otherNames: req.body.otherNames,
     authorization: true,
     originalLatin: req.body.originalLatin[0],
+    editor: req.body.editor
   });
 
   await editTextRequest.save();

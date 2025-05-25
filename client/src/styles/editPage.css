@@ -54,3 +54,67 @@ div.textBtm {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
 }
+
+
+.select-overlay {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  padding: 2px;
+}
+
+.select-overlay input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Make the overlay red when checkbox is checked */
+.select-overlay input[type="checkbox"]:checked + label,
+.select-overlay input[type="checkbox"]:checked {
+  accent-color: red; /* modern browsers */
+}
+
+
+
+.pic-item {
+  position: relative;
+  display: inline-block;
+  width: 24%;
+  margin: 0.5%;
+}
+
+.pic-item img {
+  width: 100%;
+  display: block;
+  border-radius: 4px;
+}
+
+.monthFilter {
+  text-align: center;
+  margin: 1rem 0;    /* optional vertical spacing */
+}
+
+/* make buttons inline-block so margins still work */
+.monthFilter button {
+  display: inline-block;
+  margin: 0.25rem;
+}
+
+.bulk-delete-btn {
+  display: block;
+  margin: 24px auto;
+  padding: 12px 24px;
+  background-color: #c0392b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.bulk-delete-btn:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}

@@ -675,7 +675,6 @@ const InfoDatabase = (search) => {
         <h3 className={styles.editor}>
           {editor} {postingtime}
         </h3>
-
         {(springPathsArray?.path?.length !== 0 ||
           summerPathsArray?.path?.length !== 0 ||
           autumnPathsArray?.path?.length !== 0 ||
