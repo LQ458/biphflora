@@ -2,6 +2,7 @@ import React from "react";
 import { ReactComponent as SearchIcon } from "../src/buttons/search-outline.svg";
 import "../styles/searchBar.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SearchBar = ({
   handleGet,
@@ -11,13 +12,19 @@ const SearchBar = ({
   barWidth,
 }) => {
   const [empty, setEmpty] = useState(true);
+  const navigate = useNavigate();
+  const redirect = (plant) => {
+    //plant的类型是string
+    handleGet(plant);
+    navigate(`/search/${plant.replace(" ", "_")}`);
+  };
 
   return (
     <div className="searchBarDiv">
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          handleGet(searchResults[0][0]);
+          redirect(searchResults[0][0])
         }}
         style={{ width: barWidth }}
         className="db2SubmitForm"
@@ -47,7 +54,7 @@ const SearchBar = ({
             <button
               id="buttonOne"
               className="searchResultsButton"
-              onClick={(e) => handleGet(searchResults[0][0])}
+              onClick={(e) => redirect(searchResults[0][0])}
             >
               <h2 className="db1h2">
                 {searchResults[0][0] +
@@ -62,7 +69,7 @@ const SearchBar = ({
             <button
               id="buttonTwo"
               className="searchResultsButton"
-              onClick={(e) => handleGet(searchResults[1][0])}
+              onClick={(e) => redirect(searchResults[1][0])}
             >
               <h2 className="db1h2">
                 {searchResults[1][0] +
@@ -77,7 +84,7 @@ const SearchBar = ({
             <button
               id="buttonThree"
               className="searchResultsButton"
-              onClick={(e) => handleGet(searchResults[2][0])}
+              onClick={(e) => redirect(searchResults[2][0])}
             >
               <h2 className="db1h2">
                 {searchResults[2][0] +

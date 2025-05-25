@@ -310,6 +310,7 @@ const InfoDatabase = (search) => {
     fetchData();
   }, []);
 
+  //显示top3 match
   const handleSearch = (e) => {
     const inputValue = e.target.value;
     setQuery(inputValue);
@@ -324,6 +325,7 @@ const InfoDatabase = (search) => {
     setSearchResults(finalResults);
   };
 
+  //显示完整植物信息
   const handleGet = async (getName) => {
     setLoadingMessage("Loading...");
     setQuery("");

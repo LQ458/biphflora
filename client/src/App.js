@@ -21,6 +21,7 @@ import "primeflex/primeflex.css"; // 布局
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React, { useState } from "react";
+import { useParams } from 'react-router-dom';
 
 function App() {
   const [search, setSearch] = useState("");
@@ -31,6 +32,18 @@ function App() {
   const handleGets = (input) => {
     setSearch(input);
   };
+
+  //一个搜索植物的Wrapper
+  function SearchWithParam({ handleEditPage }) {
+    const { plantKey } = useParams();  
+    //plantkKey是url中的植物名
+    return (
+      <Database
+        search={plantKey.replace("_", " ")}
+        handleEditPage={handleEditPage}
+      />
+    );
+  }
 
   // const handleAdminPreview = (input) => {
   //   setPreviewKey(input);
@@ -115,6 +128,14 @@ function App() {
                 element={
                   <>
                     <Database search={search} handleEditPage={handleEditPage} />
+                  </>
+                }
+              />
+              <Route
+                path="/search/:plantKey"
+                element={
+                  <>
+                    <SearchWithParam handleEditPage={handleEditPage} />
                   </>
                 }
               />
