@@ -43,8 +43,9 @@ const Glossary = ({ handleGets }) => {
   }, []);
 
   const redirect = (plant) => {
+    //plant的类型是string
     handleGets(plant);
-    navigate("/search");
+    navigate(`/search/${plant.replace(" ", "_")}`);
   };
 
   const toggleDisplay = (index, type) => {

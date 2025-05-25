@@ -72,7 +72,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
       };
       img.onerror = async () => {
         try {
-          const response = await axios.get("/db2Alt");
+          const response = await axios.get(urls.db2Alt);
           const altImg = new Image();
           altImg.src = response.data.pic.path;
           altImg.onload = () => {

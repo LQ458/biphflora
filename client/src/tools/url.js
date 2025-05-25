@@ -28,6 +28,7 @@ const urls = {
   getPics: `${prefix}/getPics`,
   uploadFeatureSingle: `${prefix}/uploadFeatureSingle`,
   getDb2Pic: `${prefix}/getDb2Pic`,
+  db2Alt: `${prefix}/db2Alt`,
 
   // Plant-related URLs
   numOFPlants: `${prefix}/numOFPlants`,
