@@ -13,7 +13,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
   const [numOfPages, setNumOfPages] = useState(0);
   const [subPgIndex, setSubPgIndex] = useState(1);
   const [currentDisplayIndexes, setCurrentDisplayIndexes] = useState([
-    0, 1, 2, 3, 4, 5,
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
   ]);
   const [currentOrder, setCurrentOrder] = useState(true);
   const [orderIsBold1, setOrderIsBold1] = useState(true);
@@ -33,7 +33,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
         );
         const allDisplays = response.data.allDisplays;
         setDisplayObjectList(allDisplays);
-
+        setCurrentDisplayIndexes(Array.from(Array(allDisplays.length).keys()))
         if (allDisplays && allDisplays.length > 0) {
           const topThreeDisplays = allDisplays.slice(0, 3);
           const newTopPics = [];
@@ -192,7 +192,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
         </div>
         <br />
         {Array.from(
-          { length: 3 },
+          { length: 10 },
           (_, index) =>
             (displayObjectList[currentDisplayIndexes[2 * index]] ||
               displayObjectList[currentDisplayIndexes[2 * index + 1]]) && (

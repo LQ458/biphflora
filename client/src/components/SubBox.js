@@ -55,7 +55,7 @@ const SubBox = ({
             <span>
               {displayObjectList[currentDisplayIndexes[index]]?.date
                 ? "Time: " +
-                  displayObjectList[currentDisplayIndexes[index]].date
+                  displayObjectList[currentDisplayIndexes[index]].date.slice(0,10)
                 : ""}
             </span>
             <span>
@@ -129,7 +129,7 @@ const SubBox = ({
           </div>
         </div>
       )}
-      {displayObjectList[currentDisplayIndexes[index + 1]] && (
+      {displayObjectList[currentDisplayIndexes[index + 1]] ? (
         <div style={{ position: "relative" }}>
           <div className="artCodeT">
             <img
@@ -166,7 +166,7 @@ const SubBox = ({
             <span>
               {displayObjectList[currentDisplayIndexes[index + 1]].date
                 ? "Time: " +
-                  displayObjectList[currentDisplayIndexes[index + 1]].date
+                  displayObjectList[currentDisplayIndexes[index + 1]].date.slice(0,10)
                 : ""}
             </span>
             <span>
@@ -247,7 +247,7 @@ const SubBox = ({
             </div>
           </div>
         </div>
-      )}
+      ): <div></div>}
     </section>
   );
 };

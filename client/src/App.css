@@ -89,12 +89,29 @@ section.aboutUs {
   padding: 0;
   position: absolute;
   right: 1.2vw;
-  top: 9.46vw;
+  top: 6.06vw;
   z-index: 4;
 }
 
+.flowerMiddleText {
+  position: absolute;
+  /* tweak these so it sits exactly above the bottom image: */
+  top: 19.25vw;         /* e.g. 20vw down from the top of container */
+  left: 53.5vw;        /* align with .flowerBottom’s left */
+  width: 20vw;       /* or however wide you need the block */
+  text-align: center;
+
+  z-index: 3;        /* between .flowerIcon’s 4 and .flowerBottom’s 2 */
+
+  /* optional styling: */
+  color: #2d4228c5;
+  font-size: 1.0vw;
+  font-weight: bold;
+  /* text-shadow: 0 0 0.2vw rgba(0,0,0,0.7); */
+}
+
 .flowerBottom {
-  top: 23.11vw;
+  top: 21.11vw;
   width: 25.57vw;
   position: absolute;
   left: 61vw;
@@ -128,7 +145,7 @@ section.aboutUs {
   top: 4.56vw;
   margin: 0;
   padding: 0;
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
 }
 
 .clubContent {
@@ -137,14 +154,30 @@ section.aboutUs {
   white-space: pre-wrap;
   word-wrap: break-word;
   position: absolute;
-  overflow: auto;
+  /* overflow: auto; */
   width: 64.04vw;
   right: 1.46vw;
   height: 55.09vw;
   top: 1.7vw;
   font-size: 19px;
   color: #2d4228;
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
+  /* font-synthesis: none */
+}
+.webContent {
+  left: 2rem;
+  margin: 0;
+  padding: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  position: absolute;
+  overflow: auto;
+  width: 59.15vw;
+  font-size: 19px;
+  color: #2d4228;
+  top: 5.44vw;
+  /* font-family: poppins sans-serif; */
+  /* font-synthesis: none */
 }
 
 .webLabel {
@@ -156,23 +189,8 @@ section.aboutUs {
   margin: 0;
   padding: 0;
   left: 2rem;
-  font-family: poppins sans-serif;
-}
-
-.webContent {
-  left: 2rem;
-  margin: 0;
-  padding: 0;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-
-  position: absolute;
-  overflow: auto;
-  width: 59.15vw;
-  font-size: 18px;
-  color: #2d4228;
-  top: 6.94vw;
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
+  
 }
 
 .clubContent p::first-line {
@@ -183,15 +201,16 @@ section.aboutUs {
   margin: 0;
   padding: 0;
   display: inline-block;
-  height: 40.09vw;
+  /* height: 48.09vw; */
   border-top: solid #516d4e 5px;
-
+  /* overflow: auto; */
   align-items: center;
   width: 90vw;
   position: relative;
   left: 50%;
   transform: translate(-50%, 0%);
   top: 3.17vw;
+  line-height: 1.4;
 }
 
 .aboutWebBox {
@@ -206,7 +225,8 @@ section.aboutUs {
   font-size: 18px;
   left: 50%;
   transform: translate(-50%, 0%);
-  top: 12vw;
+  top: 10vw;
+  line-height: 1.4;
 }
 
 .contactUs {
@@ -223,10 +243,12 @@ section.aboutUs {
   margin-top: 70px;
   transform: translate(-50%, 0%);
   top: 8vw;
+  line-height: 1.4;
+  font-size: 19px;
 }
 
 .subLabel1 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   left: 2rem;
   position: absolute;
@@ -235,16 +257,16 @@ section.aboutUs {
 }
 
 .subSubLabel1 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
-  left: 0rem;
-  text-align: center;
+  left: 2rem;
+  text-align: left;
   position: absolute;
   top: 20.8vw;
 }
 
 .subLabel2 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   position: absolute;
   top: 18.28vw;
@@ -253,7 +275,7 @@ section.aboutUs {
 }
 
 .subSubLabel2 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   font-size: 1rem;
   position: absolute;
@@ -263,7 +285,7 @@ section.aboutUs {
 }
 
 .subLabel3 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   font-size: 1rem;
   position: absolute;
@@ -273,7 +295,7 @@ section.aboutUs {
 }
 
 .subSubLabel3 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   text-align: center;
   font-size: 1rem;
@@ -283,7 +305,7 @@ section.aboutUs {
 }
 
 .subLabel4 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   font-size: 1rem;
   left: 2rem;
@@ -293,7 +315,7 @@ section.aboutUs {
 }
 
 .subSubLabel4 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   font-size: 1rem;
   left: 2rem;
@@ -320,7 +342,7 @@ section.aboutUs {
 }
 
 .contactUsTitle {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   position: absolute;
   font-size: 1.8rem;
   text-decoration: underline;
@@ -340,7 +362,7 @@ section.aboutUs {
 }
 
 .contactLabel1 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   position: absolute;
   left: 38.82vw;
@@ -348,7 +370,7 @@ section.aboutUs {
 }
 
 .contactInfo1 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   position: absolute;
   left: 38.82vw;
@@ -357,7 +379,7 @@ section.aboutUs {
 }
 
 .contactLabel2 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   position: absolute;
   left: 38.82vw;
@@ -365,7 +387,7 @@ section.aboutUs {
 }
 
 .contactInfo2 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   position: absolute;
   left: 38.82vw;
@@ -374,7 +396,7 @@ section.aboutUs {
 }
 
 .contactLabel3 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   position: absolute;
   left: 38.82vw;
@@ -382,7 +404,7 @@ section.aboutUs {
 }
 
 .contactInfo3 {
-  font-family: poppins sans-serif;
+  /* font-family: poppins sans-serif; */
   color: #2d4228;
   position: absolute;
   top: 16vw;

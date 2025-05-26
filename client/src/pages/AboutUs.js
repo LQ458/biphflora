@@ -124,14 +124,14 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             En
           </button>
         </div>
-        <div className="aboutClubBox">
+        <div className="aboutClubBox" style={{height:curLang === "en" ? "48.09vw" : "41.5vw"}}>
           <h2 className="clubLabel">I. Flora Club</h2>
-          <pre
+          <p
             className="clubContent"
             style={{ fontSize: curLang === "cn" ? "" : "18px" }}
           >
             {aboutFloraClub}
-          </pre>
+          </p>
           <img
             src={`${process.env.REACT_APP_Source_URL}/public/1.jpg`}
             alt="picture of bird"
@@ -145,12 +145,15 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
           style={{ top: curLang === "cn" ? "12vw" : "15vw" }}
         >
           <h2 className="webLabel">II. BIPH FLORA Website</h2>
-          <pre className="webContent">{aboutFloraWeb}</pre>
+          <p className="webContent" style = {{top: curLang==="cn"?"6.44vw":"5.04vw"}}>{aboutFloraWeb}</p>
           <img
             src={`${process.env.REACT_APP_Source_URL}/public/favicon.ico`}
             alt="flowerIcon"
             className="flowerIcon"
           />
+          <div className="flowerMiddleText">
+            Logo designed by Yvonne Wang
+          </div>
           <img
             src={`${process.env.REACT_APP_Source_URL}/public/6.jpg`}
             alt="bottomB"
@@ -178,7 +181,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
               </p>
               <p
                 className="subSubLabel1"
-                style={{ left: curLang === "cn" ? "" : "1.5rem" }}
+                style={{ left: curLang === "cn" ? "2rem" : "2rem" }}
               >
                 Leo Qin{" "}
                 {curLang === "cn"
