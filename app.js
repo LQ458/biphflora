@@ -625,8 +625,8 @@ app.post("/newCreationAuth", verifyToken, upload, async (req, res) => {
       }
       // Delete the files
       await Promise.all([
-        fs.unlink(path.join(__dirname, "/client", "/public", post.art)),
-        fs.unlink(path.join(__dirname, "/client", "/public", post.pic)),
+        fs.unlink(path.join(__dirname, "/public", post.art)),
+        fs.unlink(path.join(__dirname, "/public", post.pic)),
       ]);
       await creationBottom.deleteOne({ _id: req.body.id });
     }

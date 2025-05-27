@@ -14,6 +14,12 @@ div.creationArt {
   grid-template-columns: repeat(2, 1fr);
   gap: 2vw;
 }
+div.location {
+  display: grid;
+  width: 75vw;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2vw;
+}
 input.creationUpPlant {
   width: 25vw;
 }

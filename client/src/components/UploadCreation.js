@@ -14,6 +14,7 @@ const UploadCreation = () => {
   const [admin, setAdmin] = useState("");
   const [photographer, setPhotographer] = useState("");
   const [artist, setArtist] = useState("");
+  const [location, setLocation] = useState("");
   const [creationPlant, setCreationPlant] = useState("");
   const [creationEntries, setCreationEntries] = useState([]);
   const [creationPicFile, setCreationPicFile] = useState();
@@ -35,6 +36,7 @@ const UploadCreation = () => {
     setTemp2("");
     setPhotoDate("");
     setArtDate("");
+    setLocation("");
   };
 
   const handleFeature = async (entry) => {
@@ -162,27 +164,91 @@ const UploadCreation = () => {
     formData.append("artist", artist);
     formData.append("photoDate", photoDate);
     formData.append("photographer", photographer);
+    formData.append("artLocation", location)
+    
+    const formArt = new FormData();
+    formArt.append("plant", creationPlant);
+    formArt.append("artDate", artDate);
+    formArt.append("artist", artist);
+    formArt.append("photoDate", photoDate);
+    formArt.append("photographer", photographer);
+    formArt.append("artLocation", location)
 
-    if (creationPicFile) formData.append("pic", creationPicFile);
-    if (creationArtFile) formData.append("art", creationArtFile);
 
-    try {
-      await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadCreation`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        },
-      );
+    console.error("starting to submit")
+    if (creationPicFile && creationArtFile){
+      formData.append("pic", creationPicFile);
+      formData.append("art", creationArtFile);
+      formArt.append("files",creationArtFile);
+    }
+
+    else if (creationArtFile){
+      formArt.append("files",creationArtFile);
+    }
+
+    else{
       toast.current.show({
-        severity: "success",
-        summary: "Success",
-        detail: "Creation uploaded successfully",
+        severity: "error",
+        summary: "上传失败",
+        detail: "请上传至少一张绘画",
         life: 3000,
       });
-      clearInput();
+      
+      setCreationLoading(false);
+      return;
+    }
+
+    try {
+      if (!(creationPicFile && creationArtFile)){
+        await axios.post(
+          `${process.env.REACT_APP_Source_URL}/uploadArt`,
+          formArt,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        );
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Creation uploaded successfully",
+          life: 3000,
+        });
+        clearInput();
+      }
+      else{
+        console.log(`both processing`)
+
+        const artResp = await axios.post(
+          `${process.env.REACT_APP_Source_URL}/uploadArt`,
+          formArt,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        )
+
+        const creResp = await axios.post(
+          `${process.env.REACT_APP_Source_URL}/uploadCreation`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          },
+        );
+        
+        toast.current.show({
+          severity: "success",
+          summary: "Success",
+          detail: "Creation uploaded successfully",
+          life: 3000,
+        });
+        clearInput();
+      }
+      
     } catch (error) {
       console.log(error);
       toast.current.show({
@@ -281,24 +347,47 @@ const UploadCreation = () => {
             />
           </div>
 
-          <br />
+          <br/>
 
+          <div className="location">
+            <InputText
+                type="text"
+                placeholder="Location"
+                id="artLocation"
+                name="location"
+                gap="2vw"
+                className="inputBox leftInput"
+                style={{
+                  borderRadius: "0",
+                  border: "2px solid #516d4e",
+                }}
+                onChange={(e) => setLocation(e.target.value)}
+                value={location}
+            />
+          </div>
+          
+
+          <br/>
           <Dropdown
-            style={{
-              borderRadius: "0",
-              border: "2px solid #516d4e",
-              padding: "0",
-            }}
-            value={creationPlant}
-            className="inputBox creationUpPlant"
-            onChange={(e) => setCreationPlant(e.value)}
-            options={namesArray}
-            optionLabel="value"
-            placeholder="Plant (Latin name) Type to search"
-            filter
-            valueTemplate={selectedPicEnglishNameTemplate}
-            itemTemplate={picEnglishNameOptionTemplate}
-          />
+              style={{
+                borderRadius: "0",
+                border: "2px solid #516d4e",
+                padding: "0",
+              }}
+              value={creationPlant}
+              className="inputBox creationUpPlant"
+              onChange={(e) => setCreationPlant(e.value)}
+              options={namesArray}
+              optionLabel="value"
+              placeholder="Plant (Latin name) Type to search"
+              filter
+              valueTemplate={selectedPicEnglishNameTemplate}
+              itemTemplate={picEnglishNameOptionTemplate}
+            />
+            
+        
+          
+          
           <br />
           <br />
           <Button
