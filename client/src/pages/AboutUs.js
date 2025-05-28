@@ -310,6 +310,8 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             <br />
             {additional}
           </p>
+          <br/>
+          <br/>
           <img
             src={`${process.env.REACT_APP_Source_URL}/public/${curLang === "cn" ? "9.PNG" : "9-en.png"}`}
             className="cssHell"

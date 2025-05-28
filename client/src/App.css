@@ -355,7 +355,7 @@ section.aboutUs {
 }
 
 .cssHell {
-  top: 23.2vw;
+  top: 0.2vw;
   width: 54.49vw;
   position: absolute;
   left: 33.252vw;
@@ -366,7 +366,7 @@ section.aboutUs {
   color: #2d4228;
   position: absolute;
   left: 38.82vw;
-  top: 2.43vw;
+  top: 1.43vw;
 }
 
 .contactInfo1 {
@@ -374,7 +374,7 @@ section.aboutUs {
   color: #2d4228;
   position: absolute;
   left: 38.82vw;
-  top: 4vw;
+  top: 3.2vw;
   left: 54vw;
 }
 
@@ -383,7 +383,7 @@ section.aboutUs {
   color: #2d4228;
   position: absolute;
   left: 38.82vw;
-  top: 7.77vw;
+  top: 6.37vw;
 }
 
 .contactInfo2 {
@@ -391,7 +391,7 @@ section.aboutUs {
   color: #2d4228;
   position: absolute;
   left: 38.82vw;
-  top: 9.2vw;
+  top: 8.35vw;
   left: 54vw;
 }
 
@@ -400,14 +400,14 @@ section.aboutUs {
   color: #2d4228;
   position: absolute;
   left: 38.82vw;
-  top: 14.54vw;
+  top: 13.34vw;
 }
 
 .contactInfo3 {
   /* font-family: poppins sans-serif; */
   color: #2d4228;
   position: absolute;
-  top: 16vw;
+  top: 13.4vw;
   text-align: center;
   left: 54vw;
 }
