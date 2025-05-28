@@ -943,7 +943,7 @@ const UploadPlants = () => {
           </div>
           <br />
 
-          {/* Artwork Submission */}
+          {/* Artwork Submission
           <div
             className="artForm"
             onDragEnter={(e) => e.preventDefault()}
@@ -1036,7 +1036,7 @@ const UploadPlants = () => {
                 loading={artLoading}
               />
             </form>
-          </div>
+          </div> */}
         </div>
         <br />
         <br />

@@ -4,13 +4,14 @@ import SubBox from "./SubBox.js";
 import "../styles/creationPaint.css";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
+import styles from "../styles/galleryDatabase.module.css";
 
 const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
   const [pics, setPics] = useState([]);
   const [posts, setPosts] = useState([]);
   const [arts, setArts] = useState([]);
   const [displayObjectList, setDisplayObjectList] = useState([]);
-  const [numOfPages, setNumOfPages] = useState(0);
+  // const [numOfPages, setNumOfPages] = useState(0);
   const [subPgIndex, setSubPgIndex] = useState(1);
   const [currentDisplayIndexes, setCurrentDisplayIndexes] = useState([
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
@@ -24,8 +25,10 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
   const [topBys, setTopBys] = useState([]);
   const [topLoc, setTopLoc] = useState([]);
   const [topTimes, setTopTimes] = useState([]);
+  const itemsPerPage = 4;
 
   useEffect(() => {
+
     const fetchData = async () => {
       try {
         const response = await axios.get(
@@ -56,6 +59,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
           setTopLoc(newTopLoc);
           setTopTimes(newTopTimes);
 
+
           // Notify parent that we have data
           onDataLoad(true);
         } else {
@@ -71,16 +75,22 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
     fetchData();
   }, [onDataLoad]);
 
-  const setSubIndex = (index) => {
-    setSubPgIndex(index);
-    setCurrentDisplayIndexes([
-      (index - 1) * 6,
-      (index - 1) * 6 + 1,
-      (index - 1) * 6 + 2,
-      (index - 1) * 6 + 3,
-      (index - 1) * 6 + 4,
-      (index - 1) * 6 + 5,
-    ]);
+  const numOfPages = Math.ceil(displayObjectList.length / itemsPerPage);
+  const startIndex = (subPgIndex - 1) * itemsPerPage;
+  const currentItems = displayObjectList.slice(startIndex, startIndex + itemsPerPage);
+
+
+  const setSubIndex = (currentIndex) => {
+    setSubPgIndex(currentIndex);
+    // setCurrentDisplayIndexes([
+    //   (index - 1) * 6,
+    //   (index - 1) * 6 + 1,
+    //   (index - 1) * 6 + 2,
+    //   (index - 1) * 6 + 3,
+    //   (index - 1) * 6 + 4,
+    //   (index - 1) * 6 + 5,
+    // ]);
+    setCurrentDisplayIndexes(Array.from({length:itemsPerPage}, (_, index)=> (currentIndex - 1) * itemsPerPage + index));
   };
 
   function changeOrder(order) {
@@ -89,6 +99,9 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
       setOrderIsBold2(!order);
       setCurrentOrder(!currentOrder);
       setDisplayObjectList(displayObjectList.reverse());
+      if (displayObjectList){
+        setSubIndex(1);
+      }
     }
   }
 
@@ -169,6 +182,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
           </button>
         </div>
       )}
+
       <div className="docBottom">
         <div className="bottomBox">
           <button
@@ -183,16 +197,23 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
           >
             Oldest
           </button>
+
+          <br/>
+          <br/>
           {numOfPages > 0 &&
             Array.from({ length: numOfPages }, (_, index) => (
-              <button key={index + 1} onClick={() => setSubIndex(index + 1)}>
+              <button 
+                className={`${styles.seasonBtn} ${index+1 === subPgIndex ? styles.focussed : ""}`}
+                key={index + 1} 
+                // className="creationChangePageButton" 
+                onClick={() => setSubIndex(index + 1)}>
                 {index + 1}
               </button>
             ))}
         </div>
         <br />
         {Array.from(
-          { length: 10 },
+          { length:  itemsPerPage / 2},
           (_, index) =>
             (displayObjectList[currentDisplayIndexes[2 * index]] ||
               displayObjectList[currentDisplayIndexes[2 * index + 1]]) && (
