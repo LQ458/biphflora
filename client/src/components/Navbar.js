@@ -10,7 +10,7 @@ const Navbar = () => {
   return (
     <div className="nav">
       <header className="topBar">
-        <h1 className="htitle">BIPH FLORA 识草木</h1>
+        <h1 className="htitle">BIPH FLORA & FAUNA</h1>
         <div className="links">
           <Link
             className={`linkBarLink ${status !== "authenticated" && "widen"}`}
