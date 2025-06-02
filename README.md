@@ -430,7 +430,7 @@ npm install sharp@^0.33.5
 
 ## 📞 联系我们
 
-- 项目地址: [https://github.com/946629031/React](https://github.com/LQ458/biphflora)
+- 项目地址: [https://github.com/LQ458/biphflora](https://github.com/LQ458/biphflora)
 - 问题反馈: [Issues](https://github.com/LQ458/biphflora/issues)
 
 ---
