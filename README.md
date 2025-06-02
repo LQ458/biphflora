@@ -5,8 +5,11 @@
 ![Express](https://img.shields.io/badge/Express-v4.21.1-yellow)
 ![MongoDB](https://img.shields.io/badge/MongoDB-v8.8.2-brightgreen)
 ![Redis](https://img.shields.io/badge/Redis-v4.7.0-red)
+![License](https://img.shields.io/badge/License-Private%20Use%20Only-red)
 
 一个现代化的全栈植物图鉴Web应用，致力于为用户提供植物识别、分享和学习的综合平台。
+
+**⚠️ 重要提示：本项目仅允许个人和私人使用，禁止商业用途。如需商业使用，请联系项目维护者获取商业许可证。**
 
 ## 📋 目录
 
@@ -426,7 +429,27 @@ npm install sharp@^0.33.5
 
 ## 📄 许可证
 
-本项目采用 ISC 许可证 - 详见 [LICENSE](LICENSE) 文件
+本项目采用自定义私人使用许可证，仅允许个人和私人使用。
+
+### 🟢 允许的使用
+- ✅ 个人学习和研究
+- ✅ 私人开发和测试
+- ✅ 非商业教育目的
+- ✅ 个人作品集展示（非商业）
+
+### 🔴 禁止的使用
+- ❌ 任何形式的商业使用
+- ❌ 分发或再分发软件
+- ❌ 修改并重新分发
+- ❌ 用于商业产品或服务
+- ❌ 销售、许可或商业化
+- ❌ 商业组织或实体使用
+- ❌ 公开部署用于商业目的
+
+### 💼 商业许可
+如需商业使用、分发或其他不在私人使用条款范围内的用途，请联系版权所有者获取单独的商业许可证。
+
+详见 [LICENSE](LICENSE) 文件
 
 ## 📞 联系我们
 
