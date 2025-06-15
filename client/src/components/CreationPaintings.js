@@ -150,13 +150,13 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
             <PreviousIcon width={60} height={60} className="icons" />
           </button>
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public${topPics[topIndex]}`}
+            src={`${process.env.REACT_APP_Source_URL}/public/compressed${topPics[topIndex]}`}
             alt="pic"
             className="topImgs"
           />
           <div className="artBox">
             <img
-              src={`${process.env.REACT_APP_Source_URL}/public${topArts[topIndex]}`}
+              src={`${process.env.REACT_APP_Source_URL}/public/compressed${topArts[topIndex]}`}
               alt="art"
               className="topArts"
             />

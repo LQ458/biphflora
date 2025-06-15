@@ -26,5 +26,5 @@ yarn-error.log*
 
 /public
 /client/public/plantspic
-
+/client/public/compressed
 /node_modules

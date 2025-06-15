@@ -17,7 +17,7 @@ const PictureGrid = ({ items, selectedItem, onSelect }) => {
           onClick={() => onSelect(item)}
         >
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public${item.path}`}
+            src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.path}`}
             alt={item.plant}
           />
           <div className="mt-2">
@@ -40,7 +40,7 @@ const ArtGrid = ({ items, selectedItem, onSelect }) => {
           onClick={() => onSelect(item)}
         >
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public${item.path}`}
+            src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.path}`}
             alt={item.plant}
           />
           <div className="mt-2">
@@ -269,14 +269,14 @@ const UploadHome = () => {
                 <div className="grid">
                   <div className="col-6">
                     <img
-                      src={`${process.env.REACT_APP_Source_URL}/public${entry.works?.pic?.path}`}
+                      src={`${process.env.REACT_APP_Source_URL}/public/compressed${entry.works?.pic?.path}`}
                       alt={entry.works?.pic?.plant}
                       className="w-full"
                     />
                   </div>
                   <div className="col-6">
                     <img
-                      src={`${process.env.REACT_APP_Source_URL}/public${entry.works?.art?.path}`}
+                      src={`${process.env.REACT_APP_Source_URL}/public/compressed${entry.works?.art?.path}`}
                       alt={entry.works?.art?.plant}
                       className="w-full"
                     />
@@ -300,7 +300,7 @@ const UploadHome = () => {
       >
         {selectedPic && (
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public${selectedPic.path}`}
+            src={`${process.env.REACT_APP_Source_URL}/public/compressed${selectedPic.path}`}
             alt={selectedPic.plant}
             style={{ maxWidth: "100%" }}
           />
@@ -314,7 +314,7 @@ const UploadHome = () => {
       >
         {selectedArt && (
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public${selectedArt.path}`}
+            src={`${process.env.REACT_APP_Source_URL}/public/compressed${selectedArt.path}`}
             alt={selectedArt.plant}
             style={{ maxWidth: "100%" }}
           />

@@ -414,14 +414,14 @@ const UploadCreation = () => {
                     <div className="flex gap-3">
                       <div className="flex-1">
                         <img
-                          src={`${process.env.REACT_APP_Source_URL}/public${item.pic}`}
+                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.pic}`}
                           alt="pic"
                           className="w-full"
                         />
                       </div>
                       <div className="flex-1">
                         <img
-                          src={`${process.env.REACT_APP_Source_URL}/public${item.art}`}
+                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.art}`}
                           alt="art"
                           className="w-full"
                         />
@@ -462,14 +462,14 @@ const UploadCreation = () => {
             <div className="flex gap-3 mb-3">
               <div className="flex-1">
                 <img
-                  src={`${process.env.REACT_APP_Source_URL}/public${selectedEntry.pic}`}
+                  src={`${process.env.REACT_APP_Source_URL}/public/compressed${selectedEntry.pic}`}
                   alt="pic"
                   className="w-full"
                 />
               </div>
               <div className="flex-1">
                 <img
-                  src={`${process.env.REACT_APP_Source_URL}/public${selectedEntry.art}`}
+                  src={`${process.env.REACT_APP_Source_URL}/public/compressed${selectedEntry.art}`}
                   alt="art"
                   className="w-full"
                 />

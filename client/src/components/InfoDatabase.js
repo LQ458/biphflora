@@ -660,13 +660,14 @@ const InfoDatabase = (search) => {
                     </div>
                   </div>
                 )}
+                {artPathsArray.length>1?
                 <button className={styles.nextArBtn} onClick={nextArt}>
                   <NextIcon
                     className={styles.shiftIcon}
                     width={50}
                     height={50}
                   />
-                </button>
+                </button>:<></>}
               </div>
             </div>
           )}

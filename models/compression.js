@@ -2,7 +2,7 @@ const sharp = require("sharp");
 const fs = require("fs").promises;
 const path = require("path");
 
-async function compressImages(inputFiles, outputFolderPath) {
+async function compressImages(inputFiles, outputFolderPath, level,jquality) {
   const results = [];
 
   for (const inputFile of inputFiles) {
@@ -21,9 +21,9 @@ async function compressImages(inputFiles, outputFolderPath) {
         compressImage = () => sharp(inputFile).jpeg({ quality: 60 });
       } else if (ext === ".webp") {
         compressImage = () =>
-          sharp(inputFile).webp({ quality: 60, lossless: false });
+          sharp(inputFile).webp({ quality: jquality, lossless: false });
       } else if (ext === ".png") {
-        compressImage = () => sharp(inputFile).png({ compressionLevel: 5 });
+        compressImage = () => sharp(inputFile).png({ compressionLevel: level });
       } else {
         console.error(
           `Invalid format for input image "${inputFile}", only PNG, JPG/JPEG, or WEBP are supported. Skipping this file.`,

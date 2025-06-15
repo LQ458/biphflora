@@ -238,7 +238,7 @@ const EditPage = (props) => {
                 {paged.map(item => (
                   <div key={item._id} className="pic-item">
                     <img
-                      src={`${process.env.REACT_APP_Source_URL}/public${item.path}`}
+                      src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.path}`}
                       alt="plant pic"
                     />
                     <div className="select-overlay">
@@ -338,7 +338,7 @@ const EditPage = (props) => {
               props.editKey[2].map((item, index) => (
                 <>
                   <img
-                    src={`${process.env.REACT_APP_Source_URL}/public${item.path}`}
+                    src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.path}`}
                     key={index}
                     alt="pic"
                     style={{ maxWidth: "25%" }}

@@ -68,7 +68,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
       img.src = `${process.env.REACT_APP_Source_URL}/public${pic.path}`;
       img.onload = () => {
         newArray[index] = false;
-        srcs[index] = `${process.env.REACT_APP_Source_URL}/public${pic.path}`;
+        srcs[index] = `${process.env.REACT_APP_Source_URL}/public/compressed${pic.path}`;
         setLoadedSrc([...srcs]);
         setLoad([...newArray]);
       };
@@ -76,11 +76,11 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
         try {
           const response = await axios.get("/db2Alt");
           const altImg = new Image();
-          altImg.src = `${process.env.REACT_APP_Source_URL}/public${response.data.pic.path}`;
+          altImg.src = `${process.env.REACT_APP_Source_URL}/public/compressed${response.data.pic.path}`;
           altImg.onload = () => {
             newArray[index] = false;
             srcs[index] =
-              `${process.env.REACT_APP_Source_URL}/public${response.data.pic.path}`;
+              `${process.env.REACT_APP_Source_URL}/public/compressed${response.data.pic.path}`;
             setLoadedSrc([...srcs]);
             setLoad([...newArray]);
           };

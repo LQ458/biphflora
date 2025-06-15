@@ -35,6 +35,7 @@ app.use(compression()); //gzip compression for faster speed
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/public/plantspic", express.static("public/plantspic"));
+app.use("/public/compressed/plantspic", express.static("public/compressed/plantspic"));
 app.use("/public", express.static("public"));
 
 app.use(
@@ -640,6 +641,7 @@ app.post("/newCreationAuth", verifyToken, upload, async (req, res) => {
 app.post("/uploadArt", artmiddleware, verifyToken, async function (req, res) {
   const inputFiles = [];
   const outputFolderPath = "public/plantspic/";
+  const compressedOutputFolderPath = "public/plantspic/";
 
   try {
     const plant = await Post.findOne({ latinName: req.body.plant });
@@ -728,7 +730,7 @@ app.post(
   async function (req, res) {
     const inputFiles = [];
     const outputFolderPath = "public/plantspic/";
-
+    const smallerCompressedFolderPath = "public/compressed/plantspic/";
     try {
       const plant = await Post.findOne({ latinName: req.body.picEnglishName });
 
@@ -775,16 +777,65 @@ app.post(
           console.log("pic saved with code: " + newCount);
         }
 
+        // for (const file of req.files) {
+        //   const filePath = "./public/uploads/" + file.filename;
+        //   inputFiles.push(filePath);
+        //   let newCount = (code.count + 1).toString().padStart(4, "0");
+        //   const pic = new Pic({
+        //     plant: req.body.picEnglishName,
+        //     art: req.body.picArt,
+        //     modifiedBy: username,
+        //     season: req.body.picSeason,
+        //     takenBy: req.body.picPhotographer,
+        //     location: req.body.picSetting,
+        //     path: "/compressed/plantspic/" + file.filename,
+        //     time: req.body.month,
+        //     featured: false,
+        //     code: newCount,
+        //   });
+
+        //   await pic.save();
+        //   code = await Code.findOneAndUpdate(
+        //     { type: "pic" },
+        //     { $inc: { count: 1 } },
+        //     { new: true },
+        //   );
+        //   console.log("pic saved with code: " + newCount);
+        // }
+
         // Compress images and wait for results
         const compressionResults = await imageCompressor.compressImages(
           inputFiles,
           outputFolderPath,
+          5,
+          60
+        );
+
+        
+
+        // Check if any compression failed
+        var failedFiles = compressionResults.filter(
+          (result) => !result.success,
+        );
+        if (failedFiles.length > 0) {
+          throw new Error(
+            `Failed to compress files: ${failedFiles.map((f) => f.file).join(", ")}`,
+          );
+        }
+        
+
+        const smallerCompressionResults = await imageCompressor.compressImages(
+          inputFiles,
+          smallerCompressedFolderPath,
+          9,
+          40
         );
 
         // Check if any compression failed
-        const failedFiles = compressionResults.filter(
+        failedFiles = smallerCompressionResults.filter(
           (result) => !result.success,
         );
+
         if (failedFiles.length > 0) {
           throw new Error(
             `Failed to compress files: ${failedFiles.map((f) => f.file).join(", ")}`,

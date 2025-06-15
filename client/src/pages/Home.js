@@ -207,7 +207,7 @@ const Home = ({ handleGets }) => {
                     currentPic && (
                       <div className={styles.picContainer}>
                         <img
-                          src={`${process.env.REACT_APP_Source_URL}/public${currentPic}`}
+                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${currentPic}`}
                           alt="PlantPic"
                           className={styles.currentPics}
                         />
@@ -245,7 +245,7 @@ const Home = ({ handleGets }) => {
                     artPaths[picsArrayIndex] && (
                       <div className={styles.artContainer}>
                         <img
-                          src={`${process.env.REACT_APP_Source_URL}/public${artPaths[picsArrayIndex]}`}
+                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${artPaths[picsArrayIndex]}`}
                           alt="PlantArt"
                           className={styles.currentArts}
                         />

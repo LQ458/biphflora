@@ -252,7 +252,7 @@ const AdminAuth = ({ admin }) => {
       <div className="flex gap-3">
         <div className="flex-1">
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public${item.pic}`}
+            src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.pic}`}
             alt={item.pic}
             className="w-full"
           />
@@ -260,7 +260,7 @@ const AdminAuth = ({ admin }) => {
         </div>
         <div className="flex-1">
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public${item.art}`}
+            src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.art}`}
             alt={item.art}
             className="w-full"
           />

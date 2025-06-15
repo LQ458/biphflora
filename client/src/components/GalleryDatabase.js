@@ -406,7 +406,7 @@ const GalleryDatabase = (props) => {
                     .map((p, index) => (
                       <div className={styles.summerPic} key={index}>
                         <img
-                          src={`${process.env.REACT_APP_Source_URL}/public${p.path}`}
+                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${p.path}`}
                           alt=""
                           className={styles.summerPic}
                           onClick={() =>
