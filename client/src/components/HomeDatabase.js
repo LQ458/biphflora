@@ -1,6 +1,7 @@
 import axios from "axios";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/homeDatabase.css";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
@@ -12,7 +13,12 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
   const [pics, setPics] = useState([]);
   const [load, setLoad] = useState([true, true, true]);
   const [loadedSrc, setLoadedSrc] = useState(["", "", ""]);
-
+  const navigate = useNavigate();
+  const redirect = (plant) => {
+    //plant的类型是string
+    // handleGet(plant);
+    navigate(`/search/${plant.replace(" ", "_")}`);
+  };
   useEffect(() => {
     const getDb2Pic = async () => {
       try {
@@ -158,7 +164,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
                       alt="plant"
                       className="picImg"
                       onClick={() =>
-                        handleGet(
+                        redirect(
                           loadedSrc[index].split("/").pop().split("-")[0],
                         )
                       }
@@ -180,7 +186,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
                       alt="plant"
                       className="picImg"
                       onClick={() =>
-                        handleGet(
+                        redirect(
                           loadedSrc[index].split("/").pop().split("-")[0],
                         )
                       }

@@ -74,7 +74,7 @@ const Creation = (props) => {
             handleClick("paintings");
           }}
         >
-          Paintings
+          Artworks
         </button>
       </div>
       <div className="creationBody">{currentComponent}</div>

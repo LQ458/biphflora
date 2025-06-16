@@ -15,7 +15,7 @@ const SearchBar = ({
   const navigate = useNavigate();
   const redirect = (plant) => {
     //plant的类型是string
-    handleGet(plant);
+    // handleGet(plant);
     navigate(`/search/${plant.replace(" ", "_")}`);
   };
 

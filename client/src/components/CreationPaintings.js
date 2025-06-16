@@ -150,7 +150,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
             <PreviousIcon width={60} height={60} className="icons" />
           </button>
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/compressed${topPics[topIndex]}`}
+            src={`${process.env.REACT_APP_Source_URL}/public${topPics[topIndex]}`}
             alt="pic"
             className="topImgs"
           />

@@ -99,7 +99,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
       <div
         className="aboutUsContent"
         style={{
-          height: curLang === "cn" ? "" : "130vw",
+          height: curLang === "cn" ? "" : "135vw",
         }}
       >
         <h1 className="aboutUsTitle">{aboutUs}</h1>
@@ -134,7 +134,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
           </p>
           <img
             src={`${process.env.REACT_APP_Source_URL}/public/1.jpg`}
-            alt="picture of bird"
+            alt="pic of bird"
             className="birdPic"
           />
           <div className="greenBox" />
@@ -270,6 +270,9 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
           className="contactUs"
           style={{ top: curLang === "cn" ? "" : "12vw" }}
         >
+          {/* <div style={{top:"12vw"}}>
+                123
+          </div> */}
           <h2 className="contactUsTitle">III. Contact Us</h2>
           <img
             src={`${process.env.REACT_APP_Source_URL}/public/2.jpg`}
@@ -316,15 +319,18 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             src={`${process.env.REACT_APP_Source_URL}/public/${curLang === "cn" ? "9.PNG" : "9-en.png"}`}
             className="cssHell"
             style={{
-              scale: curLang === "cn" ? "1" : "0.8",
+              scale: curLang === "cn" ? "1" : "0.65",
               left: curLang === "cn" ? "" : "30vw",
-              top: curLang === "cn" ? "" : "19vw",
+              top: curLang === "cn" ? "19vw" : "19vw",
               width: curLang === "cn" ? "" : "65vw",
             }}
             alt="additional"
           />
+          
         </div>
+
       </div>
+      
       <div className="bottomBart" />
       <div className="bottomBar" />
     </section>

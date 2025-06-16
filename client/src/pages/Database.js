@@ -73,7 +73,8 @@ const Database = (prop) => {
         </div>
       </section>
     );
-  } else {
+  } else 
+  {
     return (
       <section className="db dbAdd db2spec">
         <Navbar />

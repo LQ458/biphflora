@@ -1,7 +1,9 @@
 :root {
   --search-bar-height: 3rem;
 }
-
+/* .input::placeholder{
+  font-size: 1px;
+} */
 .db2SearchButton {
   position: relative;
   flex-grow: 1;
@@ -62,6 +64,7 @@ form.db2SubmitForm {
 }
 .db2SearchBar:placeholder-shown {
   font-weight: 600;
+  font-size: 22px;
 }
 .db2SearchButton:hover {
   color: #516d4e;

@@ -3,7 +3,7 @@ import axios from "axios";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
 import styles from "../styles/home.module.css";
-import { useNavigate } from "react-router-dom";
+import { redirect, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.js";
 import SearchBar from "../components/SearchBar.js";
 import SearchPlant from "../components/SearchPlant.js";
@@ -34,6 +34,12 @@ const Home = ({ handleGets }) => {
   useEffect(() => {
     document.title = "BIPH FLORA 识草木";
   }, []);
+
+  const redirect = (plant) => {
+    //plant的类型是string
+    handleGets(plant);
+    navigate(`/search/${plant.replace(" ", "_")}`);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -284,7 +290,8 @@ const Home = ({ handleGets }) => {
                       type="button"
                       onClick={() => {
                         if (plants[picsArrayIndex]?.plant) {
-                          handleGet(plants[picsArrayIndex].plant);
+                          // handleGet(plants[picsArrayIndex].plant);
+                          redirect(plants[picsArrayIndex].plant)
                         }
                       }}
                       className={styles.forDetail}

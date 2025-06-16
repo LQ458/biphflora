@@ -15,7 +15,7 @@ const SubBox = ({
   const navigate = useNavigate();
   const redirect = (plant) => {
     handleGets(plant);
-    navigate("/search");
+    navigate(`/search/${plant.replace(" ", "_")}`);
   };
 
   return (
