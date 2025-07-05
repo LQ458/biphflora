@@ -2,8 +2,10 @@ import "./App.css";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Glossary from "./pages/Glossary";
+import BirdGlossary from "./pages/BirdGlossary";
 import Home from "./pages/Home";
 import Database from "./pages/Database";
+import BirdDatabase from "./pages/BirdDatabase";
 import Upload from "./pages/Upload";
 import Creation from "./pages/Creation";
 import AboutUs from "./pages/AboutUs";
@@ -11,6 +13,7 @@ import Activities from "./pages/Activities";
 import AdminView from "./components/AdminView";
 import EditPage from "./pages/EditPage";
 import AdminAuth from "./components/AdminAuth";
+import BirdEditPage from "./pages/BirdEditPage";
 import NotFound from "./pages/NotFound";
 import { UserProvider } from "./UserContext";
 import { PrimeReactProvider } from "primereact/api";
@@ -34,15 +37,27 @@ function App() {
   };
 
   //一个搜索植物的Wrapper
-  function SearchWithParam({ handleEditPage }) {
+  function SearchWithParam({ handleEditPage, dbType }) {
     const { plantKey } = useParams();  
-    //plantkKey是url中的植物名
-    return (
-      <Database
-        search={plantKey.replace("_", " ")}
-        handleEditPage={handleEditPage}
-      />
-    );
+
+    if(dbType === "plant"){
+      //plantkKey是url中的植物名
+      return (
+        <Database
+          search={plantKey.replace("_", " ")}
+          handleEditPage={handleEditPage}
+        />
+      );
+    }else{
+      //plantkKey是url中的植物名
+      return (
+        <BirdDatabase
+          search={plantKey.replace("_", " ")}
+          handleEditPage={handleEditPage}
+        />
+      );
+    }
+    
   }
 
   // const handleAdminPreview = (input) => {
@@ -84,10 +99,18 @@ function App() {
                 }
               />
               <Route
-                path="/database"
+                path="/databasePlant"
                 element={
                   <>
-                    <Database handleEditPage={handleEditPage} />
+                    <Database handleEditPage={handleEditPage} DbType="plant" />
+                  </>
+                }
+              />
+              <Route
+                path="/databaseBird"
+                element={
+                  <>
+                    <BirdDatabase handleEditPage={handleEditPage} DbType="bird" />
                   </>
                 }
               />
@@ -116,10 +139,26 @@ function App() {
                 }
               />
               <Route
+                path="/birdEditPage"
+                element={
+                  <>
+                    <BirdEditPage editKey={editKey} />
+                  </>
+                }
+              />
+              <Route
                 path="/glossary"
                 element={
                   <>
                     <Glossary handleGets={handleGets} />
+                  </>
+                }
+              />
+              <Route
+                path="/glossaryBird"
+                element={
+                  <>
+                    <BirdGlossary handleGets={handleGets} />
                   </>
                 }
               />
@@ -135,10 +174,20 @@ function App() {
                 path="/search/:plantKey"
                 element={
                   <>
-                    <SearchWithParam handleEditPage={handleEditPage} />
+                    <SearchWithParam handleEditPage={handleEditPage} dbType="plant" />
                   </>
                 }
               />
+
+              <Route
+                path="/searchBird/:plantKey"
+                element={
+                  <>
+                    <SearchWithParam handleEditPage={handleEditPage} dbType="bird"/>
+                  </>
+                }
+              />
+              
               <Route
                 path="/creation"
                 element={

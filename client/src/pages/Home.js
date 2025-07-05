@@ -183,7 +183,7 @@ const Home = ({ handleGets }) => {
     <section className={styles.home}>
       <div id="page-container">
         <div className={styles.part1}>
-          <Navbar />
+          <Navbar className={styles.tobar} z-index="1000"/>
           <nav className={styles.featureBox}>
             <div className={styles.featuredTopBar}>
               <h4 className={styles.plantInBloom}>Plant in Bloom</h4>

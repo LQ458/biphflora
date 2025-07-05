@@ -1,0 +1,46 @@
+.edit-dialog {
+  width: 80vw;
+  max-width: 1200px;
+}
+
+.p-dialog .p-dialog-content {
+  padding: 2rem;
+}
+
+.p-inputtext {
+  width: 100%;
+}
+
+.p-inputtextarea {
+  width: 100%;
+  min-height: 120px;
+}
+
+/* Add spacing between form elements */
+.grid > .col-12 {
+  margin-bottom: 1rem;
+}
+
+/* Make sure buttons have proper spacing */
+.p-button {
+  margin-right: 0.5rem;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .edit-dialog {
+    width: 95vw;
+  }
+
+  .grid > .col-12 > .grid > .col-4,
+  .grid > .col-12 > .grid > .col-6 {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+}
+
+.edit-button {
+  background-color: #739666 !important;
+  border-color: #739666 !important;
+  color: white;
+}

@@ -4,11 +4,17 @@
   min-height: 100vh;
   margin: 0;
   padding: 0;
+  overflow: visible;
+}
+
+.topbar {
+  position: relative; /* or fixed/sticky if needed */
+  z-index: 1000;      /* Ensure it's above most other elements */
 }
 
 section.home {
   color: #ffffff;
-  overflow: hidden;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   margin: 0;
@@ -63,7 +69,7 @@ h4.plantInBloom {
   margin: 0;
 }
 div.part1 {
-  background: url("../../public/homescreen.jpg") no-repeat;
+  background: url("../../public/new_bg.jpg") no-repeat;
   border: none;
   background-position: top center;
   position: relative;

@@ -73,6 +73,10 @@ h3.db1Title {
   margin: 0;
 }
 
+.db1{
+  
+}
+
 .db1T {
   position: relative;
   margin: 0;
@@ -102,8 +106,10 @@ img.databaseImg {
 div.dbImgs {
   display: grid;
   gap: 26px;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
 }
+
+
 div.results {
   position: absolute;
   top: 7vh;
@@ -244,6 +250,8 @@ button.prev1 {
   align-items: center;
   justify-content: right;
 }
+
+
 button.next1 {
   position: relative;
   display: flex;
@@ -251,6 +259,30 @@ button.next1 {
   align-items: center;
   justify-content: left;
   /* margin-left: 10px; */
+}
+
+div.birdChar{
+  /* display: flex; */
+  position: relative;
+  width: 20rem;
+  height: 8.5rem;
+  margin-left: 5rem;
+  background-color: #bbcfb3;
+  align-content: center;
+  justify-content: center;
+  /* justify-content: right; */
+  /* justify-self: right; */
+  border-radius: 0.83rem;
+}
+
+p.charTitle{
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+p.charContent{
+  font-size: 1rem;
+  font-weight: 700;
 }
 div.artAlt {
   width: 20vw;
@@ -337,7 +369,13 @@ div.seasonContainer {
   display: grid;
   position: relative;
   gap: 15px;
-  grid-template-columns: repeat(3, 1fr);
+  /* align-items: start;
+  align-content: start; */
+  /* float: left; */
+  width: 200px;
+  margin-left: 6rem;
+  /* justify-self: flex-start; */
+  grid-template-columns: repeat(4, 1fr);
 }
 
 section.loadingCreation {

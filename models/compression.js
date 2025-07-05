@@ -18,7 +18,7 @@ async function compressImages(inputFiles, outputFolderPath, level,jquality) {
       let compressImage;
 
       if (ext === ".jpg" || ext === ".jpeg") {
-        compressImage = () => sharp(inputFile).jpeg({ quality: 60 });
+        compressImage = () => sharp(inputFile).jpeg({ quality: jquality });
       } else if (ext === ".webp") {
         compressImage = () =>
           sharp(inputFile).webp({ quality: jquality, lossless: false });

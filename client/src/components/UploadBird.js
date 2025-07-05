@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import { FileUpload } from "primereact/fileupload";
 import { Toast } from "primereact/toast";
-import "../styles/uploadPlants.css";
+import "../styles/uploadBirds.css";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
@@ -11,11 +11,24 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import imageCompression from "browser-image-compression";
 
-const UploadPlants = () => {
+const UploadBirds = () => {
   const [latinName, setLatinName] = useState("");
   const [chineseName, setChineseName] = useState("");
   const [commonName, setCommonName] = useState("");
   const [location, setLocation] = useState("");
+
+  
+  const [appearance, setAppearance] = useState("");
+  const [songs, setSongs] = useState("");
+  const [diet, setDiet] = useState("");
+  const [habitat, setHabitat] = useState("");
+  const [migration, setMigration] = useState("");
+  const [breeding, setBreeding] = useState("");
+  const [juvChar, setJuvChar] = useState("");
+  const [subChar, setSubChar] = useState("");
+  const [madultChar, setMadultChar] = useState("");
+  const [fadultChar, setFadultChar] = useState("");
+
   const [bloomingSeason, setBloomingSeason] = useState("");
   const [links, setLinks] = useState("");
   const [chineseLinks, setChineseLinks] = useState("");
@@ -54,7 +67,7 @@ const UploadPlants = () => {
           `${process.env.REACT_APP_Source_URL}/userInfo`,
         );
         const searchNamesResponse = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
+          `${process.env.REACT_APP_Source_URL}/searchBirdNames`,
         );
         const fetchedNamesArray = searchNamesResponse.data.returnNames.map(
           (result) => {
@@ -87,10 +100,10 @@ const UploadPlants = () => {
   }; // Template for the dropdown
 
   const seasons = [
-    { value: "spring" },
-    { value: "summer" },
-    { value: "autumn" },
-    { value: "winter" },
+    { value: "Juvenile" },
+    { value: "Sub-adult" },
+    { value: "Male Adult" },
+    { value: "Female Adult" },
   ]; // Season options
 
   const picEnglishNameOptionTemplate = (option) => {
@@ -207,17 +220,26 @@ const UploadPlants = () => {
     const formData = new FormData();
     formData.append("latinName", latinName);
     formData.append("chineseName", chineseName);
-    formData.append("location", location);
-    formData.append("bloomingSeason", bloomingSeason);
     formData.append("commonName", commonName);
+
+    formData.append("habitat", habitat);
+    formData.append("appearance", appearance);
+    formData.append("diet", diet);
+    formData.append("songs", songs);
+    formData.append("migration", migration);
+    formData.append("breeding", breeding);
+
     formData.append("editor", editor);
     formData.append("link", JSON.stringify(processedLinkArray));
     formData.append("chineseLink", JSON.stringify(processedChineseLinkArray));
     formData.append("otherNames", otherNames);
-    formData.append("dbType", "plant");
+    formData.append("juvChar", juvChar);
+    formData.append("subChar", subChar);
+    formData.append("mAdultChar", madultChar);
+    formData.append("fAdultChar", fadultChar);
 
     try {
-      await axios.post(`${process.env.REACT_APP_Source_URL}/upload`, formData, {
+      await axios.post(`${process.env.REACT_APP_Source_URL}/uploadBird`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -225,7 +247,7 @@ const UploadPlants = () => {
       toast.current.show({
         severity: "success",
         summary: "创建成功",
-        detail: "植物创建成功",
+        detail: "鸟类创建成功",
         life: 3000,
       });
       setLatinName("");
@@ -237,6 +259,14 @@ const UploadPlants = () => {
       setLinks("");
       setChineseLinks("");
       setEditor("");
+
+      setDiet("");
+      setHabitat("");
+      setSongs("");
+      setMigration("");
+      setAppearance("");
+      setBreeding("");
+
       // 重置链接数组
       setLinkTitles([]);
       setLinkUrls([]);
@@ -247,7 +277,7 @@ const UploadPlants = () => {
         toast.current.show({
           severity: "error",
           summary: "上传失败",
-          detail: "植物已存在",
+          detail: "鸟类已存在",
           life: 3000,
         });
       }
@@ -361,7 +391,7 @@ const UploadPlants = () => {
 
       // 上传文件
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadPic`,
+        `${process.env.REACT_APP_Source_URL}/uploadBirdPic`,
         formData,
         {
           headers: {
@@ -587,11 +617,11 @@ const UploadPlants = () => {
     <>
       <div className="upload">
         <Toast ref={toast} />
-        <h1 className="dUpTitle">Plant Database</h1>
+        <h1 className="dUpTitle">Bird Database</h1>
         <div className="uploadContent">
           {/* Add Species Information Submission */}
           <div className="postForm">
-            <h2 className="uploadTitle">Species Information Profile</h2>
+            <h2 className="uploadTitle">Bird Species Information Profile</h2>
             <form encType="multipart/form-data" onSubmit={handlePlantSubmit}>
               <div className="form-group">
                 <div className="topInputs">
@@ -646,25 +676,148 @@ const UploadPlants = () => {
                     value={otherNames}
                     onChange={(e) => setOtherNames(e.target.value)}
                   />
+                  
                   <InputText
                     type="text"
-                    id="location"
-                    name="location"
-                    placeholder="location (Optional)"
+                    id="habitat"
+                    name="habitat"
+                    placeholder="Habitat"
                     style={{
                       borderRadius: "0",
                       border: "2px solid #516d4e",
                     }}
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    value={habitat}
+                    onChange={(e) => setHabitat(e.target.value)}
                   />
+                </div>
+                <br/>
+                <div className="midInputs">
+                  <InputText
+                    type="text"
+                    id="appearance"
+                    name="appearance"
+                    style={{
+                      borderRadius: "0",
+                      border: "2px solid #516d4e",
+                    }}
+                    placeholder="Appearance"
+                    value={appearance}
+                    onChange={(e) => setAppearance(e.target.value)}
+                    required
+                  />
+                  <InputText
+                    type="text"
+                    style={{
+                      borderRadius: "0",
+                      border: "2px solid #516d4e",
+                    }}
+                    id="songs"
+                    name="songs"
+                    placeholder="Songs"
+                    value={songs}
+                    onChange={(e) => setSongs(e.target.value)}
+                    required
+                  />
+                  <InputText
+                    type="text"
+                    style={{
+                      borderRadius: "0",
+                      border: "2px solid #516d4e",
+                    }}
+                    id="diet"
+                    name="diet"
+                    placeholder="Diet"
+                    value={diet}
+                    onChange={(e) => setDiet(e.target.value)}
+                    required
+                  />
+                  <InputText
+                    type="text"
+                    style={{
+                      borderRadius: "0",
+                      border: "2px solid #516d4e",
+                    }}
+                    id="migration"
+                    name="migration"
+                    placeholder="Migration"
+                    value={migration}
+                    onChange={(e) => setMigration(e.target.value)}
+                  />
+                  
+                  <InputText
+                    type="text"
+                    id="breeding"
+                    name="breeding"
+                    placeholder="Breeding"
+                    style={{
+                      borderRadius: "0",
+                      border: "2px solid #516d4e",
+                    }}
+                    value={breeding}
+                    onChange={(e) => setBreeding(e.target.value)}
+                  />
+                </div>
+                <br/>
+                <div className="bottomInputs">
+                  <InputText
+                    type="text"
+                    id="juvChar"
+                    name="juvChar"
+                    style={{
+                      borderRadius: "0",
+                      border: "2px solid #516d4e",
+                    }}
+                    placeholder="Juvenile Characteristics"
+                    value={juvChar}
+                    onChange={(e) => setJuvChar(e.target.value)}
+                    required
+                  />
+                  <InputText
+                    type="text"
+                    style={{
+                      borderRadius: "0",
+                      border: "2px solid #516d4e",
+                    }}
+                    id="subChar"
+                    name="subChar"
+                    placeholder="Sub-adult Characteristics"
+                    value={subChar}
+                    onChange={(e) => setSubChar(e.target.value)}
+                    required
+                  />
+                  <InputText
+                    type="text"
+                    style={{
+                      borderRadius: "0",
+                      border: "2px solid #516d4e",
+                    }}
+                    id="madult"
+                    name="madult"
+                    placeholder="Male Adult Characteristics"
+                    value={madultChar}
+                    onChange={(e) => setMadultChar(e.target.value)}
+                    required
+                  />
+                  <InputText
+                    type="text"
+                    style={{
+                      borderRadius: "0",
+                      border: "2px solid #516d4e",
+                    }}
+                    id="fadult"
+                    name="fadult"
+                    placeholder="Female Adult Characteristics"
+                    value={fadultChar}
+                    onChange={(e) => setFadultChar(e.target.value)}
+                  />
+                  
                 </div>
                 <br />
                 <InputTextarea
                   id="bloomingSeason"
                   name="bloomingSeason"
                   rows={7}
-                  placeholder="Additional Information (Optional): &#13;&#13;Ex.&#13;Blooming Season 花期:&#13;Fruiting Season 果期:&#13;Interesting Facts 有趣的发现:"
+                  placeholder="Additional Information (Optional)"
                   className="inputBox additionalInfo"
                   style={{
                     borderRadius: "0",
@@ -865,7 +1018,7 @@ const UploadPlants = () => {
                   onChange={(e) => setPicSeason(e.value)}
                   options={seasons}
                   optionLabel="value"
-                  placeholder="Select a season"
+                  placeholder="Select a life stage"
                   required
                   style={{
                     borderRadius: "0",
@@ -1047,4 +1200,4 @@ const UploadPlants = () => {
   );
 };
 
-export default UploadPlants;
+export default UploadBirds;

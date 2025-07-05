@@ -6,10 +6,12 @@ const mongoose = require("mongoose");
 const compression = require("compression");
 const User = require("./models/user");
 const Post = require("./models/post");
+const BirdPost = require("./models/birdPost");
 const EditTextRequest = require("./models/editTextRequest");
 const Pic = require("./models/pic");
 const Art = require("./models/art");
 const Activity = require("./models/activity");
+const BirdEditTextRequest = require("./models/birdEditTextRequest")
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const Time = require("./models/time");
@@ -23,11 +25,11 @@ const fs = require("fs").promises; // Node.js file system module with promise su
 const bcrypt = require("bcrypt");
 const multer = require("multer");
 const featureList = require("./models/featureList");
-const post = require("./models/post");
 const creationBottom = require("./models/creationBottom");
 const FeatureHome = require("./models/featureHome");
 const redis = require("redis");
 const Code = require("./models/code");
+const birdPost = require('./models/birdPost')
 const crypto = require("crypto");
 dotenv.config();
 
@@ -334,6 +336,43 @@ app.get("/userInfoGlossary", verifyToken, async (req, res) => {
   res.json(response);
 });
 
+app.get("/userInfoGlossaryBird", verifyToken, async (req, res) => {
+  const posts = await BirdPost.find({ authorization: true });
+  const letters = "abcdefghijklmnopqrstuvwxyz".split("");
+  const glossary = {};
+  const cnNames = {};
+
+  // Initialize an array for each letter
+  letters.forEach((letter) => {
+    glossary[letter] = [];
+    cnNames[letter] = [];
+  });
+
+  posts.forEach((post) => {
+    const firstLetter = post.latinName[0].toLowerCase();
+    if (glossary[firstLetter]) {
+      glossary[firstLetter].push(post.latinName);
+      cnNames[firstLetter].push(post.chineseName);
+    }
+  });
+
+  const response = req.user
+    ? {
+        success: true,
+        username: req.user?.username,
+        admin: req.user?.admin,
+        glossary,
+        cnNames,
+      }
+    : {
+        success: false,
+        glossary,
+        cnNames,
+      };
+
+  res.json(response);
+});
+
 app.post("/edit", async function (req, res) {
   try {
     res.json({ success: true });
@@ -342,7 +381,7 @@ app.post("/edit", async function (req, res) {
   }
 });
 
-app.post("/newPostAuth", verifyToken, upload, async (req, res) => {
+app.post("/newPostAuth", verifyToken, upload, async (req, res, type) => {
   if (req.body.decision) {
     const post = await Post.findOne({ _id: req.body.id });
     post.authorization = true;
@@ -351,6 +390,17 @@ app.post("/newPostAuth", verifyToken, upload, async (req, res) => {
     await Post.deleteOne({ _id: req.body.id });
   }
 
+  res.json({ success: true });
+});
+
+app.post("/newBirdPostAuth", verifyToken, upload, async (req, res, type) => {
+  if (req.body.decision) {
+    const post = await BirdPost.findOne({ _id: req.body.id });
+    post.authorization = true;
+    await post.save();
+  } else {
+    await BirdPost.deleteOne({ _id: req.body.id });
+  }
   res.json({ success: true });
 });
 
@@ -571,6 +621,7 @@ app.post(
         username: username,
         otherNames: req.body.otherNames,
         authorization: false,
+        // dbType: "plant"
       });
 
       // 确保链接数据格式一致性
@@ -601,6 +652,74 @@ app.post(
       } else {
         console.log(error, "uploading problems");
       }
+    }
+  },
+);
+
+app.post(
+  "/uploadBird",
+  globalUpload.none(),
+  verifyToken,
+  async function (req, res) {
+    try {
+      var username = "admin";
+
+      if (req.user?.admin) {
+        authorization = true;
+      } else if (req.user) {
+        username = req.user?.username;
+        authorization = false;
+      }
+
+      const post = new BirdPost({
+        latinName: req.body.latinName,
+        chineseName: req.body.chineseName,
+        commonName: req.body.commonName,
+        location: req.body.location,
+        additionalInfo: req.body.bloomingSeason,
+        link: JSON.parse(req.body.link),
+        chineseLink: JSON.parse(req.body.chineseLink),
+        editor: req.body.editor,
+        username: username,
+        otherNames: req.body.otherNames,
+        authorization: false,
+        
+        appearance: req.body.appearance,
+        habitat: req.body.habitat,
+        breeding: req.body.breeding,
+        songs: req.body.songs,
+        diet: req.body.diet,
+        migration: req.body.migration,
+        dbType: "bird",
+        juvChar: req.body.juvChar,
+        subChar: req.body.subChar,
+        mAdultChar: req.body.mAdultChar,
+        fAdultChar: req.body.fAdultChar
+      });
+
+      // 确保链接数据格式一致性
+      if (!Array.isArray(post.link)) {
+        post.link = [];
+      }
+
+      if (!Array.isArray(post.chineseLink)) {
+        post.chineseLink = [];
+      }
+
+      // 过滤掉无效的链接
+      post.link = post.link.filter(
+        (item) => item && item.linkTitle && item.link,
+      );
+      post.chineseLink = post.chineseLink.filter(
+        (item) => item && item.linkTitle && item.link,
+      );
+
+      await post.save();
+      res.json({ success: true });
+    } catch (error) {
+      res
+          .status(400)
+          .json({ success: false, message: "Bird already exists" });
     }
   },
 );
@@ -808,7 +927,7 @@ app.post(
           inputFiles,
           outputFolderPath,
           5,
-          60
+          90
         );
 
         
@@ -828,7 +947,152 @@ app.post(
           inputFiles,
           smallerCompressedFolderPath,
           9,
-          40
+          70
+        );
+
+        // Check if any compression failed
+        failedFiles = smallerCompressionResults.filter(
+          (result) => !result.success,
+        );
+
+        if (failedFiles.length > 0) {
+          throw new Error(
+            `Failed to compress files: ${failedFiles.map((f) => f.file).join(", ")}`,
+          );
+        }
+
+        // Clean up original files after successful compression
+        await Promise.all(
+          inputFiles.map((file) =>
+            fs.unlink(file).catch((err) => {
+              console.warn(
+                `Warning: Could not delete temporary file ${file}:`,
+                err,
+              );
+            }),
+          ),
+        );
+
+        res.json({ success: true, message: "Picture uploaded successfully" });
+      } else {
+        res.status(400).json({ success: false, message: "No files uploaded" });
+      }
+    } catch (error) {
+      console.error("Error in uploadPic:", error);
+      res
+        .status(500)
+        .json({ success: false, message: "Error processing request" });
+    }
+  },
+);
+
+app.post(
+  "/uploadBirdPic",
+  uploadmiddleware,
+  verifyToken,
+  async function (req, res) {
+    const inputFiles = [];
+    const outputFolderPath = "public/plantspic/";
+    const smallerCompressedFolderPath = "public/compressed/plantspic/";
+    try {
+      const plant = await BirdPost.findOne({ latinName: req.body.picEnglishName });
+
+      if (!plant) {
+        return res.status(404).send("Plant not found");
+      }
+
+      var code = await Code.findOne({ type: "pic" });
+      if (!code) {
+        console.log("No pic code found, creating a new one with count 0");
+        code = new Code({ type: "pic", count: 0 });
+        await code.save();
+      }
+
+      var username = "admin";
+      if (req.user) {
+        username = req.user?.username;
+      }
+
+      if (req.files && req.files.length >= 1) {
+        for (const file of req.files) {
+          const filePath = "./public/uploads/" + file.filename;
+          inputFiles.push(filePath);
+          let newCount = (code.count + 1).toString().padStart(4, "0");
+          const pic = new Pic({
+            plant: req.body.picEnglishName,
+            art: req.body.picArt,
+            modifiedBy: username,
+            season: req.body.picSeason.replace("-","").replace(" ",""),
+            takenBy: req.body.picPhotographer,
+            location: req.body.picSetting,
+            path: "/plantspic/" + file.filename,
+            time: req.body.month,
+            featured: false,
+            code: newCount,
+            dbType: 'bird'
+          });
+
+          await pic.save();
+          code = await Code.findOneAndUpdate(
+            { type: "pic" },
+            { $inc: { count: 1 } },
+            { new: true },
+          );
+          console.log("pic saved with code: " + newCount);
+        }
+
+        // for (const file of req.files) {
+        //   const filePath = "./public/uploads/" + file.filename;
+        //   inputFiles.push(filePath);
+        //   let newCount = (code.count + 1).toString().padStart(4, "0");
+        //   const pic = new Pic({
+        //     plant: req.body.picEnglishName,
+        //     art: req.body.picArt,
+        //     modifiedBy: username,
+        //     season: req.body.picSeason,
+        //     takenBy: req.body.picPhotographer,
+        //     location: req.body.picSetting,
+        //     path: "/compressed/plantspic/" + file.filename,
+        //     time: req.body.month,
+        //     featured: false,
+        //     code: newCount,
+        //   });
+
+        //   await pic.save();
+        //   code = await Code.findOneAndUpdate(
+        //     { type: "pic" },
+        //     { $inc: { count: 1 } },
+        //     { new: true },
+        //   );
+        //   console.log("pic saved with code: " + newCount);
+        // }
+
+        // Compress images and wait for results
+        const compressionResults = await imageCompressor.compressImages(
+          inputFiles,
+          outputFolderPath,
+          5,
+          90
+        );
+
+        
+
+        // Check if any compression failed
+        var failedFiles = compressionResults.filter(
+          (result) => !result.success,
+        );
+        if (failedFiles.length > 0) {
+          throw new Error(
+            `Failed to compress files: ${failedFiles.map((f) => f.file).join(", ")}`,
+          );
+        }
+        
+
+        const smallerCompressionResults = await imageCompressor.compressImages(
+          inputFiles,
+          smallerCompressedFolderPath,
+          9,
+          70
         );
 
         // Check if any compression failed
@@ -875,6 +1139,16 @@ app.get("/searchNames", async (req, res) => {
   res.json({ success: true, returnNames: posts, numOfPlants: posts.length });
 });
 
+
+
+app.get("/searchBirdNames", async (req, res) => {
+  const birdPosts = await BirdPost.find({ authorization: true });
+  if (!birdPosts) {
+    res.json({ success: false, returnNames: [], numOfPlants: 0 });
+  }
+  res.json({ success: true, returnNames: birdPosts, numOfPlants: birdPosts.length });
+});
+
 app.post("/syncPlantInfo", async (req, res) => {
   const resultPost = await Post.find({
     latinName: req.body.postName,
@@ -888,8 +1162,32 @@ app.post("/syncPlantInfo", async (req, res) => {
   res.json({ resultPost: resultPost, photographs: photographs, arts: arts });
 });
 
+app.post("/syncBirdInfo", async (req, res) => {
+  const resultPost = await BirdPost.find({
+    latinName: req.body.postName,
+    authorization: true,
+  });
+  const photographs = await Pic.find({
+    art: "photography",
+    plant: req.body.postName,
+  });
+  const arts = await Art.find({ plant: req.body.postName });
+  res.json({ resultPost: resultPost, photographs: photographs, arts: arts });
+});
+
 app.get("/numOfPlants", async (req, res) => {
   const posts = await Post.find({ authorization: true });
+  var numOfPlants = 0;
+
+  posts.forEach((post) => {
+    numOfPlants++;
+  });
+
+  res.json({ numOfPlants });
+});
+
+app.get("/numOfBirds", async (req, res) => {
+  const posts = await BirdPost.find({ authorization: true });
   var numOfPlants = 0;
 
   posts.forEach((post) => {
@@ -1004,7 +1302,43 @@ app.post("/updateText", verifyToken, async function (req, res) {
     otherNames: req.body.otherNames,
     authorization: true,
     originalLatin: req.body.originalLatin[0],
-    editor: req.body.editor
+    editor: req.body.editor,
+    // dbType: "plant"
+  });
+
+  await editTextRequest.save();
+  res.json({ success: true });
+});
+
+app.post("/birdUpdateText", verifyToken, async function (req, res) {
+  const editTextRequest = new BirdEditTextRequest({
+    latinName: req.body.latinName,
+    chineseName: req.body.chineseName,
+    commonName: req.body.commonName,
+    location: req.body.location,
+    additionalInfo: req.body.additionalInfo,
+    link: req.body.link,
+    chineseLink: req.body.chineseLink,
+    editor: req.body.editor,
+    username: req.user?.username,
+    otherNames: req.body.otherNames,
+    authorization: true,
+    originalLatin: req.body.originalLatin[0],
+    editor: req.body.editor,
+    dbType: "bird",
+
+    appearance:req.body.appearance,
+    songs:req.body.songs,
+    diet:req.body.diet,
+    habitat:req.body.habitat,
+    migration:req.body.migration,
+    breeding:req.body.breeding,
+
+    
+    juvChar:req.body.juvChar,
+    subChar:req.body.subChar,
+    mAdultChar:req.body.madultChar,
+    fAdultChar:req.body.fadultChar
   });
 
   await editTextRequest.save();
@@ -1020,8 +1354,14 @@ app.get("/adminAuth", verifyToken, async function (req, res) {
     admin = null;
   }
 
-  const authPosts = await EditTextRequest.find();
-  const newAuthPosts = await Post.find({ authorization: false });
+  const plantAuthPosts = await EditTextRequest.find();
+  const birdAuthPosts = await BirdEditTextRequest.find();
+  const authPosts = plantAuthPosts.concat(birdAuthPosts);
+
+  const birdPosts = await BirdPost.find({ authorization: false });
+  const plantPosts = await Post.find({ authorization: false });
+  const newAuthPosts = plantPosts.concat(birdPosts);
+
   const newCreationEntries = await creationBottom.find({ auth: false });
 
   res.json({
@@ -1031,6 +1371,137 @@ app.get("/adminAuth", verifyToken, async function (req, res) {
     newAuthPosts,
     newCreationEntries,
   });
+});
+
+app.put("/handleBirdEditDecision", verifyToken, async function (req, res) {
+  try {
+    // await BirdEditTextRequest.findByIdAndDelete("6864f3e21f4a1cd7556aabc1")
+    // await EditTextRequest.findByIdAndDelete("6864f3e21f4a1cd7556aabc1")
+    // const result = await BirdEditTextRequest.deleteMany({})
+    // const result = await BirdEditTextRequest.deleteMany({})
+    const request = await BirdEditTextRequest.findById(req.body.id);
+    if (!request) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Request not found" });
+    }
+
+    const originalLatin = request.originalLatin;
+    const newLatin = request.latinName;
+
+    if (!req.body.decision) {
+      await BirdEditTextRequest.deleteOne({ _id: request._id });
+      return res.json({ success: true, message: "request denied" });
+    }
+    // Update the post first
+    const postToEdit = await BirdPost.findOneAndUpdate(
+
+      { latinName: originalLatin },
+      {
+        $set: {
+          latinName: newLatin,
+          chineseName: request.chineseName,
+          commonName: request.commonName,
+          location: request.location,
+          additionalInfo: request.additionalInfo,
+          link: request.link,
+          chineseLink: request.chineseLink,
+          editor: request.editor,
+          username: request.username,
+          otherNames: request.otherNames,
+          authorization: true,
+
+          appearance: request.appearance,
+          songs: request.songs,
+          diet: request.diet,
+          habitat: request.habitat,
+          migration: request.migration,
+          breeding: request.breeding,
+          
+          juvChar: request.juvChar,
+          subChar: request.subChar,
+          mAdultChar: request.mAdultChar,
+          fAdultChar: request.fAdultChar,
+        },
+      },
+      {
+        new: true,
+        runValidators: true,
+      },
+    );
+
+    if (!postToEdit) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Post not found" });
+    }
+
+    // Handle pics
+    const pics = await Pic.find({ plant: originalLatin });
+    for (const pic of pics) {
+      try {
+        // Generate new filename
+        const oldPath = path.join(__dirname, "public", pic.path);
+        const fileExt = path.extname(oldPath);
+        const newFilename = `${newLatin}-${crypto.randomBytes(16).toString("hex").slice(0, 16)}${fileExt}`;
+        const newRelativePath = path.join("/plantspic", newFilename);
+        const newFullPath = path.join(
+          __dirname,
+          "public",
+          "plantspic",
+          newFilename,
+        );
+
+        // Move and rename file
+        await fs.rename(oldPath, newFullPath);
+
+        // Update database record
+        pic.plant = newLatin;
+        pic.path = newRelativePath;
+        await pic.save();
+      } catch (error) {
+        console.error(`Error processing pic ${pic._id}:`, error);
+      }
+    }
+
+    // Handle arts
+    const arts = await Art.find({ plant: originalLatin });
+    for (const art of arts) {
+      try {
+        // Generate new filename
+        const oldPath = path.join(__dirname, "public", art.path);
+        const fileExt = path.extname(oldPath);
+        const newFilename = `${newLatin}-${crypto.randomBytes(16).toString("hex").slice(0, 16)}${fileExt}`;
+        const newRelativePath = path.join("/plantspic", newFilename);
+        const newFullPath = path.join(
+          __dirname,
+          "public",
+          "plantspic",
+          newFilename,
+        );
+
+        // Move and rename file
+        await fs.rename(oldPath, newFullPath);
+
+        // Update database record
+        art.plant = newLatin;
+        art.path = newRelativePath;
+        await art.save();
+      } catch (error) {
+        console.error(`Error processing art ${art._id}:`, error);
+      }
+    }
+
+    await BirdEditTextRequest.deleteOne({ _id: request._id });
+    return res.json({ success: true, message: "request accepted" });
+  } catch (error) {
+    console.error("Error in handleEditDecision:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
 });
 
 app.put("/handleEditDecision", verifyToken, async function (req, res) {
@@ -1242,10 +1713,31 @@ app.get("/getDb2Pic", async (req, res) => {
   res.json({ success: true, pics });
 });
 
+app.get("/getDb2PicBird", async (req, res) => {
+  const pics = await Pic.aggregate([
+    { $match: {dbType: 'bird' }},
+    { $sample: { size: 3 } },
+    { $project: { path: 1, _id: 0} },
+  ]);
+  res.json({ success: true, pics });
+});
+
 app.get("/db2Alt", async (req, res) => {
   const pic = await Pic.aggregate([
     { $sample: { size: 1 } },
     { $project: { path: 1, _id: 0 } },
+  ]);
+  if (!pic) {
+    res.json({ success: false });
+  }
+  res.json({ success: true, pic });
+});
+
+app.get("/db2AltBird", async (req, res) => {
+  const pic = await Pic.aggregate([
+    { $match: {dbType: 'bird' }},
+    { $sample: { size: 1 } },
+    { $project: { path: 1, _id: 0} },
   ]);
   if (!pic) {
     res.json({ success: false });

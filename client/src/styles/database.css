@@ -1,6 +1,6 @@
 section.db {
   color: #ffffff;
-  background: url("../../public/homescreen.jpg") no-repeat;
+  background: url("../../public/new_bg.jpg") no-repeat;
   background-size: cover;
   height: 100vh;
   background-attachment: fixed;
@@ -15,9 +15,33 @@ section.db::-webkit-scrollbar {
 .dbAdd {
   overflow: hidden;
 }
+
+
 .db2spec {
   display: flex;
   flex-direction: column;
+}
+
+div.dmsg{
+  position: relative;
+  line-height: 1.5rem;
+  text-align: start;
+  margin: 0.5rem;
+  color: #dce6cd;
+  margin-left: 1rem;
+  justify-content: center;
+  width: 100%;
+  border-radius: 0.43rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  height: 100%;
+}
+
+.bottomGreen{
+  /* align-items: start;
+  justify-content: start;
+  align-content: ; */
+  /* align-content: flex-start; */
 }
 div.infoDatabase {
   background-color: #f4fae8;
@@ -33,6 +57,20 @@ div.infoDatabase {
 }
 div.homeDatabase {
   background: url("../../public/homescreen1.jpg") no-repeat;
+  background-attachment: fixed;
+  background-position: center -2rem;
+  background-size: cover;
+  position: relative;
+  margin: 0 auto;
+  margin-top: 8px;
+  width: 93vw;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+div.birdHomeDatabase {
+  background: url("../../public/bird_bg.jpg") no-repeat;
   background-attachment: fixed;
   background-position: center -2rem;
   background-size: cover;

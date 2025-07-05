@@ -16,14 +16,14 @@ const Glossary = ({ handleGets }) => {
   const [username, setUsername] = useState("");
 
   useEffect(() => {
-    document.title = "Plant Glossary 植物表";
+    document.title = "Bird Glossary 鸟类表";
   }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfoGlossary`,
+          `${process.env.REACT_APP_Source_URL}/userInfoGlossaryBird`,
         );
         setUsername(response.data.username);
         setAdmin(response.data.admin);
@@ -46,7 +46,7 @@ const Glossary = ({ handleGets }) => {
   const redirect = (plant) => {
     //plant的类型是string
     handleGets(plant);
-    navigate(`/search/${plant.replace(" ", "_")}`);
+    navigate(`/searchBird/${plant.replace(" ", "_")}`);
   };
 
   const toggleDisplay = (index, type) => {
@@ -65,7 +65,7 @@ const Glossary = ({ handleGets }) => {
       <div className={styles.sec}>
         <div className={styles.greenTop} />
         <div className={styles.gTop}>
-          <Link className={styles.back} to="/databasePlant">
+          <Link className={styles.back} to="/databaseBird">
             Back
           </Link>
           <h1 className={styles.gh1}>Glossary (Click Alphabet to expand)</h1>

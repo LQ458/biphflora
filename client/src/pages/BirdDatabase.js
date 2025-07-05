@@ -8,7 +8,7 @@ import BirdGalleryDatabase from "../components/BirdGalleryDatabase.js";
 import "../styles/database.css";
 import Navbar from "../components/Navbar.js";
 
-const Database = (prop) => {
+const BirdDatabase = (prop) => {
   const [DbType, setDbType] = useState(prop.DbType);
   const [search, setSearch] = useState([]);
   const [key, setKey] = useState("");
@@ -17,7 +17,7 @@ const Database = (prop) => {
   const handleEditPage = prop.handleEditPage;
 
   useEffect(() => {
-    document.title = "Database 植物数据库";
+    document.title = "Database 鸟类数据库";
   }, []);
 
   const handleGet = (input) => {
@@ -41,13 +41,13 @@ const Database = (prop) => {
   const handleDbTypeChange = (input) => {
     setDbType(input);
   }
-
+  
     if (key) {
       return (
         <section onLoad={() => setLoading(false)} className="db">
           <Navbar />
           <div className="infoDatabase">
-            <GalleryDatabase
+            <BirdGalleryDatabase
               customKey={key}
               handleBack={handleBack}
               gallerySearch={gallerySearch}
@@ -60,7 +60,7 @@ const Database = (prop) => {
         <section className="db">
           <Navbar />
           <div className="infoDatabase">
-            <InfoDatabase
+            <BirdInfoDatabase
               search={prop.search}
               handleGallery={handleGallery}
               handleEditPage={handleEditPage}
@@ -73,7 +73,7 @@ const Database = (prop) => {
         <section className="db">
           <Navbar />
           <div className="infoDatabase">
-            <InfoDatabase
+            <BirdInfoDatabase
               handleGallery={handleGallery}
               search={search}
               handleEditPage={handleEditPage}
@@ -105,10 +105,9 @@ const Database = (prop) => {
               flexGrow: 1,
             }}
           >
-            <div className="homeDatabase">
-              <HomeDatabase handleGet={handleGet} setLoading={setLoading} />
+            <div className="birdHomeDatabase">
+              <BirdHomeDatabase handleGet={handleGet} setLoading={setLoading} />
             </div>
-
             <div className="bottomWhite"
                 style={{
                   height: "0.3rem",
@@ -139,7 +138,6 @@ const Database = (prop) => {
       );
     }
   
-  
 };
 
-export default Database;
+export default BirdDatabase;

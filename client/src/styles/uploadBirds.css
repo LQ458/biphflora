@@ -1,0 +1,163 @@
+h1.dUpTitle {
+  color: #2d4228;
+  position: relative;
+  text-align: inherit;
+  margin-bottom: 0;
+}
+h2.uploadTitle {
+  margin: 0.7rem 0 0.7rem 0;
+  color: #2d4228;
+  font-weight: 400;
+  font-size: 1.2rem;
+}
+div.upload {
+  margin-left: 4vw;
+}
+.inputBox {
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  border: 2px solid #516d4e;
+}
+.inputBox::-webkit-input-placeholder {
+  /* Chrome/Opera/Safari */
+  color: gray;
+}
+.inputBox::-moz-placeholder {
+  /* Firefox 19+ */
+  color: gray;
+}
+.inputBox:-ms-input-placeholder {
+  /* IE 10+ */
+  color: gray;
+}
+.inputBox:-moz-placeholder {
+  /* Firefox 18- */
+  color: gray;
+}
+.inputBox:focus {
+  outline: none;
+}
+textarea.additionalInfo {
+  width: 80vw;
+  font-family: Arial, sans-serif;
+  font-weight: 400;
+  padding: 0.6rem 1.1rem 0.6rem 1.1rem;
+}
+div.topInputs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  width: 80vw;
+  gap: 2vw;
+}
+
+div.midInputs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  width: 80vw;
+  gap: 2vw;
+}
+div.bottomInputs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  width: 80vw;
+  gap: 2vw;
+}
+
+input.iPTLinks {
+  width: 78vw;
+}
+input.editor {
+  width: 17vw;
+}
+button.formSubmit {
+  color: white;
+  font-size: 1rem;
+  position: relative;
+  display: flex;
+  margin-top: 1rem;
+  background-color: #739667;
+}
+button.resetButton {
+  color: white;
+  font-size: 1rem;
+  position: relative;
+  display: flex;
+  width: fit-content;
+  background-color: #739667;
+}
+div.picTop {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  width: 80vw;
+  gap: 2vw;
+}
+input.picLatin {
+  width: auto;
+}
+input.description {
+  width: 52vw;
+}
+h3.picTitle {
+  color: #2d4228;
+  font-size: 1.1rem;
+  margin-left: 0.5vw;
+  font-weight: 400;
+}
+div.picMid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2vw;
+  width: 70vw;
+}
+input.file {
+  display: none;
+}
+label.fileLabel {
+  padding: 0.5rem 1rem 0.5rem 1rem;
+  background-color: #afc0ac;
+  color: white;
+  cursor: pointer;
+  border: 2px solid #516d4e;
+  font-weight: 500;
+}
+div.picBtm {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2vw;
+  width: 46vw;
+}
+div.artTop {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2vw;
+  width: 80vw;
+}
+input.artLocation {
+  width: 25vw;
+}
+.fileUploadComponent {
+  width: 92%;
+}
+.fileUploadComponent .p-fileupload-choose {
+  background-color: #739667;
+  border: 1px solid #739667;
+}
+.fileUploadComponent .p-fileupload-choose:focus {
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px #739667,
+    0 1px 2px 0 rgb(0, 0, 0);
+}
+.fileUploadComponent div button {
+  cursor: pointer;
+  border: 1px solid #739667;
+  font-size: 1rem;
+  color: white;
+  background-color: #739667;
+}
+
+.fileUploadComponent button:focus {
+  box-shadow:
+    0 0 0 2px #ffffff,
+    0 0 0 4px #739667,
+    0 1px 2px 0 rgb(0, 0, 0);
+}

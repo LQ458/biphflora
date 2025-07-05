@@ -23,6 +23,7 @@ const urls = {
 
   // Media-related URLs
   upload: `${prefix}/upload`,
+  uploadBird: `${prefix}/uploadBird`,
   uploadPic: `${prefix}/uploadPic`,
   uploadArt: `${prefix}/uploadArt`,
   getPics: `${prefix}/getPics`,
@@ -42,6 +43,7 @@ const urls = {
   creationDocumentary: `${prefix}/creationDocumentary`,
   updateText: `${prefix}/updateText`,
   searchNames: `${prefix}/searchNames`,
+  searchBirdNames: `${prefix}/searchBirdNames`,
 };
 
 export default urls;

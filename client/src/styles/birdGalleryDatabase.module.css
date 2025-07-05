@@ -1,0 +1,287 @@
+.db3SearchButton {
+  position: relative;
+  right: 1vw;
+  bottom: 0.2vh;
+  color: black;
+}
+.db3SearchButton:hover {
+  color: #516d4e;
+}
+button.backBtn:hover {
+  text-decoration: underline;
+}
+button.backBtn {
+  position: relative;
+  padding: 0;
+  margin: 0;
+}
+h1.lowerTitle {
+  position: relative;
+  font-size: 1.8rem;
+  margin: 0;
+}
+div.lowerParts {
+  align-items: center;
+  justify-content: center;
+}
+div.seasons {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+  width: 75%;
+  margin: 0 auto;
+}
+button.seasonBtn {
+  background-color: #95b28b;
+  padding: 0.7rem 0.7rem;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+button.seasonBtn:hover {
+  text-decoration: underline;
+}
+.focussed {
+  background-color: #516d4e !important;
+  text-decoration: underline;
+}
+div.lineB {
+  position: relative;
+  height: 0.6vh;
+  margin-top: 2.7vh;
+  background-color: #516d4e;
+}
+div.springPics {
+  top: 4vh;
+  display: grid;
+  gap: 1rem;
+  position: relative;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  grid-template-columns: repeat(4, 1fr);
+}
+div.summerPics {
+  top: 4vh;
+  display: grid;
+  gap: 1rem;
+  position: relative;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  grid-template-columns: repeat(4, 1fr);
+}
+div.autumnPics {
+  top: 4vh;
+  display: grid;
+  gap: 1rem;
+  position: relative;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  grid-template-columns: repeat(4, 1fr);
+}
+div.winterPics {
+  top: 4vh;
+  display: grid;
+  gap: 1rem;
+  position: relative;
+  margin-left: 3vw;
+  margin-right: 3vw;
+  grid-template-columns: repeat(4, 1fr);
+}
+img.summerPic {
+  width: 18vw;
+  height: 9.5vw;
+  cursor: pointer;
+  object-fit: cover;
+}
+div.summerPicWords {
+  position: relative;
+  background-color: #83a276;
+  text-align: left;
+  color: white;
+  align-items: center;
+  width: 18vw;
+}
+div.summerPic {
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: 0 auto;
+}
+p.SPW {
+  font-size: 0.8rem;
+  font-weight: 550;
+  margin-left: 8px;
+  position: relative;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+.db3Name {
+  color: white;
+  position: relative;
+  top: 1.8vw;
+  right: 39vw;
+  font-size: 2vw;
+}
+div.resultsdb3 {
+  position: absolute;
+  z-index: 1000;
+  left: 14.4vw;
+  top: 7.5vh;
+}
+h3.db3h3 {
+  position: relative;
+  font-size: 1.1rem;
+  bottom: 1.5vh;
+  font-weight: 300;
+}
+.zoomPic {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 70vw;
+  max-height: 70vh;
+}
+
+.xButton {
+  color: white;
+  position: absolute;
+  right: 12vw;
+  top: 3vw;
+  text-decoration: underline;
+  color: #2d4228;
+  font-size: 1.7vw;
+}
+
+.featureBtn {
+  right: 5vw;
+  top: 50vw;
+  color: white;
+  background-color: #739666;
+  padding: 0.5vw 1vw;
+  position: absolute;
+}
+button.pageBtn {
+  background-color: #95b28b;
+  color: white;
+  height: 3rem;
+  position: relative;
+  margin: 0 auto;
+  width: 2.5rem;
+}
+div.pageBtns {
+  display: grid;
+  position: relative;
+  margin: 2rem;
+  width: 14vw;
+  margin: 0 auto;
+  margin-top: 6rem;
+  grid-template-columns: repeat(3, 1fr);
+}
+div.btmLine {
+  height: 0.3rem;
+  background-color: #516d4e;
+  width: 88vw;
+  margin-top: 6rem !important;
+  position: relative;
+  margin: 0 auto;
+}
+.pageBtnA {
+  background-color: #63895f !important;
+}
+
+.underSeasons {
+  display: flex;
+  width: 100%;
+  justify-content: left;
+  align-items: center;
+  margin-left: 3vw;
+  margin-right: 3vw;
+}
+
+.topbarGalleryDB {
+  padding-top: 0rem;
+  background-color: #516d4e;
+  padding-bottom: 0rem;
+  position: relative;
+  width: 93vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 0 auto;
+  height: 9rem;
+}
+
+.ttl {
+  display: flex;
+  color: white;
+  font-size: 1.45rem;
+  align-items: center;
+  position: relative;
+  padding-bottom: 1rem;
+  left: 2.5vw;
+}
+
+.ttl h3 {
+  margin: 0;
+}
+
+.zoomBackground {
+  position: fixed;
+  display: inline-block;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background-color: #f4fae8;
+}
+
+body.db {
+  overflow: hidden;
+}
+
+div.lowerTop {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 0.5rem;
+  margin-bottom: 2rem;
+  margin-left: 6rem;
+  flex-direction: column;
+}
+
+button.featurePicBtn {
+  cursor: pointer;
+  color: white;
+  text-decoration: underline;
+}
+
+div.featureInfo {
+  all: initial;
+  display: flex;
+  position: fixed;
+  right: 4rem;
+  bottom: 3rem;
+  background-color: #739666;
+  color: white;
+  font-size: 1.5rem;
+  font-family: "Noto Sans TC", sans-serif;
+  padding: 0.7rem 1rem 0.7rem 1rem;
+  z-index: 10000;
+}
+div.featureInfo p {
+  margin: 0;
+}
+.arrowIcon {
+  height: 1rem;
+}
+
+button.monthBtn {
+  background-color: #95b28b;
+  padding: 0.7rem 1rem;
+  color: white;
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+button.monthBtn:hover {
+  text-decoration: underline;
+}

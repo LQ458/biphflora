@@ -10,6 +10,7 @@ import UploadHome from "../components/UploadHome.js";
 import Navbar from "../components/Navbar.js";
 import { useLocation } from "react-router-dom";
 import AdminAuth from "../components/AdminAuth.js";
+import UploadBirds from "../components/UploadBird.js";
 
 const Upload = () => {
   const navigate = useNavigate();
@@ -120,12 +121,23 @@ const Upload = () => {
           >
             Home
           </button>
+
+
           <button
             className={`${currentSubpage === "plant" && "focused"}`}
             onClick={() => switchTo("plant")}
           >
-            Database
+            Plant Database
           </button>
+          <button
+            className={`${currentSubpage === "bird" && "focused"}`}
+            onClick={() => switchTo("bird")}
+          >
+            Bird Database
+          </button>
+
+
+
           <button
             className={`${currentSubpage === "creation" && "focused"} creation`}
             onClick={() => switchTo("creation")}
@@ -150,9 +162,9 @@ const Upload = () => {
           <UploadHome />
         ) : currentSubpage === "auth" ? (
           <AdminAuth admin={admin} />
-        ) : (
-          <UploadPlants />
-        )}
+        ) : currentSubpage === "bird" ?(
+          <UploadBirds />
+        ) : <UploadPlants/>}
       </section>
     </section>
   ) : (

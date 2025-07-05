@@ -1,11 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, redirect } from "react-router-dom";
 import "../styles/navBar.css";
 import { useContext } from "react";
 import { UserContext } from "../UserContext";
+import { Button } from "primereact/button";
+import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const { user } = useContext(UserContext);
   const status = user.get("status");
+  const navigate = useNavigate();
 
   return (
     <div className="nav">
@@ -18,12 +21,19 @@ const Navbar = () => {
           >
             Home
           </Link>
-          <Link
+          {/* <Link
             className={`linkBarLink ${status !== "authenticated" && "widen"}`}
-            to="/database"
+            to="/database_plant"
           >
             Database
-          </Link>
+          </Link> */}
+          <div className={`dropdown ${status !== "authenticated" && "widen"}`}>
+            <span className="linkBarLink">Database</span>
+            <div className="dropdown-content">
+              <Link to="/databasePlant">Plants</Link>
+              <Link to="/databaseBird">Birds</Link>
+            </div>
+          </div>
           <Link
             className={`linkBarLink ${status !== "authenticated" && "widen"}`}
             to="/creation"

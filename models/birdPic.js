@@ -44,9 +44,7 @@ const picSchema = new Schema({
     type: String,
     unique: true,
   },
-  dbType:{
-    type: String
-  }
+  
 });
 
-module.exports = mongoose.model("Pic", picSchema);
+module.exports = mongoose.model("BirdPic", picSchema);

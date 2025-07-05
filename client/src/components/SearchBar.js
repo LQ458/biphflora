@@ -10,13 +10,19 @@ const SearchBar = ({
   query,
   handleSearch,
   barWidth,
+  placeHolder,
+  type
 }) => {
   const [empty, setEmpty] = useState(true);
   const navigate = useNavigate();
   const redirect = (plant) => {
     //plant的类型是string
     // handleGet(plant);
-    navigate(`/search/${plant.replace(" ", "_")}`);
+    if(type === "bird"){
+      navigate(`/searchBird/${plant.replace(" ", "_")}`);
+    }else{
+      navigate(`/search/${plant.replace(" ", "_")}`);
+    }
   };
 
   return (
@@ -36,8 +42,9 @@ const SearchBar = ({
             handleSearch(event);
             setEmpty(event.target.value === "");
           }}
-          placeholder="Enter the name of the plant 输入植物名......"
           className="db2SearchBar"
+          placeholder={placeHolder}
+          // style = {{placeholder:placeHolder}}
         />
         <button
           type="submit"

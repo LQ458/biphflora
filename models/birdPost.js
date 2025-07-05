@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const moment = require("moment-timezone");
 
-const postSchema = new Schema({
+const birdPostSchema = new Schema({
   latinName: {
     type: String,
     unique: true,
@@ -19,12 +19,40 @@ const postSchema = new Schema({
   otherNames: {
     type: String,
   },
+
+  //外型特征
+  appearance:{
+    type: String,
+  },
+
+  songs:{
+    type: String,
+  },
+
+  diet:{
+    type: String,
+  },
+
+  habitat: {
+    type: String,
+  },
+
   location: {
     type: String,
   },
+
+  migration:{
+    type: String,
+  },
+
+  breeding:{
+    type: String,
+  },
+
   additionalInfo: {
     type: String,
   },
+
   link: {
     type: Array,
   },
@@ -46,9 +74,23 @@ const postSchema = new Schema({
         .replace("T", " ")
         .replace("Z", ""),
   },
+
   dbType:{
     type: String,
-  }
+  },
+
+  juvChar:{
+    type: String
+  },
+  subChar:{
+    type: String
+  },
+  mAdultChar:{
+    type: String
+  },
+  fAdultChar:{
+    type: String
+  },
 });
 
-module.exports = mongoose.model("Post", postSchema);
+module.exports = mongoose.model("BirdPost", birdPostSchema);

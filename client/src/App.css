@@ -51,7 +51,7 @@ section.aboutUs {
   background:
     url("../public/idk.jpg") top / 100vw 60rem no-repeat,
     url("../public/4.jpg") center / 100vw auto no-repeat,
-    url("../public/homescreen.jpg") bottom / 100vw auto no-repeat;
+    url("../public/new_bg.jpg") bottom / 100vw auto no-repeat;
 }
 
 .aboutUsContent {

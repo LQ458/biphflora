@@ -23,7 +23,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
     const getDb2Pic = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/getDb2Pic`,
+          `${process.env.REACT_APP_Source_URL}/getDb2PicBird`,
         );
         setPics(response.data.pics);
       } catch (error) {
@@ -38,7 +38,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
+          `${process.env.REACT_APP_Source_URL}/searchBirdNames`,
         );
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
@@ -80,7 +80,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
       };
       img.onerror = async () => {
         try {
-          const response = await axios.get("/db2Alt");
+          const response = await axios.get("/db2AltBird");
           const altImg = new Image();
           altImg.src = `${process.env.REACT_APP_Source_URL}/public/compressed${response.data.pic.path}`;
           altImg.onload = () => {
@@ -114,31 +114,29 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
     >
       <div className="db2Container">
         <div style={{ display: "flex", flexDirection: "column" }}>
-          {/* <div className="dbBlock" /> */}
           <h1 className="db2ttl">
-            Database of Plant Species in School 校内植物检索数据库
+            Database of Bird Species in School 校内鸟类检索数据库
           </h1>
           <SearchBar
             handleGet={handleGet}
             searchResults={searchResults}
             query={query}
             handleSearch={handleSearch}
+            type="bird"
             barWidth="65%"
-            placeHolder={"Enter the name of the plant 输入植物名..."}
+            placeHolder="Enter the name of the bird 输入鸟类名字..."
           />
         </div>
 
         <div className="numOfPlantsBox">
           <div className="numOfPlantsBoxInner">
-            <div className="msg">
-              # of Plant Species Recorded in Database
-            </div>
+            <div className="msg"># of Bird Species recorded in Database</div>
             <div className="number">
               <p className="numberP">{numOfPlants}</p>
             </div>
           </div>
-          <Link to="/glossary" className="link">
-            Show Full Species List..
+          <Link to="/glossaryBird" className="link">
+            Show the Full Species List
           </Link>
         </div>
         <p
