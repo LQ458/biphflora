@@ -114,9 +114,15 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
     >
       <div className="db2Container">
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <h1 className="db2ttl">
-            Database of Bird Species in School 校内鸟类检索数据库
-          </h1>
+          <div className="dbheader">
+            <h1 className="db2ttl">
+              Database of Bird Species in School 校内鸟类检索数据库
+            </h1>
+            <Link to="/databasePlant" className="changeDbLink">
+              Switch to Plant Database 切换至植物检索数据库
+            </Link>
+          
+          </div>
           <SearchBar
             handleGet={handleGet}
             searchResults={searchResults}

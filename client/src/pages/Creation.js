@@ -4,7 +4,9 @@ import CreationDocumentary from "../components/CreationDocumentary.js";
 import CreationPaintings from "../components/CreationPaintings.js";
 import CreationNotes from "../components/CreationNotes.js";
 import CreationView from "../components/CreationView.js";
+import CreationVideos from "../components/CreationVideos.js";
 import Navbar from "../components/Navbar.js";
+import { Outlet } from "react-router-dom";
 
 const Creation = (props) => {
   const [currentSubpage, setCurrentSubpage] = useState("paintings");
@@ -15,8 +17,12 @@ const Creation = (props) => {
   const titleMapping = {
     paintings: "Creation Paintings 绘画",
     "Notes of Nature": "Creation Notes of Nature 大自然笔记",
-    documentary: "Creation Documentary 纪录",
+    videos: "Creation Documentary 纪录",
   };
+
+  useEffect(() => {
+    setCurrentSubpage(props.currentPage);
+  }, [props.currentPage]); // The "dependency array"
 
   useEffect(() => {
     document.title = titleMapping[currentSubpage];
@@ -46,6 +52,8 @@ const Creation = (props) => {
     );
   } else if (currentSubpage === "notes") {
     currentComponent = <CreationNotes />;
+  } else if(currentSubpage === "videos"){
+    currentComponent = <CreationVideos />;
   }
 
   const handleClick = (pick) => {
@@ -76,7 +84,19 @@ const Creation = (props) => {
         >
           Artworks
         </button>
+        <button
+          className={`subPageButton ${currentSubpage === "videos" && "active"}`}
+          onClick={() => {
+            handleClick("videos");
+          }}
+        >
+          Videos
+        </button>
       </div>
+
+
+
+      {/* <Outlet/> */}
       <div className="creationBody">{currentComponent}</div>
     </section>
   );

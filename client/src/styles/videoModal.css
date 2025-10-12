@@ -1,0 +1,42 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #f4fae89f;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 500000;
+}
+
+.modal-content {
+  /* position: relative; */
+  /* background-color: #181818; */
+  /* padding: 20px; */
+  /* border-radius: 8px; */
+  /* box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); */
+}
+
+.close-button {
+  position: absolute;
+  left: 5rem;
+  top:2rem;
+  /* background: white; */
+  color: black;
+  border: none;
+  border-radius: 50%;
+  /* width: 10rem;
+  height: 30rem; */
+  font-size: 2rem;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.react-player {
+    height: 50rem;
+    width: 60rem;
+    /* font-size: 10rem; */
+}

@@ -519,6 +519,7 @@ const InfoDatabase = (search) => {
               query={query}
               handleSearch={handleSearch}
               barWidth="80%"
+              placeHolder="Enter the name of the plant 输入植物名..."
             />
           </div>
           <div className={styles.ttl}>

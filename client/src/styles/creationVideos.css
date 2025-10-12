@@ -1,0 +1,173 @@
+div.seasons{
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  width: 92vw;
+  height: 45rem;
+  background-color: #516d4e;
+  margin: 0 auto;
+}
+
+
+
+
+div.seasonTitle{
+    font-size: 30;
+    background-color: #f4fae8;
+    width: 14rem;
+    height: 4rem;
+    display: flex;
+    margin-left: 3rem;
+    margin-top: 2rem;
+    font-weight: 600;
+    font-size: 1.6rem;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+
+}
+
+
+div.floatingSeasonGuides{
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    align-items: center;
+    width: 20rem;
+    margin-left: 63rem;
+    margin-top: 8rem;
+    border-radius: 3rem;
+}
+
+div.floatingSeasonGuide1{
+    display: flex;
+    flex-direction: column;
+    line-height: 0.9rem;
+    width: 16rem;
+    background-color: #f4fae8;
+    margin-top: 0rem;
+    align-items: center;
+    border-radius: 2rem;
+    padding: 1.5rem;
+    color: #2d4228;
+
+}
+
+.seasonNum{
+    font-weight: 800;
+    font-size: 1.4rem;
+    margin: 0;
+}
+
+img.videoBg{
+    position: absolute;
+    margin-top: 8rem;
+    margin-left: 6rem;
+    background-color: white;
+    width: 55rem;
+    height: 33rem;
+}
+
+.seasonLink{
+    font-weight: 800;
+    font-size: 1rem;
+    margin: 0;
+    color: #2d4228;
+}
+
+div.floatingSeasonGuide2{
+    display: flex;
+    flex-direction: column;
+    line-height: 0.9rem;
+    width: 16rem;
+    background-color: #f4fae8;
+    margin-top: 2rem;
+    align-items: center;
+    border-radius: 2rem;
+    padding: 1.5rem;
+}
+
+div.floatingSeasonGuide3{
+    display: flex;
+    flex-direction: column;
+    line-height: 0.9rem;
+    width: 16rem;
+    background-color: #f4fae8;
+    margin-top: 2rem;
+    align-items: center;
+    border-radius: 2rem;
+    padding: 1.5rem;
+}
+
+
+div.speciesTitle{
+    position: absolute;
+    font-size: 30;
+    background-color: #516d4e;
+    width: 14rem;
+    height: 4rem;
+    display: flex;
+    margin-left: 3rem;
+    margin-top: 3rem;
+    font-weight: 600;
+    font-size: 1.6rem;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+
+}
+
+div.species{
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  width: 92vw;
+  height: 60rem;
+  background-color: #f4fae8;
+  margin: 0 auto;
+  /* justify-items: center; */
+  /* justify-content: center; */
+  /* align-items: center; */
+}
+
+
+.thumnailContainer {
+  display: flex;
+  flex-direction: column; /* Stack rows vertically */
+  gap: 16px; /* Space between rows */
+  padding-top: 10rem;
+  border-radius: 8px;
+  /* width: 80rem; */
+  /* height: 40rem; */
+}
+
+.tbBox {
+  display: flex; /* Use flexbox to arrange images horizontally */
+  flex-wrap: wrap; /* Allow images to wrap to the next line if space is limited */
+  align-items: center; /* Vertically align items in the row */
+  gap: 12px; /* Space between images within a row */
+  background-color: #7396679b; /* Green background for each row */
+  padding: 12px;
+  margin-left: 1rem;
+  /* margin: auto; */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tbBox img {
+  width: 27rem; /* Fixed width for thumbnails */
+  height: 14rem; /* Fixed height for thumbnails (16:9 aspect ratio) */
+  object-fit: cover; /* Ensure images cover the area without distortion */
+}
+
+.vidBox1{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.vidCaption{
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+

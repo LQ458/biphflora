@@ -8,12 +8,13 @@
   color: #516d4e;
 }
 button.backBtn:hover {
+  
   text-decoration: underline;
 }
 button.backBtn {
   position: relative;
   padding: 0;
-  margin: 0;
+  margin-left: 4cqmax;
 }
 h1.lowerTitle {
   position: relative;
@@ -148,6 +149,8 @@ h3.db3h3 {
   position: absolute;
   right: 12vw;
   top: 3vw;
+  z-index: 1000;
+  margin-top:3rem;
   text-decoration: underline;
   color: #2d4228;
   font-size: 1.7vw;
@@ -242,11 +245,12 @@ body.db {
 
 div.lowerTop {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   margin-top: 0.5rem;
   margin-bottom: 2rem;
   margin-left: 6rem;
-  flex-direction: column;
+  flex-direction: row;
+
 }
 
 button.featurePicBtn {

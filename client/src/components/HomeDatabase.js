@@ -74,7 +74,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
       img.src = `${process.env.REACT_APP_Source_URL}/public${pic.path}`;
       img.onload = () => {
         newArray[index] = false;
-        srcs[index] = `${process.env.REACT_APP_Source_URL}/public/compressed${pic.path}`;
+        srcs[index] = `${process.env.REACT_APP_Source_URL}/public${pic.path}`;
         setLoadedSrc([...srcs]);
         setLoad([...newArray]);
       };
@@ -82,11 +82,11 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
         try {
           const response = await axios.get("/db2Alt");
           const altImg = new Image();
-          altImg.src = `${process.env.REACT_APP_Source_URL}/public/compressed${response.data.pic.path}`;
+          altImg.src = `${process.env.REACT_APP_Source_URL}/public${response.data.pic.path}`;
           altImg.onload = () => {
             newArray[index] = false;
             srcs[index] =
-              `${process.env.REACT_APP_Source_URL}/public/compressed${response.data.pic.path}`;
+              `${process.env.REACT_APP_Source_URL}/public${response.data.pic.path}`;
             setLoadedSrc([...srcs]);
             setLoad([...newArray]);
           };
@@ -115,9 +115,16 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
       <div className="db2Container">
         <div style={{ display: "flex", flexDirection: "column" }}>
           {/* <div className="dbBlock" /> */}
-          <h1 className="db2ttl">
-            Database of Plant Species in School 校内植物检索数据库
-          </h1>
+          <div className="dbheader">
+            <h1 className="db2ttl">
+              Database of Plant Species in School 校内植物检索数据库
+            </h1>
+            <Link to="/databaseBird" className="changeDbLink">
+              Switch to Bird Database 切换至鸟类检索数据库
+            </Link>
+
+          </div>
+          
           <SearchBar
             handleGet={handleGet}
             searchResults={searchResults}
@@ -130,15 +137,17 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
 
         <div className="numOfPlantsBox">
           <div className="numOfPlantsBoxInner">
-            <div className="msg">
-              # of Plant Species Recorded in Database
+            <div className="plantMsg">
+              # of Plant Species Recorded in Database 
+              <br/>
+              目前可检索种数
             </div>
-            <div className="number">
-              <p className="numberP">{numOfPlants}</p>
+            <div className="ppnumber">
+              <p className="pnumber">{numOfPlants}</p>
             </div>
           </div>
-          <Link to="/glossary" className="link">
-            Show Full Species List..
+          <Link to="/glossary" className="plink">
+            Show Full Species List<br></br>展示完整物种名单
           </Link>
         </div>
         <p

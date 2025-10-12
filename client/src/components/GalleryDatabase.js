@@ -20,6 +20,8 @@ const GalleryDatabase = (props) => {
     'Nov':'11/',
     'Dec':'12/',
   };
+  // const [availableSeason, setAvailableSeason] = useState("");
+  var availableSeason = "";
   const [curIndex, setCurIndex] = useState(0);
   const [username, setUsername] = useState("");
   const [admin, setAdmin] = useState("");
@@ -40,6 +42,7 @@ const GalleryDatabase = (props) => {
   const [seasonMonthMap, setSeasonMonthMap] = useState({});
   // also set allSeasonPics so you can page later
   const [allSeasonPics, setAllSeasonPics] = useState({});
+  
 
 
   // Which season is selected (e.g. "spring", or "" if none yet)
@@ -120,6 +123,9 @@ const GalleryDatabase = (props) => {
         let newArray = [];
         seasons.forEach((season, index) => {
           newArray[index] = response.data[`${season}Pics`];
+          if(response.data[`${season}Pics`].length>0 && availableSeason===""){
+            availableSeason = season;
+          }
         });
 
         const seasonMonthMap = seasons.reduce((acc, season, i) => {
@@ -131,10 +137,14 @@ const GalleryDatabase = (props) => {
             const key = `${mon} ${year}`;
             if (!monthMap[key]) monthMap[key] = [];
             monthMap[key].push(pic);
+            
           });
           acc[season] = monthMap;
           return acc;
         }, {});
+        
+        setSelectedSeason(availableSeason);
+        setSelectedMonth((Object.keys(seasonMonthMap[availableSeason])[0] || ""));
 
         setPics(newArray);
         sortPicMonth(newArray.flat());
@@ -146,6 +156,7 @@ const GalleryDatabase = (props) => {
     };
     getPics();
   }, [props.customKey, seasons]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -161,6 +172,7 @@ const GalleryDatabase = (props) => {
     };
 
     fetchData();
+    // setSelectedSeason(availableSeason);
   }, []);
 
   const handleBack = () => {
@@ -218,18 +230,22 @@ const GalleryDatabase = (props) => {
         console.log(error);
       }
     };
-
+    // setSelectedSeason(availableSeason);
     fetchUserInfo();
   }, []);
+  
+
+  // setSelectedMonth((Object.keys([s])[0] || ""));
 
   return (
     <body className={styles.db}>
       <div className={styles.lowerPart}>
         <div className={styles.lowerTop}>
+          
+          <h1 className={styles.lowerTitle}>Image Gallery 图库</h1>
           <button onClick={handleBack} className={styles.backBtn}>
             Back
           </button>
-          <h1 className={styles.lowerTitle}>Image Gallery 图库</h1>
         </div>
 
         {/* <div className={styles.seasons}>

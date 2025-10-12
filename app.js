@@ -1284,9 +1284,23 @@ app.post("/makePicFeatured", async (req, res) => {
   res.json({ success: true });
 });
 
-app.get("/", function (req, res) {
-  res.sendFile(path.join(__dirname, "/guide.html"));
-});
+// app.get("/", function (req, res) {
+//   res.redirect("/databasePlant");
+//   // res.sendFile(path.join(__dirname, "/guide.html"));
+// });
+
+// app.get("/home",function (req,res) {
+//   res.sendFile(path.join(__dirname, "/guide.html"));
+// });
+
+// app.post("/home",function (req,res) {
+//   res.sendFile(path.join(__dirname, "/guide.html"));
+// });
+
+// app.post("/", function (req, res) {
+//   res.redirect("/databasePlant");
+//   // res.sendFile(path.join(__dirname, "/guide.html"));
+// });
 
 app.post("/updateText", verifyToken, async function (req, res) {
   const editTextRequest = new EditTextRequest({
@@ -1666,6 +1680,7 @@ app.post(
 );
 
 app.get("/uploadHome", upload, async (req, res) => {
+
   const entries = await FeatureHome.find();
   res.json({ success: true, entries });
 });

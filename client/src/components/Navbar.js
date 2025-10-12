@@ -17,7 +17,7 @@ const Navbar = () => {
         <div className="links">
           <Link
             className={`linkBarLink ${status !== "authenticated" && "widen"}`}
-            to="/"
+            to="/home"
           >
             Home
           </Link>

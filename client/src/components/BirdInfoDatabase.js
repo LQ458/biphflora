@@ -601,6 +601,7 @@ const InfoDatabase = (search) => {
               query={query}
               handleSearch={handleSearch}
               barWidth="80%"
+              placeHolder="Enter the name of the bird 输入鸟类名..."
             />
           </div>
           <div className={styles.ttl}>

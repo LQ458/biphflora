@@ -16,6 +16,25 @@ div.msg {
   opacity: 88%;
 }
 
+div.plantMsg {
+  position: relative;
+  background-color: #516d4e;
+  line-height: 1.5rem;
+  text-align: center;
+  margin: 1rem;
+  color: #ffffff;
+  
+  align-content: center;
+  justify-content: center;
+  width: 14.5rem;
+  border-radius: 0.43rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  height: 85%;
+  line-height: 1.1rem;
+  /* opacity: 88%; */
+}
+
 div.number {
   position: relative;
   background-color: #dce6cd;
@@ -33,6 +52,25 @@ div.number {
   height: 100%;
   opacity: 88%;
 }
+
+div.ppnumber {
+  position: relative;
+  background-color: #516d4e;
+  text-align: center;
+  border-radius: 0.43rem;
+  /* padding: 1rem 1.7rem; */
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  color: #ffffff;
+  width: 5.2rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  height: 85%;
+}
+
+
 .link {
   position: relative;
   /* text-decoration: none; */
@@ -50,12 +88,33 @@ div.number {
   height: 100%;
   opacity: 88%;
 }
+
+.plink {
+  position: relative;
+  /* text-decoration: none; */
+  background-color: #516d4e;
+  padding: 1rem 1.7rem;
+  color: #ffffff;
+  text-align: center;
+  align-content: center;
+  justify-content: center;
+  width: 13rem;
+  border-radius: 0.43rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-right: 2rem;
+  height: 85%;
+}
+
+.plink:hover {
+  text-decoration: underline;
+}
+
 .link:hover {
   text-decoration: underline;
 }
-h1.db2ttl {
-  font-size: 1.7rem;
-}
+
+
 p.numberP {
   position: relative;
 }
@@ -106,6 +165,45 @@ div.numOfPlantsBox {
   padding: 0 7rem;
   justify-content: space-between;
 }
+
+div.dbheader {
+  /* position: relative; */
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 6.3rem;
+  padding: 0 0rem;
+  width: 100%;
+  /* justify-content: space-between; */
+}
+
+h1.db2ttl {
+  font-size: 1.7rem;
+  position:absolute;
+  left: 50%;
+  transform: translateX(-50%); 
+  width: 60rem;
+
+}
+
+.changeDbLink {
+  position: relative;
+  /* text-decoration: none; */
+  margin-left: auto;
+  /* margin-right: 0rem; */
+  padding: 1rem 1.7rem;
+  color: #ffffff;
+  text-align: center;
+  align-content: center;
+  justify-content: center;
+  width: 18rem;
+  border-radius: 0.43rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  height: 80%;
+  opacity: 88%;
+}
+
 
 div.numOfPlantsBoxInner {
   display: flex;

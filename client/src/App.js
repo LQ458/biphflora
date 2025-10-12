@@ -24,12 +24,20 @@ import "primeflex/primeflex.css"; // 布局
 
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import React, { useState } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
+import VideoModal from "./components/VideoModal";
 
 function App() {
   const [search, setSearch] = useState("");
   const [previewKey, setPreviewKey] = useState("");
   const [editKey, setEditKey] = useState();
+  const location = useLocation();
+  
+  // This lets the modal open "on top of" the existing page.
+  const background = location.state && location.state.background;
+
+  
+  
   // const [CR, setCR] = useState("");
 
   const handleGets = (input) => {
@@ -71,17 +79,17 @@ function App() {
   return (
     <UserProvider>
       <PrimeReactProvider>
-        <Router>
+        {/* <Router> */}
           <div className="App">
-            <Routes>
-              <Route
+            <Routes location={background || location}>
+              {/* <Route
                 path="/"
                 element={
                   <>
                     <Home handleGets={handleGets} />
                   </>
                 }
-              />
+              /> */}
               <Route
                 path="/KQsfhwifheKDFJfkdfjdkfjd3q3puod0d0"
                 element={
@@ -122,14 +130,6 @@ function App() {
                   </>
                 }
               />
-              {/* <Route
-              path="/admin"
-              element={
-                <>
-                  <Admin handleAdminPreview={handleAdminPreview} />
-                </>
-              }
-            /> */}
               <Route
                 path="/editPage"
                 element={
@@ -137,6 +137,14 @@ function App() {
                     <EditPage editKey={editKey} />
                   </>
                 }
+              />
+              <Route
+                path="/"
+                element = {<><Database handleEditPage={handleEditPage} DbType="plant" /> </>}
+              />
+              <Route
+                path="/home"
+                element = {<> <Home handleGets={handleGets} /> </>}
               />
               <Route
                 path="/birdEditPage"
@@ -186,16 +194,23 @@ function App() {
                     <SearchWithParam handleEditPage={handleEditPage} dbType="bird"/>
                   </>
                 }
-              />
-              
+              >
+                {/* <Route path=":subpageID" element = {<SubPageComponent/>}></Route> */}
+
+              </Route>
+
+
               <Route
                 path="/creation"
                 element={
                   <>
-                    <Creation handleGets={handleGets} />
+                    <Creation currentPage="paintings" handleGets={handleGets} />
                   </>
                 }
               />
+
+              <Route path="/video/:vidKey" element={<VideoModal />} />
+
               <Route
                 path="/aboutus"
                 element={
@@ -228,7 +243,7 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </div>
-        </Router>
+        {/* </Router> */}
       </PrimeReactProvider>
     </UserProvider>
   );
