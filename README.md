@@ -1,12 +1,5 @@
 # BIPH FLORA 🌿
 
-![Node.js](https://img.shields.io/badge/Node.js-v18+-green)
-![React](https://img.shields.io/badge/React-v18.3.1-blue)
-![Express](https://img.shields.io/badge/Express-v4.21.1-yellow)
-![MongoDB](https://img.shields.io/badge/MongoDB-v8.8.2-brightgreen)
-![Redis](https://img.shields.io/badge/Redis-v4.7.0-red)
-![License](https://img.shields.io/badge/License-Private%20Use%20Only-red)
-
 A modern full-stack plant identification web application dedicated to providing users with a comprehensive platform for plant identification, sharing, and learning.
 
 **⚠️ Important Notice: This project is for personal and private use only. Commercial use is prohibited. For commercial licensing, please contact the project maintainers.**
@@ -466,13 +459,6 @@ See [LICENSE](LICENSE) file for details.
 # 中文版本 / Chinese Version
 
 # BIPH FLORA 识草木 🌿
-
-![Node.js](https://img.shields.io/badge/Node.js-v18+-green)
-![React](https://img.shields.io/badge/React-v18.3.1-blue)
-![Express](https://img.shields.io/badge/Express-v4.21.1-yellow)
-![MongoDB](https://img.shields.io/badge/MongoDB-v8.8.2-brightgreen)
-![Redis](https://img.shields.io/badge/Redis-v4.7.0-red)
-![License](https://img.shields.io/badge/License-Private%20Use%20Only-red)
 
 一个现代化的全栈植物图鉴Web应用，致力于为用户提供植物识别、分享和学习的综合平台。
 
