@@ -25,10 +25,11 @@ div.links {
   flex-direction: row;
   position: absolute;
   width: var(--nav-width);
-  right: 1vw;
+  right: 2vw;
   font-weight: 600;
   height: var(--links-height);
   padding: 0.25rem;
+  padding-left: 1.6rem;
   gap: 1vw;
   overflow: visible;
   overflow-y: visible;
@@ -40,6 +41,7 @@ div.links {
 .linkBarLink {
   position: relative;
   color: #7a9a6d;
+  flex: 1;
   font-size: var(--link-size);
   text-align: center;
   display: inline-block;
@@ -49,6 +51,29 @@ div.links {
 
   text-decoration: none;
 }
+
+.linkBarLinkDD {
+  position: relative;
+  color: #7a9a6d;
+  flex: 1;
+  font-size: var(--link-size);
+  text-align: center;
+  display: inline-block;
+  border: 1px solid transparent;
+  padding: 0.5rem 0.6rem 0.5rem 0.6rem;
+  margin: 0;
+  width: 100%;
+
+  text-decoration: none;
+}
+
+.linkBarLinkDD:hover {
+  position: relative;
+  color: #639c4c;
+  background-color: #7a9a6d77;
+  text-decoration: none;
+}
+
 .widen {
   width: 9.5vw;
 }
@@ -95,9 +120,14 @@ div.nav {
 
 
 .dropdown {
+  flex:1;
   position: relative;
   display: inline-block;
   z-index: 9999;
+  text-align: center;
+  align-content: center;
+  align-items: center;
+  justify-items: center;
 }
 
 .dropdown-content {
@@ -138,5 +168,6 @@ div.nav {
   background-color: white; /* 避免透明被背景图影响 */
   overflow: visible;
   border-radius: 0.43rem;
+  /* padding-left: 2rem; */
 }
 

@@ -109,6 +109,9 @@ const CreationDocumentary = (selectedSV) => {
           src={`http://img.youtube.com/vi/ottGhOippQc/0.jpg`}
           alt="pic"
           className="videoBg"
+          onClick={()=>{
+            navigate(`/video/ottGhOippQc`);
+          }}
         />
         
 

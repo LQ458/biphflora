@@ -15,12 +15,12 @@ const Navbar = () => {
       <header className="topBar">
         <h1 className="htitle">BIPH FLORA & FAUNA</h1>
         <div className="links">
-          <Link
+          {/* <Link
             className={`linkBarLink ${status !== "authenticated" && "widen"}`}
             to="/home"
           >
             Home
-          </Link>
+          </Link> */}
           {/* <Link
             className={`linkBarLink ${status !== "authenticated" && "widen"}`}
             to="/database_plant"
@@ -28,7 +28,7 @@ const Navbar = () => {
             Database
           </Link> */}
           <div className={`dropdown ${status !== "authenticated" && "widen"}`}>
-            <span className="linkBarLink">Database</span>
+            <span className="linkBarLinkDD">Database</span>
             <div className="dropdown-content">
               <Link to="/databasePlant">Plants</Link>
               <Link to="/databaseBird">Birds</Link>
@@ -48,12 +48,12 @@ const Navbar = () => {
               Upload
             </Link>
           )}
-          <Link
+          {/* <Link
             className={`linkBarLink ${status !== "authenticated" && "widen"}`}
             to="/activities"
           >
             Activities
-          </Link>
+          </Link> */}
           <Link
             className={`linkBarLink ${status !== "authenticated" && "widen"}`}
             to="/aboutUs"
