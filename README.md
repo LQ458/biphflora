@@ -1,3 +1,470 @@
+# BIPH FLORA 🌿
+
+![Node.js](https://img.shields.io/badge/Node.js-v18+-green)
+![React](https://img.shields.io/badge/React-v18.3.1-blue)
+![Express](https://img.shields.io/badge/Express-v4.21.1-yellow)
+![MongoDB](https://img.shields.io/badge/MongoDB-v8.8.2-brightgreen)
+![Redis](https://img.shields.io/badge/Redis-v4.7.0-red)
+![License](https://img.shields.io/badge/License-Private%20Use%20Only-red)
+
+A modern full-stack plant identification web application dedicated to providing users with a comprehensive platform for plant identification, sharing, and learning.
+
+**⚠️ Important Notice: This project is for personal and private use only. Commercial use is prohibited. For commercial licensing, please contact the project maintainers.**
+
+## 📋 Table of Contents
+
+- [Project Overview](#project-overview)
+- [Technology Stack](#technology-stack)
+- [Features](#features)
+- [Project Structure](#project-structure)
+- [Installation & Deployment](#installation--deployment)
+- [API Documentation](#api-documentation)
+- [Technical Implementation](#technical-implementation)
+- [Development Guide](#development-guide)
+- [Performance Optimization](#performance-optimization)
+- [Security Features](#security-features)
+- [Contributing](#contributing)
+- [License](#license)
+
+## 🚀 Project Overview
+
+BIPH FLORA is a modern plant identification platform built with React and Node.js, offering plant search, image upload, and community sharing features. The project uses a frontend-backend separation architecture, supporting user registration/login, plant data management, image compression processing, and other advanced features.
+
+### 🎯 Core Features
+
+- **Smart Search**: Fuzzy search algorithm based on Fuse.js, supporting multi-language search in Latin, Chinese, and English names
+- **Image Management**: Integrated Sharp image processing with automatic compression and format optimization
+- **User System**: Secure user management system with JWT authentication + Redis caching
+- **Content Management**: Complete CRUD operations with administrator review mechanism
+- **Responsive Design**: Modern UI based on PrimeReact + Tailwind CSS
+
+## 🏗️ Technology Stack
+
+### Frontend Technologies
+
+- **Framework**: React 18.3.1 + React Router DOM v6
+- **UI Library**: PrimeReact 10.8.4 + PrimeFlex
+- **Styling**: Tailwind CSS + CSS Modules
+- **State Management**: React Context API
+- **HTTP Client**: Axios
+- **Image Processing**: browser-image-compression
+
+### Backend Technologies
+
+- **Runtime**: Node.js
+- **Web Framework**: Express 4.21.1
+- **Database**: MongoDB (Mongoose ODM)
+- **Caching**: Redis
+- **Authentication**: JWT + bcrypt
+- **File Upload**: Multer
+- **Image Processing**: Sharp
+- **Compression**: gzip compression
+
+### Database Design
+
+```
+MongoDB Collections:
+├── users (user information)
+├── posts (plant articles)
+├── pics (plant images)
+├── arts (artwork)
+├── activities (activity information)
+├── editTextRequests (edit requests)
+├── featureHomes (featured homepage content)
+└── codes (flora/fauna codes)
+```
+
+## ✨ Features
+
+### 🔍 Search Functionality
+- Support for fuzzy search of plant Latin names, Chinese names, and English names
+- Real-time search suggestions
+- URL parameterized search results
+
+### 👤 User Management
+- Secure user registration/login system
+- JWT Token authentication + Redis caching
+- Administrator permission control
+- Encrypted password storage
+
+### 📸 Image Processing
+- Automatic image compression and format optimization
+- Support for multiple image format uploads
+- Image caching and CDN acceleration
+- Responsive image display
+
+### 📝 Content Management
+- CRUD operations for plant information
+- Rich text editor support
+- Administrator review mechanism
+- Version control and history tracking
+
+### 🏠 Homepage Display
+- Carousel display of featured plants
+- Dynamic content loading
+- Quick search access
+- Responsive layout
+
+## 📁 Project Structure
+
+```
+biphflora/
+├── client/                 # React frontend application
+│   ├── public/
+│   ├── src/
+│   │   ├── components/     # Reusable components
+│   │   ├── pages/         # Page components
+│   │   ├── styles/        # Style files
+│   │   ├── tools/         # Utility functions
+│   │   ├── App.js         # Main application component
+│   │   ├── UserContext.js # User state management
+│   │   └── index.js       # Application entry point
+│   ├── package.json
+│   └── tailwind.config.js
+├── models/                 # Data models
+│   ├── user.js           # User model
+│   ├── post.js           # Article model
+│   ├── pic.js            # Image model
+│   ├── uploadfile.js     # File upload
+│   └── compression.js    # Image compression
+├── public/                # Static resources
+│   ├── plantspic/        # Plant images
+│   └── uploads/          # Uploaded files
+├── app.js                 # Express server main file
+├── package.json
+└── README.md
+```
+
+## 🛠️ Installation & Deployment
+
+### System Requirements
+
+- Node.js >= 18.0.0
+- MongoDB >= 5.0
+- Redis >= 6.0
+- npm or pnpm
+
+### Install Dependencies
+
+```bash
+# Install backend dependencies
+npm install
+
+# Install frontend dependencies
+cd client
+npm install
+```
+
+### Environment Configuration
+
+Create a `.env` file:
+
+```env
+# Server configuration
+PORT=3001
+
+# Database configuration
+MONGODB_URL=mongodb://localhost:27017/biphflora
+
+# Redis configuration
+REDIS_URL=redis://localhost:6379
+
+# JWT secret key
+SECRET=your-jwt-secret-key
+
+# Other configurations
+REACT_APP_Source_URL=http://localhost:3001
+```
+
+### Development Environment
+
+```bash
+# Start backend service (port 3001)
+npm start
+
+# Start frontend service (port 3000)
+cd client
+npm start
+```
+
+### Production Deployment
+
+```bash
+# Build frontend
+cd client
+npm run build
+
+# Start production server
+npm run start
+```
+
+## 📖 API Documentation
+
+### Authentication
+
+```http
+POST /login
+Content-Type: application/json
+
+{
+  "username": "string",
+  "password": "string"
+}
+```
+
+```http
+POST /register
+Content-Type: application/json
+
+{
+  "username": "string",
+  "password": "string",
+  "email": "string"
+}
+```
+
+### Plant Data
+
+```http
+GET /searchNames
+# Get list of all plant names
+
+GET /search?query=plantname
+# Search plant information
+
+POST /upload
+Content-Type: multipart/form-data
+# Upload plant images and information
+```
+
+### User Information
+
+```http
+GET /userInfo
+Authorization: Bearer <token>
+# Get user information and featured content
+
+GET /refresh
+Authorization: Bearer <token>
+# Refresh user token
+```
+
+## 🔧 Technical Implementation
+
+### Authentication System
+
+```javascript
+// JWT + Redis dual authentication
+async function verifyToken(req, res, next) {
+  const token = req.headers["authorization"];
+  
+  // JWT verification
+  const decoded = jwt.verify(token, process.env.secret);
+  
+  // Redis cache verification
+  const redisToken = await redisClient.get(decoded.username);
+  
+  if (redisToken === token) {
+    req.user = decoded;
+    next();
+  }
+}
+```
+
+### Image Compression Processing
+
+```javascript
+// Image compression using Sharp
+const sharp = require('sharp');
+
+async function compressImage(inputPath, outputPath) {
+  await sharp(inputPath)
+    .resize(800, 600, { fit: 'inside' })
+    .jpeg({ quality: 80 })
+    .toFile(outputPath);
+}
+```
+
+### Fuzzy Search Implementation
+
+```javascript
+// Smart search based on Fuse.js
+const fuse = new Fuse(plants, {
+  keys: ['latinName', 'commonName', 'chineseName'],
+  threshold: 0.4,
+  includeScore: true
+});
+
+const searchResults = fuse.search(query);
+```
+
+### React Router Configuration
+
+```javascript
+// Dynamic routing with search parameters
+<Route 
+  path="/search/:plantKey" 
+  element={<SearchWithParam />} 
+/>
+
+function SearchWithParam() {
+  const { plantKey } = useParams();
+  return <Database search={plantKey.replace("_", " ")} />;
+}
+```
+
+## 📈 Performance Optimization
+
+### Frontend Optimization
+
+- **Code Splitting**: Component lazy loading with React.lazy()
+- **Image Optimization**: Client-side compression with browser-image-compression
+- **Caching Strategy**: State caching with React Context
+- **Build Optimization**: Production build with Create React App
+
+### Backend Optimization
+
+- **Gzip Compression**: Compressed response data transmission
+- **Redis Caching**: User token and hot data caching
+- **Image Processing**: High-performance image processing with Sharp
+- **Database Optimization**: MongoDB index optimization
+
+### Deployment Optimization
+
+```javascript
+// Enable gzip compression
+app.use(compression());
+
+// Static resource caching
+app.use('/public', express.static('public', {
+  maxAge: '1d'
+}));
+```
+
+## 🔒 Security Features
+
+### Password Security
+- bcrypt encrypted password storage
+- JWT Token expiration control
+- Redis Token blacklist mechanism
+
+### Data Validation
+- User input validation and filtering
+- File upload type checking
+- CORS cross-origin request control
+
+### Error Handling
+```javascript
+// Global error handling middleware
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
+});
+```
+
+## 🚀 Development Guide
+
+### Adding New Pages
+
+1. Create new component in `client/src/pages/`
+2. Add route configuration in `App.js`
+3. Update navigation menu
+
+### Adding New API Endpoints
+
+1. Define route handler in `app.js`
+2. Create corresponding data model (if needed)
+3. Add authentication middleware (if needed)
+
+### Database Model Extension
+
+```javascript
+// Create new model in models/ directory
+const mongoose = require('mongoose');
+
+const newSchema = new mongoose.Schema({
+  field1: String,
+  field2: Number,
+  createdAt: { type: Date, default: Date.now }
+});
+
+module.exports = mongoose.model('NewModel', newSchema);
+```
+
+## 📦 Dependency Management
+
+### Main Frontend Dependencies
+
+```bash
+npm install react@^18.3.1 react-dom@^18.3.1
+npm install react-router-dom@^6.28.0
+npm install primereact@^10.8.4
+npm install axios@^1.7.7
+```
+
+### Main Backend Dependencies
+
+```bash
+npm install express@^4.21.1
+npm install mongoose@^8.8.2
+npm install redis@^4.7.0
+npm install jsonwebtoken@^9.0.2
+npm install bcrypt@^5.1.1
+npm install sharp@^0.33.5
+```
+
+## 🤝 Contributing
+
+1. Fork the project repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Create a Pull Request
+
+### Code Standards
+
+- Use Prettier for code formatting
+- Follow ESLint rules
+- Use camelCase for component and function naming
+- Add necessary code comments
+
+## 📄 License
+
+This project uses a custom private use license, allowing only personal and private use.
+
+### 🟢 Permitted Uses
+- ✅ Personal learning and research
+- ✅ Private development and testing
+- ✅ Non-commercial educational purposes
+- ✅ Personal portfolio display (non-commercial)
+
+### 🔴 Prohibited Uses
+- ❌ Any form of commercial use
+- ❌ Distribution or redistribution of software
+- ❌ Modification and redistribution
+- ❌ Use in commercial products or services
+- ❌ Sale, licensing, or commercialization
+- ❌ Use by commercial organizations or entities
+- ❌ Public deployment for commercial purposes
+
+### 💼 Commercial Licensing
+For commercial use, distribution, or other purposes not covered by private use terms, please contact the copyright holder for a separate commercial license.
+
+See [LICENSE](LICENSE) file for details.
+
+## 📞 Contact Us
+
+- Project Repository: [https://github.com/LQ458/biphflora](https://github.com/LQ458/biphflora)
+- Issue Reporting: [Issues](https://github.com/LQ458/biphflora/issues)
+
+---
+
+**BIPH FLORA** - Making plant identification simple and fun 🌱
+
+---
+
+# 中文版本 / Chinese Version
+
 # BIPH FLORA 识草木 🌿
 
 ![Node.js](https://img.shields.io/badge/Node.js-v18+-green)
@@ -110,11 +577,11 @@ MongoDB Collections:
 biphflora/
 ├── client/                 # React前端应用
 │   ├── public/
+│   ├── src/
 │   │   ├── components/     # 可复用组件
 │   │   ├── pages/         # 页面组件
 │   │   ├── styles/        # 样式文件
 │   │   ├── tools/         # 工具函数
-│   │   ├── src/           # 资源文件
 │   │   ├── App.js         # 主应用组件
 │   │   ├── UserContext.js # 用户状态管理
 │   │   └── index.js       # 应用入口
@@ -458,4 +925,4 @@ npm install sharp@^0.33.5
 
 ---
 
-**BIPH FLORA** - 让植物识别变得简单有趣 🌱 
+**BIPH FLORA** - 让植物识别变得简单有趣 🌱
