@@ -16,9 +16,9 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
   const [currentDisplayIndexes, setCurrentDisplayIndexes] = useState([
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
   ]);
-  const [currentOrder, setCurrentOrder] = useState(true);
-  const [orderIsBold1, setOrderIsBold1] = useState(true);
-  const [orderIsBold2, setOrderIsBold2] = useState(false);
+  const [currentOrder, setCurrentOrder] = useState(false);
+  const [orderIsBold1, setOrderIsBold1] = useState(false);
+  const [orderIsBold2, setOrderIsBold2] = useState(true);
   const [topPics, setTopPics] = useState([]);
   const [topArts, setTopArts] = useState([]);
   const [topIndex, setTopIndex] = useState(0);
@@ -62,7 +62,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
 
           // Sort descending (latest to earliest)
           // This works by subtracting the timestamps.
-          return dateB - dateA;
+          return dateA - dateB;
         });
         setDisplayObjectList(allDisplays);
         setCurrentDisplayIndexes(Array.from(Array(allDisplays.length).keys()))
