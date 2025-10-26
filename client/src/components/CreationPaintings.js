@@ -185,7 +185,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
           />
           <div className="artBox">
             <img
-              src={`${process.env.REACT_APP_Source_URL}/public/compressed${topArts[topIndex]}`}
+              src={`${process.env.REACT_APP_Source_URL}/public${topArts[topIndex]}`}
               alt="art"
               className="topArts"
             />
