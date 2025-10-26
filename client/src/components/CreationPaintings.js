@@ -27,6 +27,26 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
   const [topTimes, setTopTimes] = useState([]);
   const itemsPerPage = 4;
 
+  function parseArtDate(dateString) {
+    // 1. Split on any non-digit character
+    const parts = dateString.split(/\D/); // e.g., "10/25/23" -> ['10', '25', '23']
+
+    if (parts.length !== 3) {
+      // Handle potential bad data by returning the earliest possible date
+      return new Date(0); 
+    }
+
+    // 2. Parse parts into numbers
+    const month = parseInt(parts[0], 10);
+    const day = parseInt(parts[1], 10);
+    const year = parseInt(parts[2], 10);
+
+    // 3. Create the Date object
+    // We add 2000 to the year to handle the 'yy' format (e.g., 23 -> 2023)
+    // We subtract 1 from the month because Date() is 0-indexed (Jan=0, Dec=11)
+    return new Date(2000 + year, month - 1, day);
+  }
+
   useEffect(() => {
 
     const fetchData = async () => {
@@ -35,6 +55,15 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
           `${process.env.REACT_APP_Source_URL}/creationDocumentary`,
         );
         const allDisplays = response.data.allDisplays;
+        allDisplays.sort((a, b) => {
+          // Get the Date objects for comparison
+          const dateA = parseArtDate(a.artDate);
+          const dateB = parseArtDate(b.artDate);
+
+          // Sort descending (latest to earliest)
+          // This works by subtracting the timestamps.
+          return dateB - dateA;
+        });
         setDisplayObjectList(allDisplays);
         setCurrentDisplayIndexes(Array.from(Array(allDisplays.length).keys()))
         if (allDisplays && allDisplays.length > 0) {

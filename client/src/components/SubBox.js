@@ -17,7 +17,8 @@ const SubBox = ({
     handleGets(plant);
     navigate(`/search/${plant.replace(" ", "_")}`);
   };
-  const date = displayObjectList[currentDisplayIndexes[index]].date
+  const date1 = displayObjectList[currentDisplayIndexes[index]].artDate;
+  const date2 =displayObjectList[currentDisplayIndexes[index + 1]] ?displayObjectList[currentDisplayIndexes[index+1]].artDate : ""; //displayObjectList[currentDisplayIndexes[index+1]].artDate;
 
   return (
     <section className="subBox">
@@ -101,9 +102,10 @@ const SubBox = ({
                     : ""}
                 </h3> */}
                 <h3>
-                  {displayObjectList[currentDisplayIndexes[index + 1]].date
+                  {displayObjectList[currentDisplayIndexes[index]].date
                     ? "" +
-                    `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
+                    `${date1.slice(0,2)}-${date1.slice(3,5)}-${date1.slice(6,8)}`
+                    // `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
                       // displayObjectList[currentDisplayIndexes[index + 1]].date.slice(0,10)
                     : ""}
                 </h3>
@@ -229,7 +231,8 @@ const SubBox = ({
                 <h3>
                   {displayObjectList[currentDisplayIndexes[index + 1]].date
                     ? "" +
-                    `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
+                    `${date2.slice(0,2)}-${date2.slice(3,5)}-${date2.slice(6,8)}`
+                    // `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
                       // displayObjectList[currentDisplayIndexes[index + 1]].date.slice(0,10)
                     : ""}
                 </h3>

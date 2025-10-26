@@ -107,7 +107,7 @@ div.speciesTitle{
     width: 14rem;
     height: 4rem;
     display: flex;
-    margin-left: 3rem;
+    margin-left: 1.5rem;
     margin-top: 3rem;
     font-weight: 600;
     font-size: 1.6rem;
@@ -149,7 +149,7 @@ div.species{
   gap: 12px; /* Space between images within a row */
   background-color: #7396679b; /* Green background for each row */
   padding: 12px;
-  margin-left: 1rem;
+  margin-left: 1.5rem;
   /* margin: auto; */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

@@ -101,7 +101,7 @@ const CreationDocumentary = (selectedSV) => {
   
   return (
     <div>
-      <div className="seasons">
+      {/* <div className="seasons">
         <div className="seasonTitle">
           Seasons
         </div>
@@ -149,7 +149,7 @@ const CreationDocumentary = (selectedSV) => {
           </div>
         </div>
         
-      </div>
+      </div> */}
       <div className="species">
         <div className="speciesTitle">
           Meet the Species
