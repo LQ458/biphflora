@@ -17,6 +17,7 @@ const SubBox = ({
     handleGets(plant);
     navigate(`/search/${plant.replace(" ", "_")}`);
   };
+  const date = displayObjectList[currentDisplayIndexes[index]].date
 
   return (
     <section className="subBox">
@@ -52,12 +53,12 @@ const SubBox = ({
                   displayObjectList[currentDisplayIndexes[index]].photographer
                 : ""}
             </span>
-            <span>
+            {/* <span>
               {displayObjectList[currentDisplayIndexes[index]]?.date
-                ? "Time: " +
-                  displayObjectList[currentDisplayIndexes[index]].date.slice(0,10)
+                ? "" +
+                  `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
                 : ""}
-            </span>
+            </span> */}
             <span>
               {displayObjectList[currentDisplayIndexes[index]]?.location
                 ? "Setting: " +
@@ -93,12 +94,20 @@ const SubBox = ({
                       displayObjectList[currentDisplayIndexes[index]].artist
                     : ""}
                 </h3>
-                <h3>
+                {/* <h3>
                   {displayObjectList[currentDisplayIndexes[index]].location
                     ? "Location: " +
                       displayObjectList[currentDisplayIndexes[index]].location
                     : ""}
+                </h3> */}
+                <h3>
+                  {displayObjectList[currentDisplayIndexes[index + 1]].date
+                    ? "" +
+                    `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
+                      // displayObjectList[currentDisplayIndexes[index + 1]].date.slice(0,10)
+                    : ""}
                 </h3>
+                
               </div>
               {/* Art Info */}
               <div style={{ position: "relative", marginTop: "1.5rem" }}>
@@ -163,12 +172,13 @@ const SubBox = ({
                     .photographer
                 : ""}
             </span>
-            <span>
+            {/* <span>
               {displayObjectList[currentDisplayIndexes[index + 1]].date
-                ? "Time: " +
-                  displayObjectList[currentDisplayIndexes[index + 1]].date.slice(0,10)
+                ? "" +
+                `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
+                  // displayObjectList[currentDisplayIndexes[index + 1]].date.slice(0,10)
                 : ""}
-            </span>
+            </span> */}
             <span>
               {displayObjectList[currentDisplayIndexes[index + 1]].location
                 ? "Setting: " +
@@ -209,13 +219,21 @@ const SubBox = ({
                       displayObjectList[currentDisplayIndexes[index + 1]].artist
                     : ""}
                 </h3>
-                <h3>
+                {/* <h3>
                   {displayObjectList[currentDisplayIndexes[index + 1]].location
                     ? "Location: " +
                       displayObjectList[currentDisplayIndexes[index + 1]]
                         .location
                     : ""}
+                </h3> */}
+                <h3>
+                  {displayObjectList[currentDisplayIndexes[index + 1]].date
+                    ? "" +
+                    `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
+                      // displayObjectList[currentDisplayIndexes[index + 1]].date.slice(0,10)
+                    : ""}
                 </h3>
+                
               </div>
               <div style={{ position: "relative", marginTop: "1.5rem" }}>
                 <img

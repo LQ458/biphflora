@@ -165,16 +165,16 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
                 <p className="artInfo">
                   {topBys[topIndex] ? "By " + topBys[topIndex] : "By Unknown"}
                 </p>
-                <p className="artInfo">
+                {/* <p className="artInfo">
                   {topTimes[topIndex] ? topTimes[topIndex] : "Date: Unknown"}
-                </p>
+                </p> */}
                 <p className="artInfo">
                   {topLoc[topIndex]
                     ? "Location: " + topLoc[topIndex]
                     : "Location: Unknown"}
                 </p>
               </div>
-              <p className="recArt">Recent Artworks</p>
+              {/* <p className="recArt">Recent Artworks</p> */}
             </div>
           </div>
           <button className="shift" onClick={handleRight}>
