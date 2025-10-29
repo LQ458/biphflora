@@ -58,7 +58,7 @@ section.aboutUs {
   position: relative;
   margin: 0 auto;
   background-color: #f4fae8;
-  height: 125vw;
+  height: 133vw;
   width: 94vw;
   z-index: 2;
 }
@@ -159,7 +159,7 @@ section.aboutUs {
   right: 1.46vw;
   height: 55.09vw;
   top: 1.7vw;
-  font-size: 19px;
+  font-size: 20px;
   color: #2d4228;
   /* font-family: poppins sans-serif; */
   /* font-synthesis: none */
@@ -173,7 +173,7 @@ section.aboutUs {
   position: absolute;
   overflow: auto;
   width: 59.15vw;
-  font-size: 19px;
+  font-size: 20px;
   color: #2d4228;
   top: 5.44vw;
   /* font-family: poppins sans-serif; */
@@ -222,7 +222,7 @@ section.aboutUs {
   align-items: center;
   width: 90vw;
   position: relative;
-  font-size: 18px;
+  font-size: 19px;
   left: 50%;
   transform: translate(-50%, 0%);
   top: 10vw;
@@ -244,7 +244,7 @@ section.aboutUs {
   transform: translate(-50%, 0%);
   top: 8vw;
   line-height: 1.4;
-  font-size: 19px;
+  font-size: 20px;
 }
 
 .subLabel1 {

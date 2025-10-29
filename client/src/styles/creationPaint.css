@@ -85,11 +85,12 @@ p.artInfo {
   color: white;
   margin: 0;
 }
+
 div.artDes {
   display: grid;
   align-items: center;
   background-color: rgba(107, 139, 92, 0.785);
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(1, 1fr);
 }
 div.artInfos {
   display: grid;

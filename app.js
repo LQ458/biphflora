@@ -371,6 +371,7 @@ app.get("/userInfoGlossaryBird", verifyToken, async (req, res) => {
       };
 
   res.json(response);
+  console.log("123")
 });
 
 app.post("/edit", async function (req, res) {
@@ -595,13 +596,12 @@ app.post("/uploadCreation", verifyToken, upload, async (req, res) => {
 });
 
 app.post(
-  "/upload",
+  "/uploadPlant",
   globalUpload.none(),
   verifyToken,
   async function (req, res) {
     try {
       var username = "admin";
-
       if (req.user?.admin) {
         authorization = true;
       } else if (req.user) {
@@ -621,7 +621,7 @@ app.post(
         username: username,
         otherNames: req.body.otherNames,
         authorization: false,
-        // dbType: "plant"
+        dbType: "plant"
       });
 
       // 确保链接数据格式一致性
@@ -642,6 +642,8 @@ app.post(
       );
 
       await post.save();
+
+      console.log("123123123123");
 
       res.json({ success: true });
     } catch (error) {

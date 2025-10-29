@@ -77,8 +77,10 @@ function App() {
   };
 
   return (
+    <div>
     <UserProvider>
       <PrimeReactProvider>
+        
         {/* <Router> */}
           <div className="App">
             <Routes location={background || location}>
@@ -246,6 +248,7 @@ function App() {
         {/* </Router> */}
       </PrimeReactProvider>
     </UserProvider>
+    </div>
   );
 }
 

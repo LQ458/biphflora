@@ -426,7 +426,7 @@ const UploadBirds = () => {
         toast.current.show({
           severity: "error",
           summary: "上传失败",
-          detail: "请选择列表中的植物",
+          detail: "请选择列表中的鸟类",
           life: 3000,
         });
       } else {

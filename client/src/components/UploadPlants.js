@@ -172,8 +172,10 @@ const UploadPlants = () => {
   };
 
   const handlePlantSubmit = async (e) => {
+    
     e.preventDefault();
     setPlantLoading(true);
+    
 
     // 在提交前更新链接
     addEnglishLink();
@@ -204,6 +206,8 @@ const UploadPlants = () => {
       };
     });
 
+    console.log("123")
+
     const formData = new FormData();
     formData.append("latinName", latinName);
     formData.append("chineseName", chineseName);
@@ -217,7 +221,7 @@ const UploadPlants = () => {
     formData.append("dbType", "plant");
 
     try {
-      await axios.post(`${process.env.REACT_APP_Source_URL}/upload`, formData, {
+      await axios.post(`${process.env.REACT_APP_Source_URL}/uploadPlant`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

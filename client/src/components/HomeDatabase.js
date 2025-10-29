@@ -40,6 +40,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
         const response = await axios.get(
           `${process.env.REACT_APP_Source_URL}/searchNames`,
         );
+        console.log(`response:${response.data.returnNames.length}`);
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
         setNumOfPlants(response.data.numOfPlants);

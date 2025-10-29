@@ -1,6 +1,7 @@
 .edit-dialog {
   width: 80vw;
   max-width: 1200px;
+  z-index: 1000;
 }
 
 .p-dialog .p-dialog-content {

@@ -67,7 +67,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
         setDisplayObjectList(allDisplays);
         setCurrentDisplayIndexes(Array.from(Array(allDisplays.length).keys()))
         if (allDisplays && allDisplays.length > 0) {
-          const topThreeDisplays = allDisplays.slice(0, 3);
+          const topThreeDisplays = allDisplays.slice(allDisplays.length-3, allDisplays.length);
           const newTopPics = [];
           const newTopArts = [];
           const newTopBys = [];
@@ -194,16 +194,12 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
                 <p className="artInfo">
                   {topBys[topIndex] ? "By " + topBys[topIndex] : "By Unknown"}
                 </p>
-                {/* <p className="artInfo">
-                  {topTimes[topIndex] ? topTimes[topIndex] : "Date: Unknown"}
-                </p> */}
                 <p className="artInfo">
                   {topLoc[topIndex]
                     ? "Location: " + topLoc[topIndex]
                     : "Location: Unknown"}
                 </p>
               </div>
-              {/* <p className="recArt">Recent Artworks</p> */}
             </div>
           </div>
           <button className="shift" onClick={handleRight}>

@@ -8,7 +8,7 @@ import { Toast } from "primereact/toast";
 import "../styles/editPageTextForm.css";
 
 const EditPageTextForm = (prop) => {
-  const { clearSubpage, post: plant } = prop;
+  const { isVisible, clearSubpage, post: plant } = prop;
   const toast = useRef(null);
 
   const [latinName, setLatinName] = useState(plant.latinName);
@@ -25,7 +25,7 @@ const EditPageTextForm = (prop) => {
   const [linkArray, setLinkArray] = useState([]);
   const [chineseLinkArray, setChineseLinkArray] = useState([]);
   const [loadingMessage, setLoadingMessage] = useState("Submit");
-  const originalLatin = useState(plant.latinName);
+  const [originalLatin,setOriginalLatin] = useState(plant.latinName);
 
   useEffect(() => {
     if (Array.isArray(links) && links.length > 0) {
@@ -119,7 +119,7 @@ const EditPageTextForm = (prop) => {
   return (
     <Dialog
       header="Edit Text Form"
-      visible={true}
+      visible={isVisible}
       onHide={clearSubpage}
       className="edit-dialog"
     >

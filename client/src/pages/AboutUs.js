@@ -19,10 +19,12 @@ const AboutUs = () => {
         植物导赏是Flora Club识草木社团所有成员参与的最为重要的工作之一。本社团计划在校园内设置3条时长为半小时至一小时的植物观赏线路，社员将带领大家行走在校园内，领略校园的植物风光，并沿路向大家介绍身边植物的百科知识以及它们的有趣故事。我们将会为幼儿园和小学学生单独设计植物观赏的活动，并且会在之后开放给所有学生和老师参与，我们将在网站的主页上公布植物导赏的预约信息。
 
         制作关于校园植物和生物多样性的纪录片是Flora Club识草木社团所有成员参与的最为重要的另一项工作。根据影像资料与整理的信息档案，成员们使用视频编辑和录音去制作介绍单个物种的短视频与以不同季节为主题的专题纪录片。
+
 `;
   const floraWebInfoChin = `       其次，我们想介绍一下BIPH Flora网站。BIPH Flora网站创建于2023年10月，由Leo Qin、Jess Chen和 Zoe He共同开发。 创建与经营BIPH Flora 网站是Flora Club识草木社团的另一项基础工作。
 
        BIPH FLORA设有“主页”、“校内植物检索数据库”、和“创作”板块，其中“创作”板块包含“绘画”、“视频与纪录片”等次板块，社员们在工作中所获取的成果将全部放入到这些板块中，因此，BIPH FLORA网站将成为本社团向老师和同学们展现校园生物多样性的一个网络平台。
+
 
 
 `;
@@ -124,7 +126,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             En
           </button>
         </div>
-        <div className="aboutClubBox" style={{height:curLang === "en" ? "48.09vw" : "41.5vw"}}>
+        <div className="aboutClubBox" style={{height:curLang === "en" ? "48.09vw" : "48.5vw"}}>
           <h2 className="clubLabel">I. Flora Club</h2>
           <p
             className="clubContent"

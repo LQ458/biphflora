@@ -15,8 +15,11 @@ const Glossary = ({ handleGets }) => {
   const [admin, setAdmin] = useState(false);
   const [username, setUsername] = useState("");
 
+  // console("123")
+
   useEffect(() => {
     document.title = "Plant Glossary 植物表";
+    // console.error("123123123");
   }, []);
 
   useEffect(() => {

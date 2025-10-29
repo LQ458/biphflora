@@ -80,11 +80,11 @@ const EditPage = (props) => {
     const authUser = () => {
       if (status === "authenticated") {
         if (
-          !props?.editKey ||
-          !props.editKey[0] ||
-          !props.editKey[1] ||
-          !props.editKey[2] ||
-          !props.editKey[3]
+          // !props?.editKey ||
+          // !props.editKey[0] ||
+          // !props.editKey[1] ||
+          // !props.editKey[2] ||
+          !props.editKey[3].admin
         ) {
           alert("Invalid access. Redirecting to home page.");
           navigate("/");
@@ -99,13 +99,14 @@ const EditPage = (props) => {
   }, [navigate, status, props]);
 
   const clearSubpage = () => {
-    setSubpage(null);
+    setSubpage(false);
   };
 
   const handleEdit = (type) => {
     if (type === "text") {
       setSubpage(true);
     }
+    // setSubpage(true);
   };
 
   const handleAdminAuth = () => {
@@ -155,7 +156,7 @@ const EditPage = (props) => {
               {props.editKey[0].chineseName}
             </h1>
           </div>
-          <div className={`${subpage && "textBtm"}`}>
+          <div className={`${"textBtm"}`}>
             <div className="topBtm">
               <h3>Other Common Names: {props.editKey[0].otherNames}</h3>
               <h3>Location: {props.editKey[0].location}</h3>
@@ -198,12 +199,11 @@ const EditPage = (props) => {
               </button>
             </div>
             <div className="editSubpage">
-              {subpage && (
                 <EditPageTextForm
+                  isVisible={subpage}
                   clearSubpage={clearSubpage}
                   post={props.editKey[0]}
                 />
-              )}
             </div>
           </div>
         </div>
@@ -238,7 +238,7 @@ const EditPage = (props) => {
                 {paged.map(item => (
                   <div key={item._id} className="pic-item">
                     <img
-                      src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.path}`}
+                      src={`${process.env.REACT_APP_Source_URL}/public${item.path}`}
                       alt="plant pic"
                     />
                     <div className="select-overlay">
@@ -338,7 +338,7 @@ const EditPage = (props) => {
               props.editKey[2].map((item, index) => (
                 <>
                   <img
-                    src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.path}`}
+                    src={`${process.env.REACT_APP_Source_URL}/public${item.path}`}
                     key={index}
                     alt="pic"
                     style={{ maxWidth: "25%" }}
