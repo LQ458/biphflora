@@ -50,9 +50,12 @@ function App() {
 
     if(dbType === "plant"){
       //plantkKey是url中的植物名
+      // console.log("searching:");
+      // console.log(plantKey.replaceAll("_", " "));
       return (
+        
         <Database
-          search={plantKey.replace("_", " ")}
+          search={plantKey.replaceAll("_", " ")}
           handleEditPage={handleEditPage}
         />
       );
@@ -60,7 +63,7 @@ function App() {
       //plantkKey是url中的植物名
       return (
         <BirdDatabase
-          search={plantKey.replace("_", " ")}
+          search={plantKey.replaceAll("_", " ")}
           handleEditPage={handleEditPage}
         />
       );

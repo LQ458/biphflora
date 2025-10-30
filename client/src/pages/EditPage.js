@@ -80,10 +80,10 @@ const EditPage = (props) => {
     const authUser = () => {
       if (status === "authenticated") {
         if (
-          // !props?.editKey ||
-          // !props.editKey[0] ||
-          // !props.editKey[1] ||
-          // !props.editKey[2] ||
+          !props?.editKey ||
+          !props.editKey[0] ||
+          !props.editKey[1] ||
+          !props.editKey[2] ||
           !props.editKey[3].admin
         ) {
           alert("Invalid access. Redirecting to home page.");
@@ -91,6 +91,7 @@ const EditPage = (props) => {
           return;
         }
         setAuth(true);
+        console.log(props.editKey[0]);
       } else if (status === "unauthenticated") {
         navigate("/");
       }
