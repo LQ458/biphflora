@@ -96,8 +96,8 @@ section.aboutUs {
 .flowerMiddleText {
   position: absolute;
   /* tweak these so it sits exactly above the bottom image: */
-  top: 19.25vw;         /* e.g. 20vw down from the top of container */
-  left: 53.5vw;        /* align with .flowerBottom’s left */
+  top: 19.75vw;         /* e.g. 20vw down from the top of container */
+  left: 53.9vw;        /* align with .flowerBottom’s left */
   width: 20vw;       /* or however wide you need the block */
   text-align: center;
 
@@ -105,7 +105,7 @@ section.aboutUs {
 
   /* optional styling: */
   color: #2d4228c5;
-  font-size: 1.0vw;
+  font-size: 0.8vw;
   font-weight: bold;
   /* text-shadow: 0 0 0.2vw rgba(0,0,0,0.7); */
 }
@@ -141,7 +141,7 @@ section.aboutUs {
   font-size: 1.8rem;
   text-decoration: underline;
   color: #2d4228;
-  left: 6.22vw;
+  left: 2.12vw;
   top: 4.56vw;
   margin: 0;
   padding: 0;
@@ -252,7 +252,7 @@ section.aboutUs {
   color: #2d4228;
   left: 2rem;
   position: absolute;
-  top: 18.28vw;
+  top: 17.28vw;
   text-decoration: underline;
 }
 
@@ -262,16 +262,16 @@ section.aboutUs {
   left: 2rem;
   text-align: left;
   position: absolute;
-  top: 20.8vw;
+  top: 19.8vw;
 }
 
 .subLabel2 {
   /* font-family: poppins sans-serif; */
   color: #2d4228;
   position: absolute;
-  top: 18.28vw;
+  top: 26.78vw;
   text-decoration: underline;
-  left: 21.15vw;
+  left: 5.15vw;
 }
 
 .subSubLabel2 {
@@ -280,8 +280,18 @@ section.aboutUs {
   font-size: 1rem;
   position: absolute;
   text-align: center;
-  top: 20.8vw;
-  left: 21.15vw;
+  top: 29.5vw;
+  left: 3.15vw;
+}
+
+.subSubLabel5 {
+  /* font-family: poppins sans-serif; */
+  color: #2d4228;
+  text-align: center;
+  font-size: 1rem;
+  position: absolute;
+  top: 29.5vw;
+  left: 40.5vw;
 }
 
 .subLabel3 {
@@ -289,7 +299,7 @@ section.aboutUs {
   color: #2d4228;
   font-size: 1rem;
   position: absolute;
-  top: 18.28vw;
+  top: 17.78vw;
   text-decoration: underline;
   left: 31.65vw;
 }
@@ -300,9 +310,20 @@ section.aboutUs {
   text-align: center;
   font-size: 1rem;
   position: absolute;
-  top: 20.8vw;
-  left: 35.5vw;
+  top: 20.3vw;
+  left: 30.5vw;
 }
+.subSubLabel4 {
+  /* font-family: poppins sans-serif; */
+  color: #2d4228;
+  text-align: center;
+  font-size: 1rem;
+  position: absolute;
+  top: 20.3vw;
+  left: 40.5vw;
+}
+
+
 
 .subLabel4 {
   /* font-family: poppins sans-serif; */
@@ -312,15 +333,6 @@ section.aboutUs {
   position: absolute;
   top: 26.28vw;
   text-decoration: underline;
-}
-
-.subSubLabel4 {
-  /* font-family: poppins sans-serif; */
-  color: #2d4228;
-  font-size: 1rem;
-  left: 2rem;
-  position: absolute;
-  top: 28.8vw;
 }
 
 .whiteFlower {
@@ -400,16 +412,26 @@ section.aboutUs {
   color: #2d4228;
   position: absolute;
   left: 38.82vw;
-  top: 13.34vw;
+  top: 14.34vw;
 }
 
 .contactInfo3 {
   /* font-family: poppins sans-serif; */
   color: #2d4228;
   position: absolute;
-  top: 13.4vw;
-  text-align: center;
-  left: 54vw;
+  top: 16.2vw;
+  text-align: left;
+  left: 59vw;
+}
+
+.contactInfo5 {
+  /* font-family: poppins sans-serif; */
+  color: #2d4228;
+  position: absolute;
+  top: 22.2vw;
+  width: 50vw;
+  text-align: left;
+  left: 49vw;
 }
 
 .bottomBar {

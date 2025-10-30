@@ -30,21 +30,20 @@ const AboutUs = () => {
 `;
 
   const floraClubInfoEng = `
-Flora Club was founded in September 2023. The club’s main activities include species identification, compiling information profiles for campus plants and birds, creating artworks, organizing book fairs and exhibitions of photographs and artworks, designing botany guided tours, and producing videos and seasonal documentaries introducing campus species.
+Flora and Fauna Club was founded in September 2023. The club’s main activities include species identification, compiling information profiles for campus plants and birds, creating artworks, organizing book fairs and exhibitions of photographs and artworks, providing nature walk, and producing videos and seasonal documentaries introducing campus species.
 
-Species Identification and Information Profiles: Species identification involves determining the genus and species of plants and recording their Latin names. Members search for information about each plant on reliable websites, covering aspects such as its characteristics, etymology, interactions with other organisms, historical background, and medicinal value. They then select relevant details from these sources and combine them with their own observations to create plant introductions. Additionally, they provide links to the referenced websites, allowing other students to further explore the plant using these sources. Meanwhile, members document different parts of each plant—foliage, flowers, fruits, and stems—throughout the seasons using various camera lenses. They also record insects and birds that interact with these plants. All this information is compiled into plant profiles featured in the website’s database. In collaboration with campus birdwatching enthusiasts, the club will expand the database to include bird species, detailing their preferred plant habitats and recommended observation spots.
+Species Identification and Information Profiles: Species identification involves determining the genus and species of plants and recording their Latin names. Members search for information about each plant on reliable websites, covering aspects such as its characteristics, etymology, interactions with other organisms, historical background, and medicinal value. They then select relevant details from these sources and combine them with their own observations to create plant introductions. Additionally, they provide links to the referenced websites, allowing other students to further explore the plant using these sources. Meanwhile, members document different parts of each plant—foliage, flowers, fruits, and stems—throughout the seasons using various camera lenses. They also record insects and birds that interact with these plants. All this information is compiled into plant profiles featured in the website’s database. Furthermore, the club will expand the database to include bird species, detailing their preferred plant habitats and recommended observation spots.
+
+Update: The bird species profiles and database are currently in preparation and are expected to be launched for use during the 2025–2026 school year.
 
 Artworks: Club members create artwork inspired by campus plants, insects, and birds, using techniques such as watercolor, colored pencils, and digital painting. Through their work, they express their observations, understanding, and appreciation of nature.
 
 Themed Book Fairs and Exhibitions of Photographs and Paintings: The club will regularly showcase photographs and artworks in the library, offering students a window into the diversity of life on campus. Additionally, the club will organize nature-themed book fairs in the library, encouraging students to connect with nature through reading.
 
-Botany Guided Tours: The club plans to design three guided tour routes across campus, each lasting 30 minutes to an hour. Club members will lead participants along these routes, introducing the unique characteristics of plants and sharing fascinating stories about them. Tour registration will be available on the homepage of the website.
+Nature Walk: The club designed three guided tour routes across campus, each lasting 30 minutes to an hour. Club members lead participants along these routes, introducing the unique characteristics of plants and sharing fascinating stories about them. Tour registration will be available on the “database” of the website.
 
-Videos Introducing Plant Species and Seasonal Documentaries: Members write scripts based on plant information profiles, then record and edit videos to introduce various species on campus. These videos will serve as valuable educational resources for pre-K and primary school students. Additionally, members produce documentaries focused on specific seasons and broader ecological themes.
-  `;
-  const floraWebInfoEng = `
-  The BIPH Flora website was launched in October 2023 and co-created by Leo Qin, Jess Chen, and Zoe He. Managing and maintaining this website is a key responsibility of the Flora Club. The website features three main sections: "Home," "Database of Plant Species on Campus," and "Creations." The "Creations" section is further divided into "Artwork," "Videos & Documentaries," and other subsections. All work produced by club members will be uploaded to these sections, making BIPH Flora an online platform that showcases the campus’s biodiversity to both students and faculty.
-
+Videos Introducing Plant Species and Seasonal Documentaries: Members write scripts based on plant information profiles, then record and edit videos to introduce various species on campus. These videos will serve as valuable educational resources for pre-K and primary school students. Additionally, members produce documentaries focused on specific seasons and broader ecological themes`;
+  const floraWebInfoEng = `The BIPH Flora & Fauna website was launched in October 2023 and co-created by Leo Qin, Jess Chen, and Zoe He. Managing and maintaining this website is a key responsibility of the Flora and Fauna Club. The website features two main sections: "Database" and "Creation." The "Creation" section is further divided into "Artwork" and "Videos". All work produced by club members will be uploaded to these sections, making BIPH Flora & Fauna an online platform that showcases the campus’s biodiversity to both students and faculty.
 
   `;
 
@@ -53,9 +52,9 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
   const [advisor, setAdvisor] = useState("Club Advisor:");
   const [contact, setContact] = useState("Email:");
   const [techSupport, setTechSupport] = useState("Tech Support:");
-  const [founder, setFounder] = useState("Club Leader:");
+  const [founder, setFounder] = useState("Club Leaders:");
   const [additional, setAdditional] = useState(
-    "(For collaboration and work submissions, feel free to contact me via Teams or email.)"
+    "(For collaboration and work submissions, feel free to contact us via Teams or email.)"
   );
 
   useEffect(() => {
@@ -101,7 +100,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
       <div
         className="aboutUsContent"
         style={{
-          height: curLang === "cn" ? "" : "135vw",
+          height: curLang === "cn" ? "145vw" : "150vw",
         }}
       >
         <h1 className="aboutUsTitle">{aboutUs}</h1>
@@ -126,8 +125,8 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             En
           </button>
         </div>
-        <div className="aboutClubBox" style={{height:curLang === "en" ? "48.09vw" : "48.5vw"}}>
-          <h2 className="clubLabel">I. Flora Club</h2>
+        <div className="aboutClubBox" style={{height:curLang === "en" ? "52.09vw" : "48.5vw"}}>
+          <h2 className="clubLabel">I. Flora and Fauna Club</h2>
           <p
             className="clubContent"
             style={{ fontSize: curLang === "cn" ? "" : "18px" }}
@@ -144,7 +143,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
 
         <div
           className="aboutWebBox"
-          style={{ top: curLang === "cn" ? "12vw" : "15vw" }}
+          style={{ top: curLang === "cn" ? "12vw" : "15vw", height:"42vw"}}
         >
           <h2 className="webLabel">II. BIPH FLORA Website</h2>
           <p className="webContent" style = {{top: curLang==="cn"?"6.44vw":"5.04vw"}}>{aboutFloraWeb}</p>
@@ -154,7 +153,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             className="flowerIcon"
           />
           <div className="flowerMiddleText">
-            Logo designed by Yvonne Wang
+            Logo designed by Yvonne Wang, 2023
           </div>
           <img
             src={`${process.env.REACT_APP_Source_URL}/public/6.jpg`}
@@ -187,12 +186,12 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
               >
                 Leo Qin{" "}
                 {curLang === "cn"
-                  ? "（负责网站的编程工作）"
+                  ? "（负责网站的前端编程工作）"
                   : "(Web Developer)"}
                 <br />
                 Jess Chen{" "}
                 {curLang === "cn"
-                  ? "（负责网站的编程工作）"
+                  ? "（负责网站的后端编程工作）"
                   : "(Web Developer)"}
                 <br />
                 Zoe He{" "}
@@ -212,7 +211,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
               </p>
               <p
                 className="subSubLabel2"
-                style={{ left: curLang === "cn" ? "" : "21.5vw" }}
+                style={{ left: curLang === "cn" ? "" : "1.5vw" }}
               >
                 Rachel Zhang
                 <br />
@@ -220,11 +219,21 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
                 <br />
                 Kaitlyn Xu
                 <br />
+                Juliana Chen
+                
+                <br />
                 Tyler Lin
                 <br />
                 Michelle Feng
                 <br />
                 Yvonne Wang
+              </p>
+
+              <p
+                className="subSubLabel5"
+                style={{ left: curLang === "cn" ? "11.5vw" : "11.5vw" }}
+              >
+                Lucy Wang
                 <br />
                 Phyllis Li
                 <br />
@@ -242,27 +251,48 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
               <p className="subLabel3">
                 {curLang === "cn"
                   ? "植物信息档案创建及管理小组成员"
-                  : "Species Profile Upload & Management Team"}
+                  : "Species Profile Upload & Video Making"}
               </p>
               <p
                 className="subSubLabel3"
-                style={{ left: curLang === "cn" ? "" : "38.5vw" }}
+                style={{ left: curLang === "cn" ? "" : "32.5vw" }}
               >
+                Zoe He
+                <br />
                 Rachel Zhang
                 <br />
                 Kaitlyn Xu
                 <br />
-                Jarita Wen
-                <br />
-                Genevieve Li
-                <br />
                 Henry Zhu
                 <br />
-                Zoe He
+                Jarita Wen
                 <br />
                 Helen Nie
                 <br />
                 Jenny Nie
+                <br />
+                Clifford Ghezzi
+                <br />
+                Joseph Gu
+                <br />
+                Tina Chew
+                <br />
+                Alina Hua
+                <br />
+                Agu Huang
+              </p>
+
+              <p
+                className="subSubLabel4"
+                style={{ left: curLang === "cn" ? "" : "41.5vw" }}
+              >
+                Yolanda Wang
+                <br />
+                Avery Chang
+                <br />
+                Nia Xiao
+                <br />
+                George Liu
               </p>
             </div>
           </div>
@@ -293,7 +323,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
           </p>
           <p className="contactLabel2">
             {techSupport}
-            <br /> Leo Qin <br /> Jess Chen{" "}
+            <br /> Leo Qin (Front-end) <br /> Jess Chen (Back-end){" "}
           </p>
           <p
             className="contactInfo2"
@@ -305,14 +335,27 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
           <p className="contactLabel3">
             {founder}
             <br />
+            Rachael Zhang
+            <br />
+            Henry Zhu
+            <br />
             Zoe He
           </p>
           <p
             className="contactInfo3"
-            style={{ left: curLang === "cn" ? "" : "49vw" }}
+            style={{ left: curLang === "cn" ? "" : "59vw", width:"40vw"}}
           >
-            {contact}zoe.he41172-biph@basischina.com
+            {contact} ruochen.zhang72199-biph@basischina.com
             <br />
+            {contact} xun.Zhu70829-biph@basischina.com
+            <br />
+            {contact} zoe.he41172-biph@basischina.com
+            <br />
+          </p>
+          <p
+            className="contactInfo5"
+            style={{ left: curLang === "cn" ? "40vw" : "40vw" ,top: curLang === "cn" ? "24vw" : "40vw" ,}}
+          >
             {additional}
           </p>
           <br/>
@@ -323,7 +366,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             style={{
               scale: curLang === "cn" ? "1" : "0.65",
               left: curLang === "cn" ? "" : "30vw",
-              top: curLang === "cn" ? "19vw" : "19vw",
+              top: curLang === "cn" ? "28.5vw" : "25vw",
               width: curLang === "cn" ? "" : "65vw",
             }}
             alt="additional"
