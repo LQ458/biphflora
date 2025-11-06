@@ -30,7 +30,7 @@ const AboutUs = () => {
 `;
 
   const floraClubInfoEng = `
-Flora and Fauna Club was founded in September 2023. The club’s main activities include species identification, compiling information profiles for campus plants and birds, creating artworks, organizing book fairs and exhibitions of photographs and artworks, providing nature walk, and producing videos and seasonal documentaries introducing campus species.
+Flora Club was founded in September 2023 and expanded into the Flora and Fauna Club in May 2024. The club’s main activities include species identification, compiling information profiles for campus plants and birds, creating artworks, organizing book fairs and exhibitions of photographs and artworks, providing nature walk, and producing videos and seasonal documentaries introducing campus species.
 
 Species Identification and Information Profiles: Species identification involves determining the genus and species of plants and recording their Latin names. Members search for information about each plant on reliable websites, covering aspects such as its characteristics, etymology, interactions with other organisms, historical background, and medicinal value. They then select relevant details from these sources and combine them with their own observations to create plant introductions. Additionally, they provide links to the referenced websites, allowing other students to further explore the plant using these sources. Meanwhile, members document different parts of each plant—foliage, flowers, fruits, and stems—throughout the seasons using various camera lenses. They also record insects and birds that interact with these plants. All this information is compiled into plant profiles featured in the website’s database. Furthermore, the club will expand the database to include bird species, detailing their preferred plant habitats and recommended observation spots.
 
@@ -134,11 +134,20 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             {aboutFloraClub}
           </p>
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/1.jpg`}
+            src={`${process.env.REACT_APP_Source_URL}/public/newAboutUs.jpg`}
             alt="pic of bird"
             className="birdPic"
           />
+
           <div className="greenBox" />
+          <div className="topPicText">
+            Designed by Juliana, 2025
+            <br>
+            </br>
+            <br>
+            </br>
+            Club Symbols: Yellow Trumpet Tree & Red-whiskered Bulbul
+          </div>
         </div>
 
         <div
@@ -211,7 +220,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
               </p>
               <p
                 className="subSubLabel2"
-                style={{ left: curLang === "cn" ? "" : "1.5vw" }}
+                style={{ left: curLang === "cn" ? "" : "2.1vw" }}
               >
                 Rachel Zhang
                 <br />

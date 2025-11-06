@@ -119,21 +119,31 @@ section.aboutUs {
 }
 
 .birdPic {
-  width: 17.67vw;
+  width: 21.17vw;
   position: absolute;
   top: 12.67vw;
-  left: 1.73vw;
+  left: 1.23vw;
   z-index: 1;
 }
 
 .greenBox {
-  width: 17.67vw;
-  height: 28.44vw;
-  background-color: #a8c082;
+  width: 20.67vw;
+  height: 23.44vw;
+  background-color: #d8d8a0;
   position: absolute;
-  top: 14.67vw;
-  left: 4.08vw;
+  top: 16.67vw;
+  left: 0.08vw;
   z-index: 0;
+}
+
+.topPicText {
+  position: absolute;
+  font-size: 0.65rem;
+  left: 1.4vw;
+  top: 34.7vw;
+  width: 20vw;
+  font-weight: 600;
+  color: #516d4e;
 }
 
 .clubLabel {
@@ -281,7 +291,7 @@ section.aboutUs {
   position: absolute;
   text-align: center;
   top: 29.5vw;
-  left: 3.15vw;
+  left: 6.15vw;
 }
 
 .subSubLabel5 {
