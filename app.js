@@ -31,6 +31,7 @@ const redis = require("redis");
 const Code = require("./models/code");
 const birdPost = require('./models/birdPost')
 const crypto = require("crypto");
+const { log } = require("console");
 dotenv.config();
 
 app.use(compression()); //gzip compression for faster speed
@@ -1313,17 +1314,18 @@ app.post("/updateText", verifyToken, async function (req, res) {
     additionalInfo: req.body.additionalInfo,
     link: req.body.link,
     chineseLink: req.body.chineseLink,
-    editor: req.body.editor,
     username: req.user?.username,
     otherNames: req.body.otherNames,
     authorization: true,
-    originalLatin: req.body.originalLatin[0],
+    originalLatin: req.body.originalLatin,
     editor: req.body.editor,
     // dbType: "plant"
   });
 
   await editTextRequest.save();
   res.json({ success: true });
+
+  console.log("updated plant successfully")
 });
 
 app.post("/birdUpdateText", verifyToken, async function (req, res) {
@@ -1339,7 +1341,7 @@ app.post("/birdUpdateText", verifyToken, async function (req, res) {
     username: req.user?.username,
     otherNames: req.body.otherNames,
     authorization: true,
-    originalLatin: req.body.originalLatin[0],
+    originalLatin: req.body.originalLatin,
     editor: req.body.editor,
     dbType: "bird",
 
@@ -1523,14 +1525,21 @@ app.put("/handleBirdEditDecision", verifyToken, async function (req, res) {
 app.put("/handleEditDecision", verifyToken, async function (req, res) {
   try {
     const request = await EditTextRequest.findById(req.body.id);
+    
     if (!request) {
       return res
         .status(404)
         .json({ success: false, message: "Request not found" });
     }
 
+    console.log(request);
+
     const originalLatin = request.originalLatin;
     const newLatin = request.latinName;
+
+    console.log("latins:")
+    console.log(originalLatin)
+    console.log(newLatin)
 
     if (!req.body.decision) {
       await EditTextRequest.deleteOne({ _id: request._id });
@@ -1561,11 +1570,16 @@ app.put("/handleEditDecision", verifyToken, async function (req, res) {
       },
     );
 
+    console.log("sending edit request")
+    // console.log("finished sending edit request")
+
     if (!postToEdit) {
       return res
         .status(404)
         .json({ success: false, message: "Post not found" });
     }
+
+    
 
     // Handle pics
     const pics = await Pic.find({ plant: originalLatin });

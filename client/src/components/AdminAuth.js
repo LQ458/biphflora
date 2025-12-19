@@ -20,6 +20,9 @@ const AdminAuth = ({ admin }) => {
   const handleEditDecision = async (id, decision, dbtype) => {
     try {
       if(dbtype!=="bird"){
+        // console.log("editing plants")
+        // console.log(id);
+        // console.log(decision)
         await axios.put(
           `${process.env.REACT_APP_Source_URL}/handleEditDecision`,
           { id: id, decision: decision },

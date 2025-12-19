@@ -25,7 +25,7 @@ const EditPageTextForm = (prop) => {
   const [linkArray, setLinkArray] = useState([]);
   const [chineseLinkArray, setChineseLinkArray] = useState([]);
   const [loadingMessage, setLoadingMessage] = useState("Submit");
-  const [originalLatin,setOriginalLatin] = useState(plant.latinName);
+  const originalLatin = plant.latinName;
 
   useEffect(() => {
     if (Array.isArray(links) && links.length > 0) {
@@ -52,6 +52,8 @@ const EditPageTextForm = (prop) => {
     setLoadingMessage("loading...");
 
     try {
+      console.log("Original latin22:")
+      console.log(originalLatin)
       await axios.post(`${process.env.REACT_APP_Source_URL}/updateText`, {
         latinName,
         chineseName,
@@ -61,7 +63,7 @@ const EditPageTextForm = (prop) => {
         link: linkArray,
         chineseLink: chineseLinkArray,
         otherNames,
-        originalLatin,
+        originalLatin: originalLatin,
         editor: editor
       });
 
