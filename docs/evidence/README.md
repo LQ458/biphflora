@@ -7,8 +7,9 @@ raw access logs, raw user agents, account identifiers, media filenames, or
 environment-variable values.
 
 The current baseline is [production-baseline-2026-07-22.md](production-baseline-2026-07-22.md).
-The metric register is [metric-catalog.md](metric-catalog.md), and collection
-rules are in [collection-method.md](collection-method.md).
+The metric register is [metric-catalog.md](metric-catalog.md), the current
+redacted traffic report is [traffic-report-2026-07-22.md](traffic-report-2026-07-22.md),
+and collection rules are in [collection-method.md](collection-method.md).
 
 ## Status vocabulary
 
