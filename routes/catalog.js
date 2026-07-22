@@ -5,6 +5,27 @@ const Pic = require("../models/pic");
 const Art = require("../models/art");
 
 const router = express.Router();
+const NAME_DIRECTORY_PROJECTION = {
+  _id: 1,
+  latinName: 1,
+  chineseName: 1,
+  commonName: 1,
+  otherNames: 1,
+};
+const NAME_DIRECTORY_MODELS = {
+  plant: Post,
+  bird: BirdPost,
+};
+
+function toNameDirectoryEntry(entry) {
+  return {
+    _id: entry._id,
+    latinName: entry.latinName,
+    chineseName: entry.chineseName,
+    commonName: entry.commonName,
+    otherNames: entry.otherNames,
+  };
+}
 
 router.get("/searchNames", async (req, res) => {
   const posts = await Post.find({ authorization: true });
@@ -20,6 +41,36 @@ router.get("/searchBirdNames", async (req, res) => {
     res.json({ success: false, returnNames: [], numOfPlants: 0 });
   }
   res.json({ success: true, returnNames: birdPosts, numOfPlants: birdPosts.length });
+});
+
+router.get("/catalog/names", async (req, res) => {
+  const { type } = req.query;
+
+  if (type !== "plant" && type !== "bird") {
+    return res.status(400).json({
+      success: false,
+      message: "Type must be either plant or bird",
+    });
+  }
+
+  try {
+    const model = NAME_DIRECTORY_MODELS[type];
+    const entries = await model
+      .find({ authorization: true }, NAME_DIRECTORY_PROJECTION)
+      .lean();
+
+    return res.json({
+      success: true,
+      type,
+      names: entries.map(toNameDirectoryEntry),
+    });
+  } catch (_) {
+    console.error("Unable to load name directory");
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load name directory",
+    });
+  }
 });
 
 router.post("/syncPlantInfo", async (req, res) => {
