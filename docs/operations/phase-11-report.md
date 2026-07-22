@@ -43,7 +43,9 @@ Date: 2026-07-22
   `/api/searchNames`. `nginx -t` passed; no Nginx reload or configuration edit
   was performed.
 - The frontend static process remained running and served the new build asset.
-  The media directory was not changed or backfilled.
+- A read-only sample path returned by `/api/getDb2Pic` successfully served one
+  compressed media byte over public HTTPS. The media directory was not changed
+  or backfilled.
 - Existing MongoDB counts remained 153 posts (152 authorized, 1 pending),
   970 Pic documents, 27 Art documents, 3 users, and 0 bird posts. The new
   code caused empty `audit_events` and `search_events` collections to exist;
