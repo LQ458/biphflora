@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import LetterButton from "../components/LetterButton.js";
@@ -26,7 +27,7 @@ const Glossary = ({ handleGets }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfoGlossary`,
+          urls.userInfoGlossary,
         );
         setUsername(response.data.username);
         setAdmin(response.data.admin);

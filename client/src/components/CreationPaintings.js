@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls, { mediaUrl } from "../tools/url";
 import React, { useState, useEffect } from "react";
 import SubBox from "./SubBox.js";
 import "../styles/creationPaint.css";
@@ -52,7 +53,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/creationDocumentary`,
+          urls.creationDocumentary,
         );
         const allDisplays = response.data.allDisplays;
         allDisplays.sort((a, b) => {
@@ -179,13 +180,13 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
             <PreviousIcon width={60} height={60} className="icons" />
           </button>
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public${topPics[topIndex]}`}
+            src={mediaUrl(topPics[topIndex])}
             alt="pic"
             className="topImgs"
           />
           <div className="artBox">
             <img
-              src={`${process.env.REACT_APP_Source_URL}/public${topArts[topIndex]}`}
+              src={mediaUrl(topArts[topIndex])}
               alt="art"
               className="topArts"
             />

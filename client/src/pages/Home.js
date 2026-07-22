@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../api/http";
+import urls, { mediaUrl } from "../tools/url";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
 import styles from "../styles/home.module.css";
@@ -45,7 +46,7 @@ const Home = ({ handleGets }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
+          urls.searchNames,
         );
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
@@ -76,7 +77,7 @@ const Home = ({ handleGets }) => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
+          urls.userInfo,
         );
 
         setUsername(response.data.username);
@@ -213,7 +214,7 @@ const Home = ({ handleGets }) => {
                     currentPic && (
                       <div className={styles.picContainer}>
                         <img
-                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${currentPic}`}
+                          src={mediaUrl(currentPic, { compressed: true })}
                           alt="PlantPic"
                           className={styles.currentPics}
                         />
@@ -251,7 +252,7 @@ const Home = ({ handleGets }) => {
                     artPaths[picsArrayIndex] && (
                       <div className={styles.artContainer}>
                         <img
-                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${artPaths[picsArrayIndex]}`}
+                          src={mediaUrl(artPaths[picsArrayIndex], { compressed: true })}
                           alt="PlantArt"
                           className={styles.currentArts}
                         />

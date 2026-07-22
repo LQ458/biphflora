@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls, { mediaUrl } from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import EditPageTextForm from "../components/EditPageTextForm.js";
@@ -66,7 +67,7 @@ const EditPage = (props) => {
   const deletePic = async (id) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/editPageDelete`,
+        urls.editPageDelete,
         { id },
       );
       console.log(response.data);
@@ -117,7 +118,7 @@ const EditPage = (props) => {
   const deletePlant = async (id) => {
     try {
       const response = await axios.delete(
-        `${process.env.REACT_APP_Source_URL}/editPageDeletePlant`,
+        urls.editPageDeletePlant,
         {
           data: {
             id: props.editKey[0]._id,
@@ -239,7 +240,7 @@ const EditPage = (props) => {
                 {paged.map(item => (
                   <div key={item._id} className="pic-item">
                     <img
-                      src={`${process.env.REACT_APP_Source_URL}/public${item.path}`}
+                      src={mediaUrl(item.path)}
                       alt="plant pic"
                     />
                     <div className="select-overlay">
@@ -290,7 +291,7 @@ const EditPage = (props) => {
               pics.map((item, index) => (
                 <div className="pic-item" key={item._id}>
                   <img
-                    src={`${process.env.REACT_APP_Source_URL}/public${item.path}`}
+                    src={mediaUrl(item.path)}
                     key={index}
                     alt="pic"
                   />
@@ -339,7 +340,7 @@ const EditPage = (props) => {
               props.editKey[2].map((item, index) => (
                 <>
                   <img
-                    src={`${process.env.REACT_APP_Source_URL}/public${item.path}`}
+                    src={mediaUrl(item.path)}
                     key={index}
                     alt="pic"
                     style={{ maxWidth: "25%" }}

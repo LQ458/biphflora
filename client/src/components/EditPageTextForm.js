@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls from "../tools/url";
 import React, { useState, useEffect, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -54,7 +55,7 @@ const EditPageTextForm = (prop) => {
     try {
       console.log("Original latin22:")
       console.log(originalLatin)
-      await axios.post(`${process.env.REACT_APP_Source_URL}/updateText`, {
+      await axios.post(urls.updateText, {
         latinName,
         chineseName,
         commonName,

@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls, { mediaUrl } from "../tools/url";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +24,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
     const getDb2Pic = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/getDb2PicBird`,
+          urls.getDb2PicBird,
         );
         setPics(response.data.pics);
       } catch (error) {
@@ -38,7 +39,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchBirdNames`,
+          urls.searchBirdNames,
         );
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
@@ -71,22 +72,22 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
     setLoad(newArray);
     pics.forEach((pic, index) => {
       const img = new Image();
-      img.src = `${process.env.REACT_APP_Source_URL}/public${pic.path}`;
+      img.src = mediaUrl(pic.path);
       img.onload = () => {
         newArray[index] = false;
-        srcs[index] = `${process.env.REACT_APP_Source_URL}/public/compressed${pic.path}`;
+        srcs[index] = mediaUrl(pic.path, { compressed: true });
         setLoadedSrc([...srcs]);
         setLoad([...newArray]);
       };
       img.onerror = async () => {
         try {
-          const response = await axios.get("/db2AltBird");
+          const response = await axios.get(urls.db2AltBird);
           const altImg = new Image();
-          altImg.src = `${process.env.REACT_APP_Source_URL}/public/compressed${response.data.pic.path}`;
+          altImg.src = mediaUrl(response.data.pic.path, { compressed: true });
           altImg.onload = () => {
             newArray[index] = false;
             srcs[index] =
-              `${process.env.REACT_APP_Source_URL}/public/compressed${response.data.pic.path}`;
+              mediaUrl(response.data.pic.path, { compressed: true });
             setLoadedSrc([...srcs]);
             setLoad([...newArray]);
           };

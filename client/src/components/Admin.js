@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../api/http";
+import urls from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar.js";
 import "../styles/admin.css";
@@ -15,7 +16,7 @@ const Admin = ({ handleAdminPreview }) => {
   const fetchAdmin = async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_Source_URL}/userInfo`,
+        urls.userInfo,
       );
       setAdmin(response.data.admin);
       if (!response.data.admin) {
@@ -33,7 +34,7 @@ const Admin = ({ handleAdminPreview }) => {
       try {
         await fetchAdmin();
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/adminDataGet`,
+          urls.adminDataGet,
         );
         setUsers(response.data.users);
         setPlants(response.data.plants);
@@ -60,7 +61,7 @@ const Admin = ({ handleAdminPreview }) => {
     setUserLoadingState("loading...");
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/adminToggle`,
+        urls.adminToggle,
         { username: name },
       );
       setUserLoadingState("done");

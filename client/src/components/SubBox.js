@@ -1,4 +1,5 @@
 import React from "react";
+import { mediaUrl } from "../tools/url";
 import "../styles/subBox.css";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
@@ -27,7 +28,7 @@ const SubBox = ({
           <div className="artCodeT">
             <img
               className="art"
-              src={`${process.env.REACT_APP_Source_URL}/public${displayObjectList[currentDisplayIndexes[index]].art}`}
+              src={mediaUrl(displayObjectList[currentDisplayIndexes[index]].art)}
               alt="art"
             />
             {admin && (
@@ -115,7 +116,7 @@ const SubBox = ({
               <div style={{ position: "relative", marginTop: "1.5rem" }}>
                 <img
                   className="pic"
-                  src={`${process.env.REACT_APP_Source_URL}/public${displayObjectList[currentDisplayIndexes[index]].pic}`}
+                  src={mediaUrl(displayObjectList[currentDisplayIndexes[index]].pic)}
                   alt="pic"
                 />
                 {admin && (
@@ -145,7 +146,7 @@ const SubBox = ({
           <div className="artCodeT">
             <img
               className="art"
-              src={`${process.env.REACT_APP_Source_URL}/public${displayObjectList[currentDisplayIndexes[index + 1]].art}`}
+              src={mediaUrl(displayObjectList[currentDisplayIndexes[index + 1]].art)}
               alt="art"
             />
             {admin && (
@@ -241,7 +242,7 @@ const SubBox = ({
               <div style={{ position: "relative", marginTop: "1.5rem" }}>
                 <img
                   className="pic"
-                  src={`${process.env.REACT_APP_Source_URL}/public${displayObjectList[currentDisplayIndexes[index + 1]].pic}`}
+                  src={mediaUrl(displayObjectList[currentDisplayIndexes[index + 1]].pic)}
                   alt="pic"
                 />
                 {admin && (

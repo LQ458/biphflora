@@ -1,14 +1,12 @@
 import axios from "axios";
+import { apiOrigin } from "../tools/url";
 
 axios.defaults.withCredentials = true;
 axios.interceptors.request.use((config) => {
   const token = localStorage.getItem("askanything");
-  const apiBaseUrl = process.env.REACT_APP_Source_URL;
-  const normalizedApiBaseUrl = apiBaseUrl?.replace(/\/$/, "");
   const isApiRequest =
-    normalizedApiBaseUrl &&
-    (config.url === normalizedApiBaseUrl ||
-      config.url?.startsWith(`${normalizedApiBaseUrl}/`));
+    apiOrigin &&
+    (config.url === apiOrigin || config.url?.startsWith(`${apiOrigin}/`));
 
   if (!token || !isApiRequest) {
     return config;

@@ -1,49 +1,86 @@
-const prefix = process.env.REACT_APP_Source_URL;
+export const apiOrigin = (process.env.REACT_APP_Source_URL || "").replace(
+  /\/+$/,
+  "",
+);
+
+const withLeadingSlash = (path) => {
+  const value = String(path ?? "");
+  return value.startsWith("/") ? value : `/${value}`;
+};
+
+export const apiUrl = (path = "") => `${apiOrigin}${withLeadingSlash(path)}`;
+
+export const mediaUrl = (path, { compressed = false } = {}) => {
+  if (!path) {
+    return "";
+  }
+
+  const mediaPath = withLeadingSlash(path).replace(/^\/public(?=\/)/, "");
+  const normalizedPath = compressed
+    ? mediaPath.replace(/^\/compressed(?=\/)/, "")
+    : mediaPath;
+
+  return apiUrl(`/public${compressed ? "/compressed" : ""}${normalizedPath}`);
+};
 
 const urls = {
   // Admin-related URLs
-  adminDataGet: `${prefix}/adminDataGet`,
-  adminToggle: `${prefix}/adminToggle`,
-  adminAuth: `${prefix}/adminAuth`,
-  adminView: `${prefix}/adminView`,
+  adminDataGet: apiUrl("/adminDataGet"),
+  adminToggle: apiUrl("/adminToggle"),
+  adminAuth: apiUrl("/adminAuth"),
+  adminView: apiUrl("/adminView"),
+  makeFeatured: apiUrl("/makeFeatured"),
 
   // User-related URLs
-  login: `${prefix}/login`,
-  logout: `${prefix}/logout`,
-  userInfo: `${prefix}/userInfo`,
-  userInfoGlossary: `${prefix}/userInfoGlossary`,
+  login: apiUrl("/login"),
+  logout: apiUrl("/logout"),
+  register: apiUrl("/register"),
+  userInfo: apiUrl("/userInfo"),
+  userInfoGlossary: apiUrl("/userInfoGlossary"),
+  userInfoGlossaryBird: apiUrl("/userInfoGlossaryBird"),
 
   // Creation-related URLs
-  newCreationAuth: `${prefix}/newCreationAuth`,
-  newPostAuth: `${prefix}/newPostAuth`,
-  uploadCreation: `${prefix}/uploadCreation`,
-  unFeatureCreation: `${prefix}/unFeatureCreation`,
-  featureToHome: `${prefix}/featureToHome`,
-  unFeatureHome: `${prefix}/unFeatureHome`,
+  newCreationAuth: apiUrl("/newCreationAuth"),
+  newBirdPostAuth: apiUrl("/newBirdPostAuth"),
+  newPostAuth: apiUrl("/newPostAuth"),
+  uploadCreation: apiUrl("/uploadCreation"),
+  unFeatureCreation: apiUrl("/unFeatureCreation"),
+  featureToHome: apiUrl("/featureToHome"),
+  unFeatureHome: apiUrl("/unFeatureHome"),
+  uploadHome: apiUrl("/uploadHome"),
+  getPicsAndArts: apiUrl("/getPicsAndArts"),
 
   // Media-related URLs
-  upload: `${prefix}/upload`,
-  uploadBird: `${prefix}/uploadBird`,
-  uploadPic: `${prefix}/uploadPic`,
-  uploadArt: `${prefix}/uploadArt`,
-  getPics: `${prefix}/getPics`,
-  uploadFeatureSingle: `${prefix}/uploadFeatureSingle`,
-  getDb2Pic: `${prefix}/getDb2Pic`,
-  db2Alt: `${prefix}/db2Alt`,
+  upload: apiUrl("/upload"),
+  uploadBird: apiUrl("/uploadBird"),
+  uploadPic: apiUrl("/uploadPic"),
+  uploadBirdPic: apiUrl("/uploadBirdPic"),
+  uploadArt: apiUrl("/uploadArt"),
+  getPics: apiUrl("/getPics"),
+  uploadFeatureSingle: apiUrl("/uploadFeatureSingle"),
+  uploadFeatureArtSingle: apiUrl("/uploadFeatureArtSingle"),
+  getDb2Pic: apiUrl("/getDb2Pic"),
+  getDb2PicBird: apiUrl("/getDb2PicBird"),
+  db2Alt: apiUrl("/db2Alt"),
+  db2AltBird: apiUrl("/db2AltBird"),
 
-  // Plant-related URLs
-  numOFPlants: `${prefix}/numOFPlants`,
-  syncPlantInfo: `${prefix}/syncPlantInfo`,
-  editPageDelete: `${prefix}/editPageDelete`,
-  editPageDeletePlant: `${prefix}/editPageDeletePlant`,
+  // Plant- and bird-related URLs
+  numOfPlants: apiUrl("/numOfPlants"),
+  numOfBirds: apiUrl("/numOfBirds"),
+  syncPlantInfo: apiUrl("/syncPlantInfo"),
+  syncBirdInfo: apiUrl("/syncBirdInfo"),
+  editPageDelete: apiUrl("/editPageDelete"),
+  editPageDeletePlant: apiUrl("/editPageDeletePlant"),
+  birdUpdateText: apiUrl("/birdUpdateText"),
 
   // Miscellaneous URLs
-  refresh: `${prefix}/refresh`,
-  handleEditDecision: `${prefix}/handleEditDecision`,
-  creationDocumentary: `${prefix}/creationDocumentary`,
-  updateText: `${prefix}/updateText`,
-  searchNames: `${prefix}/searchNames`,
-  searchBirdNames: `${prefix}/searchBirdNames`,
+  refresh: apiUrl("/refresh"),
+  handleEditDecision: apiUrl("/handleEditDecision"),
+  handleBirdEditDecision: apiUrl("/handleBirdEditDecision"),
+  creationDocumentary: apiUrl("/creationDocumentary"),
+  updateText: apiUrl("/updateText"),
+  searchNames: apiUrl("/searchNames"),
+  searchBirdNames: apiUrl("/searchBirdNames"),
 };
 
 export default urls;

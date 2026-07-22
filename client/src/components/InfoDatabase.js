@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls, { mediaUrl } from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
@@ -74,7 +75,7 @@ const InfoDatabase = (search) => {
         path: zoomArtLink,
       };
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadFeatureArtSingle`,
+        urls.uploadFeatureArtSingle,
         newFeature,
         {
           headers: {
@@ -98,7 +99,7 @@ const InfoDatabase = (search) => {
         path: zoomPicLink,
       };
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadFeatureSingle`,
+        urls.uploadFeatureSingle,
         newFeature,
         {
           headers: {
@@ -231,7 +232,7 @@ const InfoDatabase = (search) => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/syncPlantInfo`,
+        urls.syncPlantInfo,
         { postName: searchName },
       );
 
@@ -283,7 +284,7 @@ const InfoDatabase = (search) => {
     const numOfPlants = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/numOFPlants`,
+          urls.numOfPlants,
         );
         setNumOfPlants(response.data.numOfPlants);
       } catch (error) {
@@ -298,7 +299,7 @@ const InfoDatabase = (search) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
+          urls.searchNames,
         );
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
@@ -334,7 +335,7 @@ const InfoDatabase = (search) => {
     setSearchName(sendName);
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/syncPlantInfo`,
+        urls.syncPlantInfo,
         { postName: sendName },
       );
       setLatin(response.data.resultPost[0].latinName);
@@ -400,7 +401,7 @@ const InfoDatabase = (search) => {
   useEffect(() => {
     setLoad(true);
     const img = new Image();
-    img.src = `${process.env.REACT_APP_Source_URL}/public${displayArtPath}`;
+    img.src = mediaUrl(displayArtPath);
     img.onload = () => {
       setLoad(false);
       setLoadedSrc(displayArtPath);
@@ -425,7 +426,7 @@ const InfoDatabase = (search) => {
           <div key={index}>
             <img
               className={styles.databaseImg}
-              src={`${process.env.REACT_APP_Source_URL}/public${path}`}
+              src={mediaUrl(path)}
               alt={`${index + 1}`}
               onClick={() => handleZoom(path, seasonInfo[index])}
             />
@@ -648,7 +649,7 @@ const InfoDatabase = (search) => {
                 ) : (
                   <div style={{ position: "relative" }}>
                     <img
-                      src={`${process.env.REACT_APP_Source_URL}/public${loadedSrc}`}
+                      src={mediaUrl(loadedSrc)}
                       id="artPic"
                       onClick={() => handleArtZoom(displayArtPath)}
                       alt="art"
@@ -739,7 +740,7 @@ const InfoDatabase = (search) => {
           <div className={styles.zoomBox}>
             <img
               className={styles.zoomPic}
-              src={`${process.env.REACT_APP_Source_URL}/public${zoomPicLink}`}
+              src={mediaUrl(zoomPicLink)}
               alt={zoomPicLink}
             />
             <button
@@ -771,7 +772,7 @@ const InfoDatabase = (search) => {
           <div className={styles.zoomBox}>
             <img
               className={styles.zoomPic}
-              src={`${process.env.REACT_APP_Source_URL}/public${zoomArtLink}`}
+              src={mediaUrl(zoomArtLink)}
               alt={zoomArtLink}
             />
             <button

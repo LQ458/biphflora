@@ -2,6 +2,7 @@
 import { createContext, useReducer, useEffect } from "react";
 import { Map, fromJS } from "immutable";
 import axios from "./api/http";
+import urls from "./tools/url";
 
 const userReducer = (state, action) => {
   switch (action.type) {
@@ -24,14 +25,11 @@ export const UserProvider = ({ children }) => {
   const refresh = async () => {
     try {
       const token = localStorage.getItem("askanything");
-      const response = await axios.get(
-        `${process.env.REACT_APP_Source_URL}/refresh`,
-        {
-          headers: {
-            authorization: token,
-          },
+      const response = await axios.get(urls.refresh, {
+        headers: {
+          authorization: token,
         },
-      );
+      });
       if (response.data.user) {
         dispatch({ type: "LOGIN", payload: response.data.user });
       } else {
@@ -50,7 +48,7 @@ export const UserProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("askanything");
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/login`,
+        urls.login,
         {
           username,
           password,
@@ -84,7 +82,7 @@ export const UserProvider = ({ children }) => {
       const token = localStorage.getItem("askanything");
       localStorage.removeItem("askanything");
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/logout`,
+        urls.logout,
         {},
         {
           headers: {

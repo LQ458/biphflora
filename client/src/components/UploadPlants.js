@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import { FileUpload } from "primereact/fileupload";
@@ -51,10 +52,10 @@ const UploadPlants = () => {
     const fetchData = async () => {
       try {
         const userInfoResponse = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
+          urls.userInfo,
         );
         const searchNamesResponse = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
+          urls.searchNames,
         );
         const fetchedNamesArray = searchNamesResponse.data.returnNames.map(
           (result) => {
@@ -221,7 +222,7 @@ const UploadPlants = () => {
     formData.append("dbType", "plant");
 
     try {
-      await axios.post(`${process.env.REACT_APP_Source_URL}/uploadPlant`, formData, {
+      await axios.post(urls.uploadPlant, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -365,7 +366,7 @@ const UploadPlants = () => {
 
       // 上传文件
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadPic`,
+        urls.uploadPic,
         formData,
         {
           headers: {
@@ -445,7 +446,7 @@ const UploadPlants = () => {
 
     try {
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadArt`,
+        urls.uploadArt,
         formData,
         {
           headers: {

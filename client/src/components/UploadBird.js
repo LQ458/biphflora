@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import { FileUpload } from "primereact/fileupload";
@@ -64,10 +65,10 @@ const UploadBirds = () => {
     const fetchData = async () => {
       try {
         const userInfoResponse = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
+          urls.userInfo,
         );
         const searchNamesResponse = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchBirdNames`,
+          urls.searchBirdNames,
         );
         const fetchedNamesArray = searchNamesResponse.data.returnNames.map(
           (result) => {
@@ -239,7 +240,7 @@ const UploadBirds = () => {
     formData.append("fAdultChar", fadultChar);
 
     try {
-      await axios.post(`${process.env.REACT_APP_Source_URL}/uploadBird`, formData, {
+      await axios.post(urls.uploadBird, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -391,7 +392,7 @@ const UploadBirds = () => {
 
       // 上传文件
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadBirdPic`,
+        urls.uploadBirdPic,
         formData,
         {
           headers: {
@@ -471,7 +472,7 @@ const UploadBirds = () => {
 
     try {
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadArt`,
+        urls.uploadArt,
         formData,
         {
           headers: {

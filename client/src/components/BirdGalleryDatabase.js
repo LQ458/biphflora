@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls, { mediaUrl } from "../tools/url";
 import React, { useState, useEffect, useMemo } from "react";
 import styles from "../styles/galleryDatabase.module.css";
 import SearchPlant from "./SearchPlant.js";
@@ -114,7 +115,7 @@ const GalleryDatabase = (props) => {
     const getPics = async () => {
       try {
         const response = await axios.post(
-          `${process.env.REACT_APP_Source_URL}/getPics`,
+          urls.getPics,
           { plant: plant },
         );
         let newArray = [];
@@ -151,7 +152,7 @@ const GalleryDatabase = (props) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
+          urls.searchNames,
         );
         const fetchedNamesArray = response.data.returnNames;
         setNamesArray(fetchedNamesArray);
@@ -188,7 +189,7 @@ const GalleryDatabase = (props) => {
         path: zoomPicLink,
       };
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadFeatureSingle`,
+        urls.uploadFeatureSingle,
         newFeature,
         {
           headers: {
@@ -205,7 +206,7 @@ const GalleryDatabase = (props) => {
     const fetchUserInfo = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
+          urls.userInfo,
           {
             headers: {
               Authorization: `${localStorage.getItem("askanything")}`,
@@ -352,7 +353,7 @@ const GalleryDatabase = (props) => {
                     .map((p, index) => (
                       <div className={styles.summerPic} key={index}>
                         <img
-                          src={`${process.env.REACT_APP_Source_URL}/public${p.path}`}
+                          src={mediaUrl(p.path)}
                           alt=""
                           className={styles.summerPic}
                           onClick={() =>
@@ -406,7 +407,7 @@ const GalleryDatabase = (props) => {
                     .map((p, index) => (
                       <div className={styles.summerPic} key={index}>
                         <img
-                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${p.path}`}
+                          src={mediaUrl(p.path, { compressed: true })}
                           alt=""
                           className={styles.summerPic}
                           onClick={() =>
@@ -458,7 +459,7 @@ const GalleryDatabase = (props) => {
                       .map((pic, picIndex) => (
                         <div className={styles.summerPic} key={picIndex}>
                           <img
-                            src={`${process.env.REACT_APP_Source_URL}/public${pic.path}`}
+                            src={mediaUrl(pic.path)}
                             alt=""
                             className={styles.summerPic}
                             onClick={() =>
@@ -511,7 +512,7 @@ const GalleryDatabase = (props) => {
             <div className={styles.zoomBox}>
               <img
                 className={styles.zoomPic}
-                src={`${process.env.REACT_APP_Source_URL}/public${zoomPicLink}`}
+                src={mediaUrl(zoomPicLink)}
                 alt={zoomPicLink}
               />
               <button
