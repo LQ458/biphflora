@@ -24,20 +24,23 @@ Date: 2026-07-22
   exact file was tested through both `sshpass -f` and OpenSSH askpass, with
   `root` still rejected. No additional usernames or keys were brute-forced.
 
-## Deployment status
+## Initial gate and subsequent deployment
 
-No server write, process restart, Nginx reload, database write, media write, or
-backup deletion occurred. The release remains local and is not production
-approved. A successful SSH identity (host, username, and accepted key/password
-format) is required before the following authorized sequence can begin:
+The checks above were the initial access gate and intentionally did not change
+the host. After the correct root credential was supplied, the authorized
+sequence was completed on 2026-07-22. A protected deployment and its evidence
+are recorded in [phase-11-report.md](phase-11-report.md). The deployment used
+an isolated release directory and a server-side backup before the cutover; it
+did not use `git pull`, reload Nginx, migrate MongoDB, backfill media, or delete
+backups.
 
-1. Read-only process/container, deployment commit, disk, MongoDB, Redis, media,
-   backup, TLS, and log checks.
-2. Separate backups and manifests for MongoDB, media, environment/configuration,
-   Redis decision, and log metric cutoff.
-3. Isolated smoke/restore check or an explicit staging exception.
-4. One-commit deployment, health verification, traffic/error observation, and
-   recorded rollback point.
+The deployment gates that remain open even though the release is live are:
+
+1. Independent staging parity and a successful MongoDB/media restore rehearsal.
+2. Reliable historical monitoring or a documented server-side aggregation for
+   valid sessions, verified visitors, latency, and error-rate metrics.
+3. A read-only review of the intermittent SSH banner closures and the server's
+   SSH/fail2ban logs.
 
 ## Evidence limitation
 

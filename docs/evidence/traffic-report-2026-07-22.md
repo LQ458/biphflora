@@ -83,10 +83,11 @@ verified contributors
 ```text
 Metric: HTTP request entries
 Exact definition: frontend Nginx access-log entries before business filtering
-Value: 1,131,038
-Time window: 2024-10-31 through 2026-07-22
+Value: 1,131,459
+Time window: 2024-10-31 through the post-deploy verification on 2026-07-22
 Source: production Nginx access logs
-Query/calculation: counted retained frontend access-log entries
+Query/calculation: counted retained frontend access-log entries after the
+deployment checks
 Bot/internal-traffic filtering: none; includes assets, bots, scans, health,
 and internal/test traffic
 Collected on: 2026-07-22
@@ -103,8 +104,9 @@ exclusion list before any of these values can be reported.
 ## Product, media, and reliability evidence
 
 - Current registered accounts: 3. This is an account count, not active users.
-- Media filesystem: 1,245 mixed files using 2,332,361,589 bytes. This includes
-  originals, derivatives, uploads, assets, and possible archives.
+- Media filesystem: 1,245 mixed files using 2,332,435,708 bytes in the
+  pre-deploy server snapshot. This includes originals, derivatives, uploads,
+  assets, and possible archives; the deployment did not modify this tree.
 - MongoDB Pic/Art path coverage: 997 of 997 document paths existed at baseline.
 - Search result quality, search counts, success/zero-result rates, image
   processing failure rate, average sizes, compression ratio, and storage saved:
@@ -116,8 +118,9 @@ exclusion list before any of these values can be reported.
 
 ## Engineering and deployment state
 
-- Current production baseline: commit `ea471b6`; the refactor branch release is
-  not deployed.
+- Current production after the protected cutover: commit
+  `6c9bfb77528f3b4341c01088d4df4355d2c91a2a` (`6c9bfb7`), with previous
+  commit `ea471b6` retained in the rollback backup.
 - Local verification: 24 backend tests and 15 frontend tests pass; production
   build succeeds with existing CRA/Browserslist/ESLint warnings.
 - Root production dependency audit: 0 advisories after the native and
@@ -126,9 +129,16 @@ exclusion list before any of these values can be reported.
   advisories after the dependency boundary and overrides.
 - Full client development-tree audit still reports CRA-related advisories; this
   report does not claim a CRA migration.
-- No independent staging or restore rehearsal is verified. No production write,
-  restart, Nginx reload, database migration, media backfill, or deployment has
-  occurred in this work.
+- No independent staging or restore rehearsal is verified. One controlled
+  backend restart and client build swap occurred during deployment; no Nginx
+  reload, data migration, or media backfill was performed. Empty additive
+  `audit_events` and `search_events` collections exist after application
+  startup, with zero event documents at verification.
+
+The deployment and rollback evidence is recorded in
+[phase-11-report.md](../operations/phase-11-report.md). The valid session,
+verified visitor, and historical uptime fields remain `unavailable` rather
+than being inferred from the request count.
 
 The metric register in [metric-catalog.md](metric-catalog.md) and the method in
 [collection-method.md](collection-method.md) are authoritative for definitions,
