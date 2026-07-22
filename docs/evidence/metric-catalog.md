@@ -22,21 +22,21 @@ the product. Every future measurement must use the evidence-record template in
 | First public launch date | Unavailable | Unavailable | Earliest retained public snapshot is only a lower bound |
 | Earliest public snapshot | 2024-01-15 | Direct | Internet Archive retained-snapshot record |
 | Domain registration date | 2023-10-12 | Direct | Public RDAP registration event |
-| Current deployed commit | ea471b6 | Direct | Production Git checkout at collection time |
-| Current deployment date | 2025-12-19 candidate | Candidate | Latest retained pull-origin-main reflog entry; not a completed deployment proof |
+| Current deployed commit | 6c9bfb7 | Direct | Protected production cutover recorded in phase-11 report; previous ea471b6 retained for rollback |
+| Current deployment date | 2026-07-22 | Direct for this cutover | Server-side deployment marker and post-deploy health checks; historical deployment count remains unavailable |
 | Continuous service duration | Unavailable | Unavailable | No availability monitor or complete incident history |
 | Interrupted-service periods | Unavailable | Unavailable | No verified incident timeline |
 | Major versions/features | Partially available in Git history | Proxy | Requires a reviewed release timeline |
 | Total deployments/recent deployment | Unavailable / candidate above | Unavailable | Git pull and process dates cannot establish all deployments |
 | Server/platform migrations | Unavailable | Unavailable | Needs configuration/history evidence |
 | Incidents and recovery times | Unavailable | Unavailable | Logs are not classified incidents |
-| Production/staging/local relationship | Production and local commit observed; no staging found | Direct/partial | Need isolated staging before deployment approval |
+| Production/staging/local relationship | Production and local release commit 6c9bfb7; no independent staging found | Direct/partial | Isolated release smoke passed; staging parity and restore rehearsal remain unavailable |
 
 ## Traffic and audience
 
 | Metric | Current value | Status | Source and limitation |
 | --- | --- | --- | --- |
-| Unfiltered access-log entries | 1,131,038 | Direct | Request entries from 2024-10-31 to 2026-07-22; not visits |
+| Unfiltered access-log entries | 1,131,459 | Direct | Current frontend log snapshot through post-deploy checks; not visits |
 | Pageviews | Unavailable | Unavailable | SPA navigation and filtering are not captured defensibly |
 | Visits/sessions | Unavailable | Unavailable | Requires documented 30-minute session aggregation |
 | Verified unique visitors | Unavailable | Unavailable | No suitable first-party identity source |
@@ -47,7 +47,7 @@ the product. Every future measurement must use the evidence-record template in
 | Visit duration/pages/bounce rate | Unavailable | Unavailable | Nginx alone cannot observe SPA completion or duration |
 | Source, device, country distribution | Unavailable | Unavailable | Needs filtered, privacy-preserving aggregation |
 | Most visited pages | Unavailable | Unavailable | Needs route-level aggregation and SPA caveat |
-| HTTP request total | 1,131,038 frontend access-log entries | Direct | Operational request volume only; never label as visits |
+| HTTP request total | 1,131,459 frontend access-log entries | Direct | Operational request volume only; never label as visits |
 
 ## Product usage and contribution
 
@@ -58,7 +58,7 @@ the product. Every future measurement must use the evidence-record template in
 | Historical records created | Unavailable | Unavailable | Deleted documents are not recoverable from current collections |
 | Pic documents | 970 | Direct | Current MongoDB Pic collection |
 | Art documents | 27 | Direct | Current MongoDB Art collection |
-| Media filesystem footprint | 1,245 files / 2,332,361,589 bytes | Direct | Includes non-record files and derivatives |
+| Media filesystem footprint | 1,245 files / 2,332,435,708 bytes | Direct | Pre-deploy point-in-time snapshot; includes non-record files and derivatives |
 | Current registered accounts | 3 | Direct | Current MongoDB user documents; not active users |
 | Searches, success rate, zero-result rate, language use | Unavailable | Unavailable | Aggregate search telemetry exists but is disabled by default; no historical events have been verified |
 | Detail views, uploads, creates, edits, reviews | Unavailable | Unavailable | Append-only audit path exists but is disabled by default; no historical events have been verified |
@@ -71,7 +71,7 @@ the product. Every future measurement must use the evidence-record template in
 
 | Metric | Current value | Status | Source and limitation |
 | --- | --- | --- | --- |
-| Point-in-time public HTTPS | HTTP 200 | Direct | Observed after the stage-0 audit only |
+| Point-in-time public HTTPS | HTTP 200 | Direct | Observed for root, `/api/health/live`, and `/api/searchNames` after protected cutover |
 | Uptime/availability/downtime/MTTR | Unavailable | Unavailable | No historical monitor coverage |
 | HTTP error rate / unhandled exceptions | Unavailable | Unavailable | Need classified status/error aggregation |
 | p50/p95/p99, search, upload, database latency | Unavailable | Unavailable | No latency telemetry |
