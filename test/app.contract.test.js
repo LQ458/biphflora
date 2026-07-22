@@ -7,6 +7,8 @@ const Post = require("../models/post");
 const BirdPost = require("../models/birdPost");
 const Pic = require("../models/pic");
 const Art = require("../models/art");
+const creationBottom = require("../models/creationBottom");
+const FeatureHome = require("../models/featureHome");
 const { app, runtime } = require("../app");
 
 let server;
@@ -15,7 +17,10 @@ const originals = {
   postFind: Post.find,
   birdPostFind: BirdPost.find,
   picFind: Pic.find,
+  picAggregate: Pic.aggregate,
   artFind: Art.find,
+  creationBottomFind: creationBottom.find,
+  featureHomeFind: FeatureHome.find,
 };
 
 function request(pathname, { method = "GET", body, headers = {} } = {}) {
@@ -97,7 +102,10 @@ after(async () => {
   Post.find = originals.postFind;
   BirdPost.find = originals.birdPostFind;
   Pic.find = originals.picFind;
+  Pic.aggregate = originals.picAggregate;
   Art.find = originals.artFind;
+  creationBottom.find = originals.creationBottomFind;
+  FeatureHome.find = originals.featureHomeFind;
 
   await new Promise((resolve, reject) => {
     server.close((error) => {
@@ -209,4 +217,106 @@ test("public read routes retain search, detail, count, refresh, and CORS contrac
     { model: "Post", query: { authorization: true } },
     { model: "BirdPost", query: { authorization: true } },
   ]);
+});
+
+test("public content routes retain documentary, glossary, media, and feature contracts", async () => {
+  Post.find = async (query) => {
+    calls.push({ model: "Post", query });
+    return [
+      {
+        latinName: "Acer rubrum",
+        chineseName: "红花槭",
+        authorization: true,
+      },
+    ];
+  };
+  BirdPost.find = async (query) => {
+    calls.push({ model: "BirdPost", query });
+    return [
+      {
+        latinName: "Corvus corax",
+        chineseName: "渡鸦",
+        authorization: true,
+      },
+    ];
+  };
+  Pic.find = async (query) => {
+    calls.push({ model: "Pic", query });
+    return [
+      { path: "/plantspic/spring.jpg", season: "spring" },
+      { path: "/plantspic/winter.jpg", season: "winter" },
+    ];
+  };
+  Pic.aggregate = async (pipeline) => {
+    calls.push({ model: "Pic", pipeline });
+    return [{ path: "/plantspic/random.jpg" }];
+  };
+  Art.find = async (query) => {
+    calls.push({ model: "Art", query });
+    return [{ path: "/plantspic/art.jpg" }];
+  };
+  creationBottom.find = async (query) => {
+    calls.push({ model: "creationBottom", query });
+    return [{ plant: "Acer rubrum", auth: true }];
+  };
+  FeatureHome.find = () => ({
+    lean: async () => [{ plant: "Acer rubrum" }],
+  });
+
+  const documentary = await request("/creationDocumentary");
+  const userInfo = await request("/userInfo");
+  const plantGlossary = await request("/userInfoGlossary");
+  const birdGlossary = await request("/userInfoGlossaryBird");
+  const seasonalPics = await request("/getPics", {
+    method: "POST",
+    body: { plant: "Acer rubrum" },
+  });
+  const randomPics = await request("/getDb2Pic");
+  const randomBirdPics = await request("/getDb2PicBird");
+  const randomAlt = await request("/db2Alt");
+  const randomBirdAlt = await request("/db2AltBird");
+  const media = await request("/getPicsAndArts", {
+    method: "POST",
+    body: { plant: "Acer rubrum" },
+  });
+
+  assert.deepEqual(documentary.body, {
+    success: true,
+    allDisplays: [{ plant: "Acer rubrum", auth: true }],
+  });
+  assert.deepEqual(userInfo.body, {
+    success: false,
+    featureLists: [{ plant: "Acer rubrum" }],
+  });
+  assert.equal(plantGlossary.body.success, false);
+  assert.deepEqual(plantGlossary.body.glossary.a, ["Acer rubrum"]);
+  assert.deepEqual(plantGlossary.body.cnNames.a, ["红花槭"]);
+  assert.equal(birdGlossary.body.success, false);
+  assert.deepEqual(birdGlossary.body.glossary.c, ["Corvus corax"]);
+  assert.deepEqual(birdGlossary.body.cnNames.c, ["渡鸦"]);
+  assert.deepEqual(seasonalPics.body, {
+    success: true,
+    springPics: [{ path: "/plantspic/spring.jpg", season: "spring" }],
+    summerPics: [],
+    autumnPics: [],
+    winterPics: [{ path: "/plantspic/winter.jpg", season: "winter" }],
+  });
+  assert.deepEqual(randomPics.body, {
+    success: true,
+    pics: [{ path: "/plantspic/random.jpg" }],
+  });
+  assert.deepEqual(randomBirdPics.body, randomPics.body);
+  assert.deepEqual(randomAlt.body, {
+    success: true,
+    pic: [{ path: "/plantspic/random.jpg" }],
+  });
+  assert.deepEqual(randomBirdAlt.body, randomAlt.body);
+  assert.deepEqual(media.body, {
+    success: true,
+    pics: [
+      { path: "/plantspic/spring.jpg", season: "spring" },
+      { path: "/plantspic/winter.jpg", season: "winter" },
+    ],
+    arts: [{ path: "/plantspic/art.jpg" }],
+  });
 });

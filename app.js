@@ -37,7 +37,17 @@ const creationBottom = require("./models/creationBottom");
 const FeatureHome = require("./models/featureHome");
 const { createRuntime } = require("./runtime");
 const { createAuthMiddleware } = require("./middleware/auth");
+const { createAuthRouter } = require("./routes/auth");
 const catalogRouter = require("./routes/catalog");
+const { createContentRouter } = require("./routes/content");
+const {
+  cleanupFiles,
+  getCompressedPlantMediaDirectory,
+  getCompressedPlantMediaPath,
+  getPlantMediaDirectory,
+  getPlantMediaPath,
+  getUploadedFiles,
+} = require("./services/mediaFiles");
 const Code = require("./models/code");
 const birdPost = require('./models/birdPost')
 const crypto = require("crypto");
@@ -119,26 +129,6 @@ const upload = multer({
 
 const globalUpload = multer({});
 
-function getUploadedFiles(files) {
-  if (Array.isArray(files)) {
-    return files;
-  }
-
-  return Object.values(files || {}).flat();
-}
-
-async function cleanupFiles(filePaths) {
-  await Promise.all(
-    filePaths.map((filePath) =>
-      fs.unlink(filePath).catch((error) => {
-        if (error.code !== "ENOENT") {
-          console.warn("Unable to clean up uploaded file");
-        }
-      }),
-    ),
-  );
-}
-
 function uploadWithCleanup(req, res, next) {
   upload(req, res, async (error) => {
     if (error) {
@@ -170,117 +160,17 @@ function toPublicUser(user) {
   };
 }
 
-app.post("/login", verifyToken, async (req, res) => {
-  var passwordMatch = false;
-  if (req.sessionStoreUnavailable) {
-    return sessionStoreUnavailable(res);
-  }
-
-  if (req.user) {
-    return res.json({
-      success: true,
-      message: "Already logged in",
-      user: req.user,
-      token: req.token,
-    });
-  }
-
-  const { username, password } = req.body;
-  const user = await User.findOne({ username }).select("+password");
-
-  if (user) {
-    passwordMatch = await bcrypt.compare(password, user.password);
-  } else {
-    return res.json({ success: false, message: "User not found" });
-  }
-
-  if (passwordMatch) {
-    if (!runtime.isSessionStoreReady()) {
-      return sessionStoreUnavailable(res);
-    }
-
-    var token = jwt.sign(
-      { username: user.username, admin: user.admin },
-      process.env.secret,
-      { expiresIn: "180d" },
-    );
-
-    try {
-      const redisToken = await runtime.getSessionToken(username);
-      let hasUsableSession = false;
-
-      if (redisToken) {
-        try {
-          const sessionPayload = jwt.verify(redisToken, process.env.secret);
-          hasUsableSession = sessionPayload?.username === username;
-        } catch (_) {
-          hasUsableSession = false;
-        }
-      }
-
-      if (hasUsableSession) {
-        token = redisToken;
-      } else {
-        await runtime.deleteSession(username);
-        await runtime.setSessionToken(username, token);
-      }
-
-      return res.json({
-        success: true,
-        message: "Login successful",
-        user: (({ username, admin }) => ({ username, admin }))(user),
-        token,
-      });
-    } catch (_) {
-      console.warn("Unable to create a login session");
-      return sessionStoreUnavailable(res);
-    }
-  } else {
-    return res.json({
-      success: false,
-      message: "Invalid username or password",
-    });
-  }
-});
-
-app.get("/refresh", verifyToken, async (req, res) => {
-  if (req.sessionStoreUnavailable) {
-    return sessionStoreUnavailable(res);
-  }
-
-  if (!req.user) {
-    return res.json({ success: false, message: "Token not valid" });
-  }
-
-  return res.json({
-    success: true,
-    message: "Token refreshed",
-    user: req.user,
-  });
-});
-
-app.post("/logout", verifyToken, async (req, res) => {
-  if (!req.user) {
-    if (
-      req.sessionStoreUnavailable ||
-      (getAuthorizationToken(req.headers["authorization"]) &&
-        !runtime.isSessionStoreReady())
-    ) {
-      return sessionStoreUnavailable(res);
-    }
-
-    return res.json({ success: true, message: "Logout successful" });
-  }
-
-  try {
-    await runtime.deleteSession(req.user.username);
-  } catch (_) {
-    console.warn("Unable to remove login session");
-    return sessionStoreUnavailable(res);
-  }
-
-  return res.json({ success: true, message: "Logout successful" });
-});
+app.use(
+  createAuthRouter({
+    User,
+    bcrypt,
+    getAuthorizationToken,
+    jwt,
+    runtime,
+    sessionStoreUnavailable,
+    verifyToken,
+  }),
+);
 
 app.post("/adminView", requireAdmin, async (req, res) => {
   const resultPlant = await Post.findOne({ latinName: req.body.search });
@@ -309,29 +199,17 @@ app.post("/makeFeatured", requireAdmin, async (req, res) => {
   res.json({ success: true });
 });
 
-app.get("/creationDocumentary", async (req, res) => {
-  const allDisplays = await creationBottom.find({ auth: true });
-
-  res.json({ success: true, allDisplays });
-});
-
-app.post("/register", async (req, res) => {
-  const { username } = req.body;
-  const password = await bcrypt.hash(req.body.password, 10);
-  try {
-    await User.create({
-      username,
-      password: password,
-      admin: false,
-    });
-    return res.json({ success: true, message: "Register successful" });
-  } catch (error) {
-    if (error.code === 11000) {
-      return res.json({ success: false, message: "Username already exists" });
-    }
-    return res.json({ success: false, message: error.message });
-  }
-});
+app.use(
+  createContentRouter({
+    Art,
+    BirdPost,
+    FeatureHome,
+    Pic,
+    Post,
+    creationBottom,
+    verifyToken,
+  }),
+);
 
 app.get("/adminDataGet", requireAdmin, async (req, res) => {
   const plants = await Post.find({ authorization: true });
@@ -345,95 +223,6 @@ app.post("/adminToggle", requireAdmin, async (req, res) => {
   user.admin = !user.admin;
   await user.save();
   res.json({ success: true });
-});
-
-app.get("/userInfo", verifyToken, async (req, res) => {
-  const featureLists = await FeatureHome.find().lean();
-  if (req.user) {
-    res.json({
-      success: true,
-      username: req.user?.username,
-      admin: req.user?.admin,
-      featureLists,
-    });
-  } else {
-    res.json({ success: false, featureLists });
-  }
-});
-
-app.get("/userInfoGlossary", verifyToken, async (req, res) => {
-  const posts = await Post.find({ authorization: true });
-  const letters = "abcdefghijklmnopqrstuvwxyz".split("");
-  const glossary = {};
-  const cnNames = {};
-
-  // Initialize an array for each letter
-  letters.forEach((letter) => {
-    glossary[letter] = [];
-    cnNames[letter] = [];
-  });
-
-  posts.forEach((post) => {
-    const firstLetter = post.latinName[0].toLowerCase();
-    if (glossary[firstLetter]) {
-      glossary[firstLetter].push(post.latinName);
-      cnNames[firstLetter].push(post.chineseName);
-    }
-  });
-
-  const response = req.user
-    ? {
-        success: true,
-        username: req.user?.username,
-        admin: req.user?.admin,
-        glossary,
-        cnNames,
-      }
-    : {
-        success: false,
-        glossary,
-        cnNames,
-      };
-
-  res.json(response);
-});
-
-app.get("/userInfoGlossaryBird", verifyToken, async (req, res) => {
-  const posts = await BirdPost.find({ authorization: true });
-  const letters = "abcdefghijklmnopqrstuvwxyz".split("");
-  const glossary = {};
-  const cnNames = {};
-
-  // Initialize an array for each letter
-  letters.forEach((letter) => {
-    glossary[letter] = [];
-    cnNames[letter] = [];
-  });
-
-  posts.forEach((post) => {
-    const firstLetter = post.latinName[0].toLowerCase();
-    if (glossary[firstLetter]) {
-      glossary[firstLetter].push(post.latinName);
-      cnNames[firstLetter].push(post.chineseName);
-    }
-  });
-
-  const response = req.user
-    ? {
-        success: true,
-        username: req.user?.username,
-        admin: req.user?.admin,
-        glossary,
-        cnNames,
-      }
-    : {
-        success: false,
-        glossary,
-        cnNames,
-      };
-
-  res.json(response);
-  console.log("123")
 });
 
 app.post("/edit", requireAuth, async function (req, res) {
@@ -549,15 +338,9 @@ app.post("/uploadCreation", requireAuth, uploadWithCleanup, async (req, res) => 
     const uploadedFiles = getUploadedFiles(files);
     inputFiles.push(...uploadedFiles.map((file) => file.path));
     outputFiles.push(
-      ...uploadedFiles.map((file) =>
-        path.join(__dirname, "public", "plantspic", file.filename),
-      ),
+      ...uploadedFiles.map((file) => getPlantMediaPath(file.filename)),
     );
-    const outputFolderPath = `${path.join(
-      __dirname,
-      "public",
-      "plantspic",
-    )}${path.sep}`;
+    const outputFolderPath = getPlantMediaDirectory();
     const plant = await Post.findOne({ latinName: body.plant });
 
     if (!plant) {
@@ -838,17 +621,11 @@ app.post("/uploadArt", requireAuth, artmiddleware, async function (req, res) {
   const outputFiles = [];
   const createdArts = [];
   const uploadedFiles = getUploadedFiles(req.files);
-  const outputFolderPath = `${path.join(
-    __dirname,
-    "public",
-    "plantspic",
-  )}${path.sep}`;
+  const outputFolderPath = getPlantMediaDirectory();
 
   inputFiles.push(...uploadedFiles.map((file) => file.path));
   outputFiles.push(
-    ...uploadedFiles.map((file) =>
-      path.join(__dirname, "public", "plantspic", file.filename),
-    ),
+    ...uploadedFiles.map((file) => getPlantMediaPath(file.filename)),
   );
 
   try {
@@ -937,29 +714,14 @@ app.post(
     const outputFiles = [];
     const createdPics = [];
     const uploadedFiles = getUploadedFiles(req.files);
-    const outputFolderPath = `${path.join(
-      __dirname,
-      "public",
-      "plantspic",
-    )}${path.sep}`;
-    const smallerCompressedFolderPath = `${path.join(
-      __dirname,
-      "public",
-      "compressed",
-      "plantspic",
-    )}${path.sep}`;
+    const outputFolderPath = getPlantMediaDirectory();
+    const smallerCompressedFolderPath = getCompressedPlantMediaDirectory();
 
     inputFiles.push(...uploadedFiles.map((file) => file.path));
     outputFiles.push(
       ...uploadedFiles.flatMap((file) => [
-        path.join(__dirname, "public", "plantspic", file.filename),
-        path.join(
-          __dirname,
-          "public",
-          "compressed",
-          "plantspic",
-          file.filename,
-        ),
+        getPlantMediaPath(file.filename),
+        getCompressedPlantMediaPath(file.filename),
       ]),
     );
 
@@ -1073,29 +835,14 @@ app.post(
     const outputFiles = [];
     const createdPics = [];
     const uploadedFiles = getUploadedFiles(req.files);
-    const outputFolderPath = `${path.join(
-      __dirname,
-      "public",
-      "plantspic",
-    )}${path.sep}`;
-    const smallerCompressedFolderPath = `${path.join(
-      __dirname,
-      "public",
-      "compressed",
-      "plantspic",
-    )}${path.sep}`;
+    const outputFolderPath = getPlantMediaDirectory();
+    const smallerCompressedFolderPath = getCompressedPlantMediaDirectory();
 
     inputFiles.push(...uploadedFiles.map((file) => file.path));
     outputFiles.push(
       ...uploadedFiles.flatMap((file) => [
-        path.join(__dirname, "public", "plantspic", file.filename),
-        path.join(
-          __dirname,
-          "public",
-          "compressed",
-          "plantspic",
-          file.filename,
-        ),
+        getPlantMediaPath(file.filename),
+        getCompressedPlantMediaPath(file.filename),
       ]),
     );
 
@@ -1242,41 +989,6 @@ app.post("/adminMakeAdminUser", requireAdmin, async (req, res) => {
     await user.save();
 
     res.json({ success: true });
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-app.post("/getPics", async (req, res) => {
-  try {
-    const pics = await Pic.find({ plant: req.body.plant });
-
-    var springPics = [];
-    var summerPics = [];
-    var autumnPics = [];
-    var winterPics = [];
-
-    if (Array.isArray(pics) && pics.length > 0) {
-      pics.forEach((pic) => {
-        if (pic.season == "spring") {
-          springPics.push(pic);
-        } else if (pic.season == "summer") {
-          summerPics.push(pic);
-        } else if (pic.season == "autumn") {
-          autumnPics.push(pic);
-        } else if (pic.season == "winter") {
-          winterPics.push(pic);
-        }
-      });
-    }
-
-    res.json({
-      success: true,
-      springPics: springPics,
-      summerPics: summerPics,
-      autumnPics: autumnPics,
-      winterPics: winterPics,
-    });
   } catch (error) {
     console.log(error);
   }
@@ -1730,46 +1442,6 @@ app.post("/unFeatureCreation", requireAdmin, uploadWithCleanup, async (req, res)
   }
 });
 
-app.get("/getDb2Pic", async (req, res) => {
-  const pics = await Pic.aggregate([
-    { $sample: { size: 3 } },
-    { $project: { path: 1, _id: 0 } },
-  ]);
-  res.json({ success: true, pics });
-});
-
-app.get("/getDb2PicBird", async (req, res) => {
-  const pics = await Pic.aggregate([
-    { $match: {dbType: 'bird' }},
-    { $sample: { size: 3 } },
-    { $project: { path: 1, _id: 0} },
-  ]);
-  res.json({ success: true, pics });
-});
-
-app.get("/db2Alt", async (req, res) => {
-  const pic = await Pic.aggregate([
-    { $sample: { size: 1 } },
-    { $project: { path: 1, _id: 0 } },
-  ]);
-  if (!pic) {
-    res.json({ success: false });
-  }
-  res.json({ success: true, pic });
-});
-
-app.get("/db2AltBird", async (req, res) => {
-  const pic = await Pic.aggregate([
-    { $match: {dbType: 'bird' }},
-    { $sample: { size: 1 } },
-    { $project: { path: 1, _id: 0} },
-  ]);
-  if (!pic) {
-    res.json({ success: false });
-  }
-  res.json({ success: true, pic });
-});
-
 app.post("/editPageDelete", requireAdmin, async (req, res) => {
   try {
     const pic = await Pic.findOne({ _id: req.body.id });
@@ -1820,16 +1492,6 @@ app.delete("/editPageDeletePlant", requireAdmin, async (req, res) => {
   } catch (error) {
     console.error("Error in editPageDeletePlant:", error);
     res.status(500).json({ success: false, message: "plant not deleted" });
-  }
-});
-
-app.post("/getPicsAndArts", async (req, res) => {
-  try {
-    const pics = await Pic.find({ plant: req.body.plant });
-    const arts = await Art.find({ plant: req.body.plant });
-    res.json({ success: true, pics, arts });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
   }
 });
 

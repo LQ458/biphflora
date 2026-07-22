@@ -19,6 +19,7 @@ let server;
 let sessionStoreAvailable = true;
 const sessions = new Map();
 const originals = {
+  userCreate: User.create,
   userFind: User.find,
   userFindOne: User.findOne,
   postFind: Post.find,
@@ -111,6 +112,7 @@ before(async () => {
 beforeEach(() => {
   sessionStoreAvailable = true;
   sessions.clear();
+  User.create = originals.userCreate;
   User.find = originals.userFind;
   User.findOne = originals.userFindOne;
   Post.find = originals.postFind;
@@ -118,6 +120,7 @@ beforeEach(() => {
 });
 
 after(async () => {
+  User.create = originals.userCreate;
   User.find = originals.userFind;
   User.findOne = originals.userFindOne;
   Post.find = originals.postFind;
@@ -295,6 +298,47 @@ test("login and logout report a session-store outage", async () => {
   assert.deepEqual(protectedWrite.body, {
     success: false,
     message: "Authentication service unavailable",
+  });
+});
+
+test("registration retains its public response and stored user shape", async () => {
+  const createdUsers = [];
+  User.create = async (user) => {
+    createdUsers.push(user);
+    return user;
+  };
+
+  const registered = await request("/register", {
+    method: "POST",
+    body: { username: "new-member", password: "registration-password" },
+  });
+
+  assert.equal(registered.status, 200);
+  assert.deepEqual(registered.body, {
+    success: true,
+    message: "Register successful",
+  });
+  assert.equal(createdUsers.length, 1);
+  assert.equal(createdUsers[0].username, "new-member");
+  assert.equal(createdUsers[0].admin, false);
+  assert.equal("originalPassword" in createdUsers[0], false);
+  assert.equal(
+    await bcrypt.compare("registration-password", createdUsers[0].password),
+    true,
+  );
+
+  User.create = async () => {
+    const error = new Error("duplicate key");
+    error.code = 11000;
+    throw error;
+  };
+  const duplicate = await request("/register", {
+    method: "POST",
+    body: { username: "new-member", password: "registration-password" },
+  });
+  assert.deepEqual(duplicate.body, {
+    success: false,
+    message: "Username already exists",
   });
 });
 
