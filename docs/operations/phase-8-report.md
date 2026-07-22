@@ -14,9 +14,11 @@ Date: 2026-07-22
   current Nginx public routing therefore does not expose the new backend health
   or catalog endpoints.
 - The supplied `/Users/LeoQin/Downloads/biphflora connect` file was used only
-  as an SSH password source; its contents were not printed or copied. Read-only
-  authentication attempts for the documented candidates `root` and `ubuntu`
-  returned permission denied. No additional usernames or keys were brute-forced.
+  as an SSH password source; its contents were not printed or copied. The
+  exact path is the only matching `biphflora connect*` file in Downloads; it is
+  an ASCII file with 41 bytes, no line terminator, and mode `0644`. Read-only
+  authentication attempts for `root` and `ubuntu` on the public hostname did
+  not authenticate. No additional usernames or keys were brute-forced.
 
 ## Deployment status
 
