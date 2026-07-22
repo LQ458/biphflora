@@ -23,6 +23,62 @@ export const mediaUrl = (path, { compressed = false } = {}) => {
   return apiUrl(`/public${compressed ? "/compressed" : ""}${normalizedPath}`);
 };
 
+export const MEDIA_VARIANT_VERSION = "v1";
+export const MEDIA_VARIANT_WIDTHS = [480, 960, 1600];
+
+const normalizeMediaPath = (path) =>
+  withLeadingSlash(path)
+    .replace(/^\/public(?=\/)/, "")
+    .replace(/^\/compressed(?=\/)/, "");
+
+export const mediaVariantUrl = (
+  path,
+  { width, version = MEDIA_VARIANT_VERSION } = {},
+) => {
+  if (!path || !MEDIA_VARIANT_WIDTHS.includes(Number(width))) {
+    return "";
+  }
+
+  const mediaPath = normalizeMediaPath(path);
+  if (!mediaPath.startsWith("/plantspic/")) {
+    return "";
+  }
+
+  return apiUrl(
+    `/public/variants/${version}/${Number(width)}${mediaPath}.webp`,
+  );
+};
+
+export const responsiveMediaProps = (
+  path,
+  { sizes = "100vw", widths = MEDIA_VARIANT_WIDTHS } = {},
+) => {
+  if (!path) {
+    return { src: "", fallbackSrc: [] };
+  }
+
+  const validWidths = [...new Set(widths.map(Number))]
+    .filter((width) => MEDIA_VARIANT_WIDTHS.includes(width))
+    .sort((left, right) => left - right);
+  const candidates = validWidths
+    .map((width) => [mediaVariantUrl(path, { width }), width])
+    .filter(([url]) => url);
+
+  if (candidates.length === 0) {
+    return {
+      src: mediaUrl(path, { compressed: true }),
+      fallbackSrc: mediaUrl(path),
+    };
+  }
+
+  return {
+    src: candidates[candidates.length - 1][0],
+    srcSet: candidates.map(([url, width]) => `${url} ${width}w`).join(", "),
+    sizes,
+    fallbackSrc: [mediaUrl(path, { compressed: true }), mediaUrl(path)],
+  };
+};
+
 const urls = {
   // Admin-related URLs
   adminDataGet: apiUrl("/adminDataGet"),

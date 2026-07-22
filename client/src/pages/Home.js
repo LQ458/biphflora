@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "../api/http";
-import urls, { mediaUrl } from "../tools/url";
+import urls, { responsiveMediaProps } from "../tools/url";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
 import styles from "../styles/home.module.css";
@@ -74,9 +74,7 @@ const Home = ({ handleGets }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          urls.userInfo,
-        );
+        const response = await axios.get(urls.userInfo);
 
         setUsername(response.data.username);
         setAdmin(response.data.admin);
@@ -182,7 +180,7 @@ const Home = ({ handleGets }) => {
     <section className={styles.home}>
       <div id="page-container">
         <div className={styles.part1}>
-          <Navbar className={styles.tobar} z-index="1000"/>
+          <Navbar className={styles.tobar} z-index="1000" />
           <nav className={styles.featureBox}>
             <div className={styles.featuredTopBar}>
               <h4 className={styles.plantInBloom}>Plant in Bloom</h4>
@@ -212,9 +210,11 @@ const Home = ({ handleGets }) => {
                     currentPic && (
                       <div className={styles.picContainer}>
                         <MediaImage
-                          src={mediaUrl(currentPic, { compressed: true })}
-                          fallbackSrc={mediaUrl(currentPic)}
+                          {...responsiveMediaProps(currentPic, {
+                            sizes: "(max-width: 700px) 100vw, 36vw",
+                          })}
                           loading="eager"
+                          fetchPriority="high"
                           alt="PlantPic"
                           className={styles.currentPics}
                         />
@@ -252,7 +252,9 @@ const Home = ({ handleGets }) => {
                     artPaths[picsArrayIndex] && (
                       <div className={styles.artContainer}>
                         <MediaImage
-                          src={mediaUrl(artPaths[picsArrayIndex])}
+                          {...responsiveMediaProps(artPaths[picsArrayIndex], {
+                            sizes: "(max-width: 700px) 100vw, 19vw",
+                          })}
                           loading="eager"
                           alt="PlantArt"
                           className={styles.currentArts}
@@ -293,7 +295,7 @@ const Home = ({ handleGets }) => {
                       onClick={() => {
                         if (plants[picsArrayIndex]?.plant) {
                           // handleGet(plants[picsArrayIndex].plant);
-                          redirect(plants[picsArrayIndex].plant)
+                          redirect(plants[picsArrayIndex].plant);
                         }
                       }}
                       className={styles.forDetail}

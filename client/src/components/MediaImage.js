@@ -1,5 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 
+const normalizeFallbacks = (fallbackSrc) =>
+  (Array.isArray(fallbackSrc) ? fallbackSrc : [fallbackSrc]).filter(Boolean);
+
 const MediaImage = ({
   src,
   fallbackSrc,
@@ -11,23 +14,28 @@ const MediaImage = ({
   ...imageProps
 }) => {
   const [currentSrc, setCurrentSrc] = useState(src);
+  const [currentSrcSet, setCurrentSrcSet] = useState(imageProps.srcSet);
   const [failed, setFailed] = useState(!src);
-  const fallbackAttempted = useRef(false);
+  const fallbackIndex = useRef(0);
+  const fallbacks = normalizeFallbacks(fallbackSrc);
+  const fallbackKey = fallbacks.join("\n");
 
   useEffect(() => {
-    fallbackAttempted.current = false;
+    fallbackIndex.current = 0;
     setCurrentSrc(src);
+    setCurrentSrcSet(imageProps.srcSet);
     setFailed(!src);
-  }, [fallbackSrc, src]);
+  }, [fallbackKey, imageProps.srcSet, src]);
 
   const handleError = (event) => {
-    if (
-      !fallbackAttempted.current &&
-      fallbackSrc &&
-      fallbackSrc !== currentSrc
-    ) {
-      fallbackAttempted.current = true;
-      setCurrentSrc(fallbackSrc);
+    const nextFallback = fallbacks
+      .slice(fallbackIndex.current)
+      .find((candidate) => candidate !== currentSrc);
+
+    if (nextFallback) {
+      fallbackIndex.current = fallbacks.indexOf(nextFallback) + 1;
+      setCurrentSrcSet(undefined);
+      setCurrentSrc(nextFallback);
       return;
     }
 
@@ -43,6 +51,7 @@ const MediaImage = ({
     <img
       {...imageProps}
       src={currentSrc}
+      srcSet={currentSrcSet}
       loading={loading}
       decoding={decoding}
       alt={alt}

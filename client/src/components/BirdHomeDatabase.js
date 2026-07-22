@@ -1,5 +1,5 @@
 import axios from "../api/http";
-import urls, { mediaUrl } from "../tools/url";
+import urls, { responsiveMediaProps } from "../tools/url";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,9 +23,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
   useEffect(() => {
     const getDb2Pic = async () => {
       try {
-        const response = await axios.get(
-          urls.getDb2PicBird,
-        );
+        const response = await axios.get(urls.getDb2PicBird);
         setPics(response.data.pics);
       } catch (error) {
         console.log(error);
@@ -87,7 +85,6 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
             <Link to="/databasePlant" className="changeDbLink">
               Switch to Plant Database 切换至植物检索数据库
             </Link>
-          
           </div>
           <SearchBar
             handleGet={handleGet}
@@ -129,11 +126,13 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
               return (
                 <div key={index} className="pic">
                   <MediaImage
+                    {...responsiveMediaProps(pic.path, {
+                      sizes: "(max-width: 700px) 90vw, 30vw",
+                    })}
                     style={{ cursor: "pointer" }}
-                    src={mediaUrl(pic.path, { compressed: true })}
-                    fallbackSrc={mediaUrl(pic.path)}
                     failedContent={<div className="db2picAlt" />}
-                    loading="eager"
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : "auto"}
                     alt="plant"
                     className="picImg"
                     onClick={() =>

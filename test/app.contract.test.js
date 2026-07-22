@@ -145,6 +145,20 @@ test("health endpoints expose liveness separately from dependency readiness", as
   });
 });
 
+test("responsive image route rejects unsupported or missing variants safely", async () => {
+  const unsupportedWidth = await request(
+    "/public/variants/v1/481/plantspic/example.jpg.webp",
+  );
+  const missingVariant = await request(
+    "/public/variants/v1/480/plantspic/missing.jpg.webp",
+  );
+
+  assert.equal(unsupportedWidth.status, 404);
+  assert.equal(missingVariant.status, 404);
+  assert.equal(unsupportedWidth.body, null);
+  assert.equal(missingVariant.body, null);
+});
+
 test("public read routes retain search, detail, count, refresh, and CORS contracts", async () => {
   const search = await request("/searchNames", {
     headers: { origin: "https://www.biphflora.com" },

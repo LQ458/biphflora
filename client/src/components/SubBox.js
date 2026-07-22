@@ -1,9 +1,10 @@
 import React from "react";
-import { mediaUrl } from "../tools/url";
+import { responsiveMediaProps } from "../tools/url";
 import "../styles/subBox.css";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { UserContext } from "../UserContext";
+import MediaImage from "./MediaImage.js";
 
 const SubBox = ({
   displayObjectList,
@@ -19,16 +20,21 @@ const SubBox = ({
     navigate(`/search/${plant.replace(" ", "_")}`);
   };
   const date1 = displayObjectList[currentDisplayIndexes[index]].artDate;
-  const date2 =displayObjectList[currentDisplayIndexes[index + 1]] ?displayObjectList[currentDisplayIndexes[index+1]].artDate : ""; //displayObjectList[currentDisplayIndexes[index+1]].artDate;
+  const date2 = displayObjectList[currentDisplayIndexes[index + 1]]
+    ? displayObjectList[currentDisplayIndexes[index + 1]].artDate
+    : ""; //displayObjectList[currentDisplayIndexes[index+1]].artDate;
 
   return (
     <section className="subBox">
       {displayObjectList[currentDisplayIndexes[index]] && (
         <div style={{ position: "relative" }}>
           <div className="artCodeT">
-            <img
+            <MediaImage
               className="art"
-              src={mediaUrl(displayObjectList[currentDisplayIndexes[index]].art)}
+              {...responsiveMediaProps(
+                displayObjectList[currentDisplayIndexes[index]].art,
+                { sizes: "(max-width: 700px) 100vw, 24vw" },
+              )}
               alt="art"
             />
             {admin && (
@@ -105,18 +111,20 @@ const SubBox = ({
                 <h3>
                   {displayObjectList[currentDisplayIndexes[index]].date
                     ? "" +
-                    `${date1.slice(0,2)}-${date1.slice(3,5)}-${date1.slice(6,8)}`
-                    // `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
+                      `${date1.slice(0, 2)}-${date1.slice(3, 5)}-${date1.slice(6, 8)}`
+                    : // `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
                       // displayObjectList[currentDisplayIndexes[index + 1]].date.slice(0,10)
-                    : ""}
+                      ""}
                 </h3>
-                
               </div>
               {/* Art Info */}
               <div style={{ position: "relative", marginTop: "1.5rem" }}>
-                <img
+                <MediaImage
                   className="pic"
-                  src={mediaUrl(displayObjectList[currentDisplayIndexes[index]].pic)}
+                  {...responsiveMediaProps(
+                    displayObjectList[currentDisplayIndexes[index]].pic,
+                    { sizes: "(max-width: 700px) 100vw, 24vw" },
+                  )}
                   alt="pic"
                 />
                 {admin && (
@@ -144,9 +152,12 @@ const SubBox = ({
       {displayObjectList[currentDisplayIndexes[index + 1]] ? (
         <div style={{ position: "relative" }}>
           <div className="artCodeT">
-            <img
+            <MediaImage
               className="art"
-              src={mediaUrl(displayObjectList[currentDisplayIndexes[index + 1]].art)}
+              {...responsiveMediaProps(
+                displayObjectList[currentDisplayIndexes[index + 1]].art,
+                { sizes: "(max-width: 700px) 100vw, 24vw" },
+              )}
               alt="art"
             />
             {admin && (
@@ -232,17 +243,19 @@ const SubBox = ({
                 <h3>
                   {displayObjectList[currentDisplayIndexes[index + 1]].date
                     ? "" +
-                    `${date2.slice(0,2)}-${date2.slice(3,5)}-${date2.slice(6,8)}`
-                    // `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
+                      `${date2.slice(0, 2)}-${date2.slice(3, 5)}-${date2.slice(6, 8)}`
+                    : // `${date.slice(5,7)}-${date.slice(8,10)}-${date.slice(2,4)}`
                       // displayObjectList[currentDisplayIndexes[index + 1]].date.slice(0,10)
-                    : ""}
+                      ""}
                 </h3>
-                
               </div>
               <div style={{ position: "relative", marginTop: "1.5rem" }}>
-                <img
+                <MediaImage
                   className="pic"
-                  src={mediaUrl(displayObjectList[currentDisplayIndexes[index + 1]].pic)}
+                  {...responsiveMediaProps(
+                    displayObjectList[currentDisplayIndexes[index + 1]].pic,
+                    { sizes: "(max-width: 700px) 100vw, 24vw" },
+                  )}
                   alt="pic"
                 />
                 {admin && (
@@ -269,7 +282,9 @@ const SubBox = ({
             </div>
           </div>
         </div>
-      ): <div></div>}
+      ) : (
+        <div></div>
+      )}
     </section>
   );
 };

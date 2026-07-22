@@ -1,11 +1,12 @@
 import axios from "../api/http";
-import urls, { mediaUrl } from "../tools/url";
+import urls, { responsiveMediaProps } from "../tools/url";
 import React, { useState, useEffect } from "react";
 import SubBox from "./SubBox.js";
 import "../styles/creationPaint.css";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
 import styles from "../styles/galleryDatabase.module.css";
+import MediaImage from "./MediaImage.js";
 
 const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
   const [pics, setPics] = useState([]);
@@ -15,7 +16,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
   // const [numOfPages, setNumOfPages] = useState(0);
   const [subPgIndex, setSubPgIndex] = useState(1);
   const [currentDisplayIndexes, setCurrentDisplayIndexes] = useState([
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
   ]);
   const [currentOrder, setCurrentOrder] = useState(false);
   const [orderIsBold1, setOrderIsBold1] = useState(false);
@@ -34,7 +35,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
 
     if (parts.length !== 3) {
       // Handle potential bad data by returning the earliest possible date
-      return new Date(0); 
+      return new Date(0);
     }
 
     // 2. Parse parts into numbers
@@ -49,12 +50,9 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
   }
 
   useEffect(() => {
-
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          urls.creationDocumentary,
-        );
+        const response = await axios.get(urls.creationDocumentary);
         const allDisplays = response.data.allDisplays;
         allDisplays.sort((a, b) => {
           // Get the Date objects for comparison
@@ -66,9 +64,12 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
           return dateA - dateB;
         });
         setDisplayObjectList(allDisplays);
-        setCurrentDisplayIndexes(Array.from(Array(allDisplays.length).keys()))
+        setCurrentDisplayIndexes(Array.from(Array(allDisplays.length).keys()));
         if (allDisplays && allDisplays.length > 0) {
-          const topThreeDisplays = allDisplays.slice(allDisplays.length-3, allDisplays.length);
+          const topThreeDisplays = allDisplays.slice(
+            allDisplays.length - 3,
+            allDisplays.length,
+          );
           const newTopPics = [];
           const newTopArts = [];
           const newTopBys = [];
@@ -89,7 +90,6 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
           setTopLoc(newTopLoc);
           setTopTimes(newTopTimes);
 
-
           // Notify parent that we have data
           onDataLoad(true);
         } else {
@@ -107,8 +107,10 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
 
   const numOfPages = Math.ceil(displayObjectList.length / itemsPerPage);
   const startIndex = (subPgIndex - 1) * itemsPerPage;
-  const currentItems = displayObjectList.slice(startIndex, startIndex + itemsPerPage);
-
+  const currentItems = displayObjectList.slice(
+    startIndex,
+    startIndex + itemsPerPage,
+  );
 
   const setSubIndex = (currentIndex) => {
     setSubPgIndex(currentIndex);
@@ -120,7 +122,12 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
     //   (index - 1) * 6 + 4,
     //   (index - 1) * 6 + 5,
     // ]);
-    setCurrentDisplayIndexes(Array.from({length:itemsPerPage}, (_, index)=> (currentIndex - 1) * itemsPerPage + index));
+    setCurrentDisplayIndexes(
+      Array.from(
+        { length: itemsPerPage },
+        (_, index) => (currentIndex - 1) * itemsPerPage + index,
+      ),
+    );
   };
 
   function changeOrder(order) {
@@ -129,7 +136,7 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
       setOrderIsBold2(!order);
       setCurrentOrder(!currentOrder);
       setDisplayObjectList(displayObjectList.reverse());
-      if (displayObjectList){
+      if (displayObjectList) {
         setSubIndex(1);
       }
     }
@@ -179,14 +186,18 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
           <button className="shift" onClick={handleLeft}>
             <PreviousIcon width={60} height={60} className="icons" />
           </button>
-          <img
-            src={mediaUrl(topPics[topIndex])}
+          <MediaImage
+            {...responsiveMediaProps(topPics[topIndex], {
+              sizes: "(max-width: 700px) 100vw, 42vw",
+            })}
             alt="pic"
             className="topImgs"
           />
           <div className="artBox">
-            <img
-              src={mediaUrl(topArts[topIndex])}
+            <MediaImage
+              {...responsiveMediaProps(topArts[topIndex], {
+                sizes: "(max-width: 700px) 100vw, 38vw",
+              })}
               alt="art"
               className="topArts"
             />
@@ -224,22 +235,23 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
             Oldest
           </button>
 
-          <br/>
-          <br/>
+          <br />
+          <br />
           {numOfPages > 0 &&
             Array.from({ length: numOfPages }, (_, index) => (
-              <button 
-                className={`${styles.seasonBtn} ${index+1 === subPgIndex ? styles.focussed : ""}`}
-                key={index + 1} 
-                // className="creationChangePageButton" 
-                onClick={() => setSubIndex(index + 1)}>
+              <button
+                className={`${styles.seasonBtn} ${index + 1 === subPgIndex ? styles.focussed : ""}`}
+                key={index + 1}
+                // className="creationChangePageButton"
+                onClick={() => setSubIndex(index + 1)}
+              >
                 {index + 1}
               </button>
             ))}
         </div>
         <br />
         {Array.from(
-          { length:  itemsPerPage / 2},
+          { length: itemsPerPage / 2 },
           (_, index) =>
             (displayObjectList[currentDisplayIndexes[2 * index]] ||
               displayObjectList[currentDisplayIndexes[2 * index + 1]]) && (

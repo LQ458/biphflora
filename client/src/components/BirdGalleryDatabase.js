@@ -1,5 +1,5 @@
 import axios from "../api/http";
-import urls, { mediaUrl } from "../tools/url";
+import urls, { mediaUrl, responsiveMediaProps } from "../tools/url";
 import React, { useState, useEffect, useMemo } from "react";
 import styles from "../styles/galleryDatabase.module.css";
 import ArrowIcon from "../src/buttons/arrow.svg";
@@ -8,18 +8,18 @@ import MediaImage from "./MediaImage.js";
 const GalleryDatabase = (props) => {
   const seasons = useMemo(() => ["spring", "summer", "autumn", "winter"], []);
   const month2NumMap = {
-    'Jan':'01/',
-    'Feb':'02/',
-    'Mar':'03/',
-    'Apr':'04/',
-    'May':'05/',
-    'Jun':'06/',
-    'Jul':'07/',
-    'Aug':'08/',
-    'Sep':'09/',
-    'Oct':'10/',
-    'Nov':'11/',
-    'Dec':'12/',
+    Jan: "01/",
+    Feb: "02/",
+    Mar: "03/",
+    Apr: "04/",
+    May: "05/",
+    Jun: "06/",
+    Jul: "07/",
+    Aug: "08/",
+    Sep: "09/",
+    Oct: "10/",
+    Nov: "11/",
+    Dec: "12/",
   };
   const [curIndex, setCurIndex] = useState(0);
   const [username, setUsername] = useState("");
@@ -39,12 +39,10 @@ const GalleryDatabase = (props) => {
   // also set allSeasonPics so you can page later
   const [allSeasonPics, setAllSeasonPics] = useState({});
 
-
   // Which season is selected (e.g. "spring", or "" if none yet)
   const [selectedSeason, setSelectedSeason] = useState("");
   // Which month‐year is selected within that season (e.g. "Mar 2025")
   const [selectedMonth, setSelectedMonth] = useState("");
-
 
   useEffect(() => {
     const springBtn = document.getElementById("springBtn");
@@ -111,10 +109,7 @@ const GalleryDatabase = (props) => {
     const plant = props.customKey;
     const getPics = async () => {
       try {
-        const response = await axios.post(
-          urls.getPics,
-          { plant: plant },
-        );
+        const response = await axios.post(urls.getPics, { plant: plant });
         let newArray = [];
         seasons.forEach((season, index) => {
           newArray[index] = response.data[`${season}Pics`];
@@ -123,7 +118,7 @@ const GalleryDatabase = (props) => {
         const seasonMonthMap = seasons.reduce((acc, season, i) => {
           const pics = newArray[i];
           const monthMap = {};
-          pics.forEach(pic => {
+          pics.forEach((pic) => {
             // assume pic.time === "Day Mon DD YYYY …"
             const [, mon, , year] = pic.time.split(" ");
             const key = `${mon} ${year}`;
@@ -155,15 +150,11 @@ const GalleryDatabase = (props) => {
         plant: " " + props.customKey,
         path: zoomPicLink,
       };
-      await axios.post(
-        urls.uploadFeatureSingle,
-        newFeature,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      await axios.post(urls.uploadFeatureSingle, newFeature, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
     } catch (error) {
       console.log(error);
     }
@@ -172,14 +163,11 @@ const GalleryDatabase = (props) => {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get(
-          urls.userInfo,
-          {
-            headers: {
-              Authorization: `${localStorage.getItem("askanything")}`,
-            },
+        const response = await axios.get(urls.userInfo, {
+          headers: {
+            Authorization: `${localStorage.getItem("askanything")}`,
           },
-        );
+        });
         setUsername(response.data.username);
         setAdmin(response.data.admin);
       } catch (error) {
@@ -231,14 +219,14 @@ const GalleryDatabase = (props) => {
           </button>
         </div> */}
         <div className={styles.seasons}>
-          {seasons.map(s => (
+          {seasons.map((s) => (
             <>
               <button
                 key={s}
-                className={`${styles.seasonBtn} ${s === selectedSeason ? styles.focussed : ""}` }
+                className={`${styles.seasonBtn} ${s === selectedSeason ? styles.focussed : ""}`}
                 onClick={() => {
                   setSelectedSeason(s);
-                  setSelectedMonth((Object.keys(seasonMonthMap[s])[0] || ""));
+                  setSelectedMonth(Object.keys(seasonMonthMap[s])[0] || "");
                   setCurIndex(0);
                 }}
               >
@@ -246,7 +234,6 @@ const GalleryDatabase = (props) => {
               </button>
               {s != "winter" && <div className={styles.lineB} />}
             </>
-            
           ))}
         </div>
 
@@ -266,7 +253,7 @@ const GalleryDatabase = (props) => {
                       setCurIndex(0);
                     }}
                   >
-                  {month2NumMap[m.slice(0,3)]+m.slice(4,8)}
+                    {month2NumMap[m.slice(0, 3)] + m.slice(4, 8)}
                   </button>
                 </>
               ))}
@@ -304,10 +291,6 @@ const GalleryDatabase = (props) => {
             return acc;
           }, [])}
         </div> */}
-
-
-
-
 
         {/* {pics.map(
           (pic, index) =>
@@ -360,22 +343,26 @@ const GalleryDatabase = (props) => {
               </>
             ),
         )} */}
-        {selectedSeason && selectedMonth && (() => {
-          const picsToShow = seasonMonthMap[selectedSeason][selectedMonth] || [];
-          const pageSize = 12;
-          const start = curIndex * pageSize;
-          const end = start + pageSize;
-          return (
-            // 
-            <>
+        {selectedSeason &&
+          selectedMonth &&
+          (() => {
+            const picsToShow =
+              seasonMonthMap[selectedSeason][selectedMonth] || [];
+            const pageSize = 12;
+            const start = curIndex * pageSize;
+            const end = start + pageSize;
+            return (
+              //
+              <>
                 <div className={styles.summerPics}>
                   {picsToShow
                     .slice(curIndex * 12, (curIndex + 1) * 12)
                     .map((p, index) => (
                       <div className={styles.summerPic} key={index}>
                         <MediaImage
-                          src={mediaUrl(p.path, { compressed: true })}
-                          fallbackSrc={mediaUrl(p.path)}
+                          {...responsiveMediaProps(p.path, {
+                            sizes: "(max-width: 700px) 92vw, 24vw",
+                          })}
                           loading="lazy"
                           decoding="async"
                           alt=""
@@ -415,8 +402,8 @@ const GalleryDatabase = (props) => {
                   </div>
                 )}
               </>
-          );
-        })()}
+            );
+          })()}
 
         {/* {curMode === "month" &&
           monthPics.map(

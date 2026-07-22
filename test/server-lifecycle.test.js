@@ -8,6 +8,7 @@ const { startServer } = require("../server");
 test("server startup connects dependencies and graceful shutdown closes both layers", async () => {
   let connectCalls = 0;
   let disconnectCalls = 0;
+  let drainCalls = 0;
   const runtime = {
     async connect() {
       connectCalls += 1;
@@ -39,6 +40,9 @@ test("server startup connects dependencies and graceful shutdown closes both lay
     host: "127.0.0.1",
     logger,
     registerSignalHandlers: false,
+    drainBackgroundTasks: async () => {
+      drainCalls += 1;
+    },
   });
 
   await once(server, "listening");
@@ -47,5 +51,6 @@ test("server startup connects dependencies and graceful shutdown closes both lay
 
   assert.equal(connectCalls, 1);
   assert.equal(disconnectCalls, 1);
+  assert.equal(drainCalls, 1);
   assert.equal(server.listening, false);
 });

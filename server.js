@@ -1,4 +1,4 @@
-const { app, runtime } = require("./app");
+const { app, drainImageVariantQueue, runtime } = require("./app");
 
 function closeServer(server) {
   return new Promise((resolve, reject) => {
@@ -20,6 +20,7 @@ function startServer({
   host = process.env.HOST || "0.0.0.0",
   logger = console,
   registerSignalHandlers = true,
+  drainBackgroundTasks = drainImageVariantQueue,
 } = {}) {
   const server = appInstance.listen(port, host, () => {
     logger.info("HTTP server is listening");
@@ -31,6 +32,7 @@ function startServer({
       shutdownPromise = (async () => {
         logger.info("Graceful shutdown requested: " + signal);
         await closeServer(server);
+        await drainBackgroundTasks();
         await runtimeInstance.disconnect();
       })();
     }

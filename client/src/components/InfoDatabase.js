@@ -1,5 +1,5 @@
 import axios from "../api/http";
-import urls, { mediaUrl } from "../tools/url";
+import urls, { mediaUrl, responsiveMediaProps } from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
@@ -73,15 +73,11 @@ const InfoDatabase = (search) => {
         plant: latin,
         path: zoomArtLink,
       };
-      await axios.post(
-        urls.uploadFeatureArtSingle,
-        newFeature,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      await axios.post(urls.uploadFeatureArtSingle, newFeature, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       setFeatureBtnMsg("Success");
       setTimeout(() => setFeatureBtnMsg("Submitted!"), 1000);
       setTimeout(() => setFeatureBtnMsg("Feature"), 1000);
@@ -97,15 +93,11 @@ const InfoDatabase = (search) => {
         plant: latin,
         path: zoomPicLink,
       };
-      await axios.post(
-        urls.uploadFeatureSingle,
-        newFeature,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      await axios.post(urls.uploadFeatureSingle, newFeature, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       setFeatureBtnMsg("Success");
       setTimeout(() => setFeatureBtnMsg("Submitted!"), 1000);
       setTimeout(() => setFeatureBtnMsg("Feature"), 1000);
@@ -230,10 +222,9 @@ const InfoDatabase = (search) => {
     const startTime = Date.now();
 
     try {
-      const response = await axios.post(
-        urls.syncPlantInfo,
-        { postName: searchName },
-      );
+      const response = await axios.post(urls.syncPlantInfo, {
+        postName: searchName,
+      });
 
       const endTime = Date.now();
       const loadTime = endTime - startTime;
@@ -314,10 +305,9 @@ const InfoDatabase = (search) => {
     const sendName = getName;
     setSearchName(sendName);
     try {
-      const response = await axios.post(
-        urls.syncPlantInfo,
-        { postName: sendName },
-      );
+      const response = await axios.post(urls.syncPlantInfo, {
+        postName: sendName,
+      });
       setLatin(response.data.resultPost[0].latinName);
       setName(
         response.data.resultPost[0].commonName +
@@ -395,9 +385,10 @@ const InfoDatabase = (search) => {
         return (
           <div key={index}>
             <MediaImage
+              {...responsiveMediaProps(path, {
+                sizes: "(max-width: 700px) 45vw, 18vw",
+              })}
               className={styles.databaseImg}
-              src={mediaUrl(path, { compressed: true })}
-              fallbackSrc={mediaUrl(path)}
               loading="lazy"
               decoding="async"
               alt={`${index + 1}`}
@@ -634,14 +625,17 @@ const InfoDatabase = (search) => {
                     <p>Setting: {artInfoArray[artsIndex].setting}</p>
                   </div>
                 </div>
-                {artPathsArray.length>1?
-                <button className={styles.nextArBtn} onClick={nextArt}>
-                  <NextIcon
-                    className={styles.shiftIcon}
-                    width={50}
-                    height={50}
-                  />
-                </button>:<></>}
+                {artPathsArray.length > 1 ? (
+                  <button className={styles.nextArBtn} onClick={nextArt}>
+                    <NextIcon
+                      className={styles.shiftIcon}
+                      width={50}
+                      height={50}
+                    />
+                  </button>
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
           )}

@@ -11,7 +11,7 @@ const EditTextRequest = require("./models/editTextRequest");
 const Pic = require("./models/pic");
 const Art = require("./models/art");
 const Activity = require("./models/activity");
-const BirdEditTextRequest = require("./models/birdEditTextRequest")
+const BirdEditTextRequest = require("./models/birdEditTextRequest");
 const dotenv = require("dotenv");
 const jwt = require("jsonwebtoken");
 const Time = require("./models/time");
@@ -49,15 +49,27 @@ const catalogRouter = require("./routes/catalog");
 const { createContentRouter } = require("./routes/content");
 const { createTelemetryRouter } = require("./routes/telemetry");
 const {
+  assertDerivativeCleanupSucceeded,
   cleanupFiles,
+  cleanupPlantMediaDerivatives,
   getCompressedPlantMediaDirectory,
   getCompressedPlantMediaPath,
   getPlantMediaDirectory,
   getPlantMediaPath,
   getUploadedFiles,
+  renamePlantMediaDerivatives,
 } = require("./services/mediaFiles");
+const {
+  PUBLIC_DIRECTORY,
+  VARIANT_VERSION,
+  createSerialTaskQueue,
+  generateImageVariants,
+  getVariantFallbackFilePaths,
+  getVariantFilePath,
+  parseVariantRequestPath,
+} = require("./services/imageVariants");
 const Code = require("./models/code");
-const birdPost = require('./models/birdPost')
+const birdPost = require("./models/birdPost");
 const crypto = require("crypto");
 dotenv.config();
 const runtime = createRuntime({
@@ -89,8 +101,54 @@ app.use(
 app.use(compression()); //gzip compression for faster speed
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  `/public/variants/${VARIANT_VERSION}`,
+  express.static(path.join(PUBLIC_DIRECTORY, "variants", VARIANT_VERSION), {
+    immutable: true,
+    maxAge: "1y",
+    fallthrough: true,
+  }),
+);
+app.get("/public/variants/:version/:width/plantspic/*", async (req, res) => {
+  try {
+    const { mediaPath, width } = parseVariantRequestPath(req.path);
+    const variantPath = getVariantFilePath(mediaPath, width);
+
+    try {
+      await fs.access(variantPath);
+      res.set("Cache-Control", "public, max-age=31536000, immutable");
+      return res.sendFile(variantPath);
+    } catch (error) {
+      if (error.code !== "ENOENT") {
+        throw error;
+      }
+    }
+
+    const fallbackFiles = getVariantFallbackFilePaths(mediaPath);
+    const fallbackPaths = [fallbackFiles.compressed, fallbackFiles.original];
+    for (const fallbackPath of fallbackPaths) {
+      try {
+        await fs.access(fallbackPath);
+        res.set("Cache-Control", "public, max-age=300");
+        res.set("X-Media-Variant", "legacy-fallback");
+        return res.sendFile(fallbackPath);
+      } catch (error) {
+        if (error.code !== "ENOENT") {
+          throw error;
+        }
+      }
+    }
+
+    return res.status(404).end();
+  } catch (_) {
+    return res.status(404).end();
+  }
+});
 app.use("/public/plantspic", express.static("public/plantspic"));
-app.use("/public/compressed/plantspic", express.static("public/compressed/plantspic"));
+app.use(
+  "/public/compressed/plantspic",
+  express.static("public/compressed/plantspic"),
+);
 app.use("/public", express.static("public"));
 
 app.use(
@@ -111,6 +169,74 @@ app.use(
     logger: console,
   }),
 );
+
+const imageVariantTasks = createSerialTaskQueue();
+
+async function generateQueuedVariants(filePaths) {
+  let failed = 0;
+
+  for (const filePath of filePaths) {
+    try {
+      const results = await generateImageVariants(filePath);
+      failed += results.filter((result) => result.status === "failed").length;
+    } catch (_) {
+      failed += 1;
+    }
+  }
+
+  if (failed > 0) {
+    console.warn(`Unable to create ${failed} responsive image variants`);
+  }
+}
+
+function enqueueImageVariants(filePaths) {
+  const pendingPaths = filePaths.map((filePath) => String(filePath));
+  return imageVariantTasks.enqueue(() => generateQueuedVariants(pendingPaths));
+}
+
+function scheduleUploadedVariants(uploadedFiles) {
+  void enqueueImageVariants(
+    uploadedFiles.map(({ filename }) => getPlantMediaPath(filename)),
+  );
+}
+
+async function drainImageVariantQueue() {
+  await imageVariantTasks.drain();
+}
+
+async function removeStoredMedia(mediaPath) {
+  await imageVariantTasks.enqueue(async () => {
+    const cleanupResult = await cleanupPlantMediaDerivatives(
+      path.basename(mediaPath),
+    );
+    assertDerivativeCleanupSucceeded(cleanupResult);
+    await fs.unlink(path.join(__dirname, "public", mediaPath));
+  });
+}
+
+function moveStoredMediaDerivatives(oldPath, newPath, newFullPath) {
+  void imageVariantTasks.enqueue(async () => {
+    try {
+      const result = await renamePlantMediaDerivatives(
+        path.basename(oldPath),
+        path.basename(newPath),
+      );
+      const failed = result.variants.filter(
+        (variant) => variant.status === "failed",
+      ).length;
+
+      if (result.compressed === "failed" || failed > 0) {
+        console.warn("Unable to rename one or more image derivatives");
+      }
+    } catch (_) {
+      console.warn("Unable to rename one or more image derivatives");
+    }
+
+    await generateImageVariants(newFullPath).catch(() => {
+      console.warn("Unable to refresh responsive image variants");
+    });
+  });
+}
 
 app.get("/health/live", (req, res) => {
   res.status(200).json({ status: "live" });
@@ -252,28 +378,38 @@ app.post("/edit", requireAuth, async function (req, res) {
   res.json({ success: true });
 });
 
-app.post("/newPostAuth", requireAdmin, uploadWithCleanup, async (req, res, type) => {
-  if (req.body.decision) {
-    const post = await Post.findOne({ _id: req.body.id });
-    post.authorization = true;
-    await post.save();
-  } else {
-    await Post.deleteOne({ _id: req.body.id });
-  }
+app.post(
+  "/newPostAuth",
+  requireAdmin,
+  uploadWithCleanup,
+  async (req, res, type) => {
+    if (req.body.decision) {
+      const post = await Post.findOne({ _id: req.body.id });
+      post.authorization = true;
+      await post.save();
+    } else {
+      await Post.deleteOne({ _id: req.body.id });
+    }
 
-  res.json({ success: true });
-});
+    res.json({ success: true });
+  },
+);
 
-app.post("/newBirdPostAuth", requireAdmin, uploadWithCleanup, async (req, res, type) => {
-  if (req.body.decision) {
-    const post = await BirdPost.findOne({ _id: req.body.id });
-    post.authorization = true;
-    await post.save();
-  } else {
-    await BirdPost.deleteOne({ _id: req.body.id });
-  }
-  res.json({ success: true });
-});
+app.post(
+  "/newBirdPostAuth",
+  requireAdmin,
+  uploadWithCleanup,
+  async (req, res, type) => {
+    if (req.body.decision) {
+      const post = await BirdPost.findOne({ _id: req.body.id });
+      post.authorization = true;
+      await post.save();
+    } else {
+      await BirdPost.deleteOne({ _id: req.body.id });
+    }
+    res.json({ success: true });
+  },
+);
 
 app.post("/featureToHome", requireAdmin, async (req, res) => {
   try {
@@ -351,129 +487,138 @@ app.post("/featureToHome", requireAdmin, async (req, res) => {
   }
 });
 
-app.post("/uploadCreation", requireAuth, uploadWithCleanup, async (req, res) => {
-  const inputFiles = [];
-  const outputFiles = [];
-  let creation;
+app.post(
+  "/uploadCreation",
+  requireAuth,
+  uploadWithCleanup,
+  async (req, res) => {
+    const inputFiles = [];
+    const outputFiles = [];
+    let creation;
 
-  try {
-    const { body, files } = req;
-    const uploadedFiles = getUploadedFiles(files);
-    inputFiles.push(...uploadedFiles.map((file) => file.path));
-    outputFiles.push(
-      ...uploadedFiles.map((file) => getPlantMediaPath(file.filename)),
-    );
-    const outputFolderPath = getPlantMediaDirectory();
-    const plant = await Post.findOne({ latinName: body.plant });
-
-    if (!plant) {
-      return res.status(404).json({
-        success: false,
-        message: "Plant not found",
-      });
-    }
-
-    if (!files || !files.pic || !files.art) {
-      return res.status(400).json({
-        success: false,
-        message: "Both picture and artwork files are required",
-      });
-    }
-
-    await validateImageFiles([files.pic[0], files.art[0]]);
-
-    // Get or create pic code
-    var picCode = await Code.findOne({ type: "crePic" });
-    if (!picCode) {
-      picCode = new Code({ type: "crePic", count: 0 });
-      await picCode.save();
-    }
-
-    // Get or create art code
-    var artCode = await Code.findOne({ type: "creArt" });
-    if (!artCode) {
-      artCode = new Code({ type: "creArt", count: 0 });
-      await artCode.save();
-    }
-
-    // Compress images and wait for results
-    const compressionResults = await imageCompressor.compressImages(
-      inputFiles,
-      outputFolderPath,
-    );
-
-    // Check if any compression failed
-    const failedFiles = compressionResults.filter((result) => !result.success);
-    if (failedFiles.length > 0) {
-      throw new Error(
-        `Failed to compress files: ${failedFiles.map((f) => f.file).join(", ")}`,
+    try {
+      const { body, files } = req;
+      const uploadedFiles = getUploadedFiles(files);
+      inputFiles.push(...uploadedFiles.map((file) => file.path));
+      outputFiles.push(
+        ...uploadedFiles.map((file) => getPlantMediaPath(file.filename)),
       );
+      const outputFolderPath = getPlantMediaDirectory();
+      const plant = await Post.findOne({ latinName: body.plant });
+
+      if (!plant) {
+        return res.status(404).json({
+          success: false,
+          message: "Plant not found",
+        });
+      }
+
+      if (!files || !files.pic || !files.art) {
+        return res.status(400).json({
+          success: false,
+          message: "Both picture and artwork files are required",
+        });
+      }
+
+      await validateImageFiles([files.pic[0], files.art[0]]);
+
+      // Get or create pic code
+      var picCode = await Code.findOne({ type: "crePic" });
+      if (!picCode) {
+        picCode = new Code({ type: "crePic", count: 0 });
+        await picCode.save();
+      }
+
+      // Get or create art code
+      var artCode = await Code.findOne({ type: "creArt" });
+      if (!artCode) {
+        artCode = new Code({ type: "creArt", count: 0 });
+        await artCode.save();
+      }
+
+      // Compress images and wait for results
+      const compressionResults = await imageCompressor.compressImages(
+        inputFiles,
+        outputFolderPath,
+      );
+
+      // Check if any compression failed
+      const failedFiles = compressionResults.filter(
+        (result) => !result.success,
+      );
+      if (failedFiles.length > 0) {
+        throw new Error(
+          `Failed to compress files: ${failedFiles.map((f) => f.file).join(", ")}`,
+        );
+      }
+
+      const picPath = path.join("/plantspic/", files.pic[0].filename);
+      const artPath = path.join("/plantspic/", files.art[0].filename);
+
+      // Create creation entry
+      creation = new creationBottom({
+        auth: false,
+        plant: body.plant,
+        art: artPath,
+        pic: picPath,
+        date: new Date().toISOString(),
+        creator: req.authenticatedUser.username,
+        artist: body.artist,
+        photographer: body.photographer,
+        photoDate: body.photoDate,
+        artDate: body.artDate,
+        location: plant.location,
+        name: plant.latinName,
+        commonName: plant.commonName,
+        chineseName: plant.chineseName,
+        picCode: (picCode.count + 1).toString().padStart(4, "0"),
+        artCode: (artCode.count + 1).toString().padStart(4, "0"),
+      });
+
+      await creation.save();
+
+      // Update codes
+      await Promise.all([
+        Code.findOneAndUpdate(
+          { type: "crePic" },
+          { $inc: { count: 1 } },
+          { new: true },
+        ),
+        Code.findOneAndUpdate(
+          { type: "creArt" },
+          { $inc: { count: 1 } },
+          { new: true },
+        ),
+      ]);
+
+      scheduleUploadedVariants(uploadedFiles);
+
+      return res.json({
+        success: true,
+        message: "Creation uploaded successfully",
+        creation,
+      });
+    } catch (error) {
+      if (creation?._id) {
+        await cleanupRecords(creationBottom, [creation]);
+      }
+      await cleanupFiles(outputFiles);
+
+      const uploadError = getUploadErrorResponse(error);
+      if (uploadError) {
+        return res.status(uploadError.status).json(uploadError.body);
+      }
+
+      console.error("Creation upload failed");
+      return res.status(500).json({
+        success: false,
+        message: "Unable to process creation upload",
+      });
+    } finally {
+      await cleanupFiles(inputFiles);
     }
-
-    const picPath = path.join("/plantspic/", files.pic[0].filename);
-    const artPath = path.join("/plantspic/", files.art[0].filename);
-
-    // Create creation entry
-    creation = new creationBottom({
-      auth: false,
-      plant: body.plant,
-      art: artPath,
-      pic: picPath,
-      date: new Date().toISOString(),
-      creator: req.authenticatedUser.username,
-      artist: body.artist,
-      photographer: body.photographer,
-      photoDate: body.photoDate,
-      artDate: body.artDate,
-      location: plant.location,
-      name: plant.latinName,
-      commonName: plant.commonName,
-      chineseName: plant.chineseName,
-      picCode: (picCode.count + 1).toString().padStart(4, "0"),
-      artCode: (artCode.count + 1).toString().padStart(4, "0"),
-    });
-
-    await creation.save();
-
-    // Update codes
-    await Promise.all([
-      Code.findOneAndUpdate(
-        { type: "crePic" },
-        { $inc: { count: 1 } },
-        { new: true },
-      ),
-      Code.findOneAndUpdate(
-        { type: "creArt" },
-        { $inc: { count: 1 } },
-        { new: true },
-      ),
-    ]);
-
-    return res.json({
-      success: true,
-      message: "Creation uploaded successfully",
-      creation,
-    });
-  } catch (error) {
-    if (creation?._id) {
-      await cleanupRecords(creationBottom, [creation]);
-    }
-    await cleanupFiles(outputFiles);
-
-    const uploadError = getUploadErrorResponse(error);
-    if (uploadError) {
-      return res.status(uploadError.status).json(uploadError.body);
-    }
-
-    console.error("Creation upload failed");
-    return res.status(500).json({
-      success: false,
-      message: "Unable to process creation upload",
-    });
-  } finally {
-    await cleanupFiles(inputFiles);
-  }
-});
+  },
+);
 
 app.post(
   "/uploadPlant",
@@ -498,7 +643,7 @@ app.post(
         username: username,
         otherNames: req.body.otherNames,
         authorization: false,
-        dbType: "plant"
+        dbType: "plant",
       });
 
       // 确保链接数据格式一致性
@@ -560,7 +705,7 @@ app.post(
         username: username,
         otherNames: req.body.otherNames,
         authorization: false,
-        
+
         appearance: req.body.appearance,
         habitat: req.body.habitat,
         breeding: req.body.breeding,
@@ -571,7 +716,7 @@ app.post(
         juvChar: req.body.juvChar,
         subChar: req.body.subChar,
         mAdultChar: req.body.mAdultChar,
-        fAdultChar: req.body.fAdultChar
+        fAdultChar: req.body.fAdultChar,
       });
 
       // 确保链接数据格式一致性
@@ -608,37 +753,42 @@ app.post(
   },
 );
 
-app.post("/newCreationAuth", requireAdmin, uploadWithCleanup, async (req, res) => {
-  try {
-    if (req.body.decision) {
-      const post = await creationBottom.findOne({ _id: req.body.id });
-      if (!post) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Post not found" });
+app.post(
+  "/newCreationAuth",
+  requireAdmin,
+  uploadWithCleanup,
+  async (req, res) => {
+    try {
+      if (req.body.decision) {
+        const post = await creationBottom.findOne({ _id: req.body.id });
+        if (!post) {
+          return res
+            .status(404)
+            .json({ success: false, message: "Post not found" });
+        }
+        post.auth = true;
+        await post.save();
+      } else {
+        const post = await creationBottom.findOne({ _id: req.body.id });
+        if (!post) {
+          return res
+            .status(404)
+            .json({ success: false, message: "Post not found" });
+        }
+        // Delete the files
+        await Promise.all([
+          removeStoredMedia(post.art),
+          removeStoredMedia(post.pic),
+        ]);
+        await creationBottom.deleteOne({ _id: req.body.id });
       }
-      post.auth = true;
-      await post.save();
-    } else {
-      const post = await creationBottom.findOne({ _id: req.body.id });
-      if (!post) {
-        return res
-          .status(404)
-          .json({ success: false, message: "Post not found" });
-      }
-      // Delete the files
-      await Promise.all([
-        fs.unlink(path.join(__dirname, "/public", post.art)),
-        fs.unlink(path.join(__dirname, "/public", post.pic)),
-      ]);
-      await creationBottom.deleteOne({ _id: req.body.id });
+      res.json({ success: true, message: "creation saved" });
+    } catch (_) {
+      console.warn("Unable to review creation submission");
+      res.status(500).json({ success: false, message: "An error occurred" });
     }
-    res.json({ success: true, message: "creation saved" });
-  } catch (_) {
-    console.warn("Unable to review creation submission");
-    res.status(500).json({ success: false, message: "An error occurred" });
-  }
-});
+  },
+);
 
 app.post("/uploadArt", requireAuth, artmiddleware, async function (req, res) {
   const inputFiles = [];
@@ -704,6 +854,8 @@ app.post("/uploadArt", requireAuth, artmiddleware, async function (req, res) {
           { new: true },
         );
       }
+
+      scheduleUploadedVariants(uploadedFiles);
 
       return res.json({ success: true, message: "Art uploaded successfully" });
     } else {
@@ -822,6 +974,8 @@ app.post(
           );
         }
 
+        scheduleUploadedVariants(uploadedFiles);
+
         return res.json({
           success: true,
           message: "Picture uploaded successfully",
@@ -871,7 +1025,9 @@ app.post(
     );
 
     try {
-      const plant = await BirdPost.findOne({ latinName: req.body.picEnglishName });
+      const plant = await BirdPost.findOne({
+        latinName: req.body.picEnglishName,
+      });
 
       if (!plant) {
         return res.status(404).send("Plant not found");
@@ -943,6 +1099,8 @@ app.post(
             { new: true },
           );
         }
+
+        scheduleUploadedVariants(uploadedFiles);
 
         return res.json({
           success: true,
@@ -1064,7 +1222,7 @@ app.post("/updateText", requireAuth, async function (req, res) {
   await editTextRequest.save();
   res.json({ success: true });
 
-  console.log("updated plant successfully")
+  console.log("updated plant successfully");
 });
 
 app.post("/birdUpdateText", requireAuth, async function (req, res) {
@@ -1084,18 +1242,17 @@ app.post("/birdUpdateText", requireAuth, async function (req, res) {
     editor: req.body.editor,
     dbType: "bird",
 
-    appearance:req.body.appearance,
-    songs:req.body.songs,
-    diet:req.body.diet,
-    habitat:req.body.habitat,
-    migration:req.body.migration,
-    breeding:req.body.breeding,
+    appearance: req.body.appearance,
+    songs: req.body.songs,
+    diet: req.body.diet,
+    habitat: req.body.habitat,
+    migration: req.body.migration,
+    breeding: req.body.breeding,
 
-    
-    juvChar:req.body.juvChar,
-    subChar:req.body.subChar,
-    mAdultChar:req.body.madultChar,
-    fAdultChar:req.body.fadultChar
+    juvChar: req.body.juvChar,
+    subChar: req.body.subChar,
+    mAdultChar: req.body.madultChar,
+    fAdultChar: req.body.fadultChar,
   });
 
   await editTextRequest.save();
@@ -1144,7 +1301,6 @@ app.put("/handleBirdEditDecision", requireAdmin, async function (req, res) {
     }
     // Update the post first
     const postToEdit = await BirdPost.findOneAndUpdate(
-
       { latinName: originalLatin },
       {
         $set: {
@@ -1166,7 +1322,7 @@ app.put("/handleBirdEditDecision", requireAdmin, async function (req, res) {
           habitat: request.habitat,
           migration: request.migration,
           breeding: request.breeding,
-          
+
           juvChar: request.juvChar,
           subChar: request.subChar,
           mAdultChar: request.mAdultChar,
@@ -1203,6 +1359,11 @@ app.put("/handleBirdEditDecision", requireAdmin, async function (req, res) {
 
         // Move and rename file
         await fs.rename(oldPath, newFullPath);
+        await moveStoredMediaDerivatives(
+          pic.path,
+          newRelativePath,
+          newFullPath,
+        );
 
         // Update database record
         pic.plant = newLatin;
@@ -1231,6 +1392,11 @@ app.put("/handleBirdEditDecision", requireAdmin, async function (req, res) {
 
         // Move and rename file
         await fs.rename(oldPath, newFullPath);
+        await moveStoredMediaDerivatives(
+          art.path,
+          newRelativePath,
+          newFullPath,
+        );
 
         // Update database record
         art.plant = newLatin;
@@ -1255,7 +1421,7 @@ app.put("/handleBirdEditDecision", requireAdmin, async function (req, res) {
 app.put("/handleEditDecision", requireAdmin, async function (req, res) {
   try {
     const request = await EditTextRequest.findById(req.body.id);
-    
+
     if (!request) {
       return res
         .status(404)
@@ -1300,8 +1466,6 @@ app.put("/handleEditDecision", requireAdmin, async function (req, res) {
         .json({ success: false, message: "Post not found" });
     }
 
-    
-
     // Handle pics
     const pics = await Pic.find({ plant: originalLatin });
     for (const pic of pics) {
@@ -1320,6 +1484,11 @@ app.put("/handleEditDecision", requireAdmin, async function (req, res) {
 
         // Move and rename file
         await fs.rename(oldPath, newFullPath);
+        await moveStoredMediaDerivatives(
+          pic.path,
+          newRelativePath,
+          newFullPath,
+        );
 
         // Update database record
         pic.plant = newLatin;
@@ -1348,6 +1517,11 @@ app.put("/handleEditDecision", requireAdmin, async function (req, res) {
 
         // Move and rename file
         await fs.rename(oldPath, newFullPath);
+        await moveStoredMediaDerivatives(
+          art.path,
+          newRelativePath,
+          newFullPath,
+        );
 
         // Update database record
         art.plant = newLatin;
@@ -1416,53 +1590,62 @@ app.post(
 );
 
 app.get("/uploadHome", uploadWithCleanup, async (req, res) => {
-
   const entries = await FeatureHome.find();
   res.json({ success: true, entries });
 });
 
-app.post("/unFeatureHome", requireAdmin, uploadWithCleanup, async (req, res) => {
-  try {
-    // 使用 _id 来精确删除特定的 feature
-    await FeatureHome.deleteOne({ _id: req.body.id });
-    const entries = await FeatureHome.find();
-    res.json({ success: true, entries });
-  } catch (_) {
-    console.warn("Unable to remove featured content");
-    res.status(500).json({
-      success: false,
-      message: "Unable to remove featured content",
-    });
-  }
-});
+app.post(
+  "/unFeatureHome",
+  requireAdmin,
+  uploadWithCleanup,
+  async (req, res) => {
+    try {
+      // 使用 _id 来精确删除特定的 feature
+      await FeatureHome.deleteOne({ _id: req.body.id });
+      const entries = await FeatureHome.find();
+      res.json({ success: true, entries });
+    } catch (_) {
+      console.warn("Unable to remove featured content");
+      res.status(500).json({
+        success: false,
+        message: "Unable to remove featured content",
+      });
+    }
+  },
+);
 
 app.get("/uploadCreation", uploadWithCleanup, async (req, res) => {
   const temp = await creationBottom.find({ auth: true });
   res.json({ temp, success: true });
 });
 
-app.post("/unFeatureCreation", requireAdmin, uploadWithCleanup, async (req, res) => {
-  try {
-    const art = await creationBottom.findOne({ _id: req.body.temp });
-    const artPath = art.art;
-    const picPath = art.pic;
-    await Promise.all([
-      fs.unlink(path.join(__dirname, "public", artPath)),
-      fs.unlink(path.join(__dirname, "public", picPath)),
-    ]);
-    await creationBottom.deleteOne({ _id: req.body.temp });
-    const temp = await creationBottom.find({ auth: true });
-    res.json({ success: true, temp });
-  } catch (_) {
-    console.warn("Unable to delete creation");
-    res.status(500).json({ success: false, message: "plant not deleted" });
-  }
-});
+app.post(
+  "/unFeatureCreation",
+  requireAdmin,
+  uploadWithCleanup,
+  async (req, res) => {
+    try {
+      const art = await creationBottom.findOne({ _id: req.body.temp });
+      const artPath = art.art;
+      const picPath = art.pic;
+      await Promise.all([
+        removeStoredMedia(artPath),
+        removeStoredMedia(picPath),
+      ]);
+      await creationBottom.deleteOne({ _id: req.body.temp });
+      const temp = await creationBottom.find({ auth: true });
+      res.json({ success: true, temp });
+    } catch (_) {
+      console.warn("Unable to delete creation");
+      res.status(500).json({ success: false, message: "plant not deleted" });
+    }
+  },
+);
 
 app.post("/editPageDelete", requireAdmin, async (req, res) => {
   try {
     const pic = await Pic.findOne({ _id: req.body.id });
-    await fs.unlink(path.join(__dirname, "public", pic.path));
+    await removeStoredMedia(pic.path);
     await Pic.deleteOne({ _id: req.body.id });
     res.json({ success: true, message: "pic deleted" });
   } catch (_) {
@@ -1485,7 +1668,7 @@ app.delete("/editPageDeletePlant", requireAdmin, async (req, res) => {
     await Promise.all([
       ...pics.map(async (pic) => {
         try {
-          await fs.unlink(path.join(__dirname, "public", pic.path));
+          await removeStoredMedia(pic.path);
           await Pic.deleteOne({ _id: pic._id });
         } catch (_) {
           console.warn("Unable to delete related picture");
@@ -1493,7 +1676,7 @@ app.delete("/editPageDeletePlant", requireAdmin, async (req, res) => {
       }),
       ...arts.map(async (art) => {
         try {
-          await fs.unlink(path.join(__dirname, "public", art.path));
+          await removeStoredMedia(art.path);
           await Art.deleteOne({ _id: art._id });
         } catch (_) {
           console.warn("Unable to delete related artwork");
@@ -1526,7 +1709,7 @@ app.use(function (err, req, res, next) {
   return res.status(500).send("Something broke!");
 });
 
-module.exports = { app, runtime };
+module.exports = { app, drainImageVariantQueue, runtime };
 
 if (require.main === module) {
   require("./server").startServer();

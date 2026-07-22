@@ -1,5 +1,5 @@
 import axios from "../api/http";
-import urls, { mediaUrl } from "../tools/url";
+import urls, { mediaUrl, responsiveMediaProps } from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
@@ -77,10 +77,10 @@ const InfoDatabase = (search) => {
   const [stageChar, setStageChar] = useState([]);
   // const [displayedChar, setDisplayedChar] = useState([]);
   const indexes = {
-      Juvenile: 0,
-      Subadult: 1,
-      MaleAdult: 2,
-      FemaleAdult: 3,
+    Juvenile: 0,
+    Subadult: 1,
+    MaleAdult: 2,
+    FemaleAdult: 3,
   };
 
   const featureSingleArtHandle = async (input) => {
@@ -90,15 +90,11 @@ const InfoDatabase = (search) => {
         plant: latin,
         path: zoomArtLink,
       };
-      await axios.post(
-        urls.uploadFeatureArtSingle,
-        newFeature,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      await axios.post(urls.uploadFeatureArtSingle, newFeature, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       setFeatureBtnMsg("Success");
       setTimeout(() => setFeatureBtnMsg("Submitted!"), 1000);
       setTimeout(() => setFeatureBtnMsg("Feature"), 1000);
@@ -114,15 +110,11 @@ const InfoDatabase = (search) => {
         plant: latin,
         path: zoomPicLink,
       };
-      await axios.post(
-        urls.uploadFeatureSingle,
-        newFeature,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      await axios.post(urls.uploadFeatureSingle, newFeature, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       setFeatureBtnMsg("Success");
       setTimeout(() => setFeatureBtnMsg("Submitted!"), 1000);
       setTimeout(() => setFeatureBtnMsg("Feature"), 1000);
@@ -254,10 +246,9 @@ const InfoDatabase = (search) => {
     const startTime = Date.now();
 
     try {
-      const response = await axios.post(
-        urls.syncBirdInfo,
-        { postName: searchName },
-      );
+      const response = await axios.post(urls.syncBirdInfo, {
+        postName: searchName,
+      });
 
       const endTime = Date.now();
       const loadTime = endTime - startTime;
@@ -300,13 +291,12 @@ const InfoDatabase = (search) => {
       assignPicPaths(response.data.photographs);
       setArts(response.data.arts);
       setOtherNames(response.data.resultPost[0].otherNames || "");
-      setStageChar([response.data.resultPost[0].juvChar,
-      response.data.resultPost[0].subChar,
-    response.data.resultPost[0].mAdultChar,
-  response.data.resultPost[0].fAdultChar])
-
-      
-
+      setStageChar([
+        response.data.resultPost[0].juvChar,
+        response.data.resultPost[0].subChar,
+        response.data.resultPost[0].mAdultChar,
+        response.data.resultPost[0].fAdultChar,
+      ]);
     } catch (error) {
       console.log(error);
     } finally {
@@ -353,10 +343,9 @@ const InfoDatabase = (search) => {
     const sendName = getName;
     setSearchName(sendName);
     try {
-      const response = await axios.post(
-        urls.syncBirdInfo,
-        { postName: sendName },
-      );
+      const response = await axios.post(urls.syncBirdInfo, {
+        postName: sendName,
+      });
       setLatin(response.data.resultPost[0].latinName);
       setName(
         response.data.resultPost[0].commonName +
@@ -382,15 +371,12 @@ const InfoDatabase = (search) => {
       assignPicPaths(response.data.photographs);
       setArts(response.data.arts);
       setOtherNames(response.data.resultPost[0].otherNames || "");
-      setStageChar([response.data.resultPost[0].juvChar,
-      response.data.resultPost[0].subChar,
-    response.data.resultPost[0].mAdultChar,
-  response.data.resultPost[0].fAdultChar])
-
-
-
-      
-
+      setStageChar([
+        response.data.resultPost[0].juvChar,
+        response.data.resultPost[0].subChar,
+        response.data.resultPost[0].mAdultChar,
+        response.data.resultPost[0].fAdultChar,
+      ]);
     } catch (error) {
       console.log(error);
     }
@@ -411,7 +397,6 @@ const InfoDatabase = (search) => {
       FemaleAdult: [],
     };
 
-    
     picPaths.forEach(({ season, path, code, takenBy, time, location }) => {
       if (!paths[season]) {
         paths[season] = { path: [], code: [] };
@@ -428,13 +413,12 @@ const InfoDatabase = (search) => {
 
     // setDisplayedChar(displayIndexes.forEach((i)=> {charList.push(stageChar[i])}));
 
-
     /* spring: juv summer: subadult autumn: maleadult winter:femaleadult */
     setSpringPathsArray(paths.Juvenile);
     setSummerPathsArray(paths.Subadult);
     setAutumnPathsArray(paths.MaleAdult);
     setWinterPathsArray(paths.FemaleAdult);
-    
+
     setSpringInfo(info.Juvenile);
     setSummerInfo(info.Subadult);
     setAutumnInfo(info.MaleAdult);
@@ -454,7 +438,7 @@ const InfoDatabase = (search) => {
     seasonLeft,
     seasonInfo,
     index,
-    text
+    text,
   }) {
     if (seasonPaths?.path?.length === 0) {
       return null;
@@ -465,9 +449,10 @@ const InfoDatabase = (search) => {
         return (
           <div key={index}>
             <MediaImage
+              {...responsiveMediaProps(path, {
+                sizes: "(max-width: 700px) 45vw, 18vw",
+              })}
               className={styles.databaseImg}
-              src={mediaUrl(path, { compressed: true })}
-              fallbackSrc={mediaUrl(path)}
               loading="lazy"
               decoding="async"
               alt={`${index + 1}`}
@@ -521,12 +506,10 @@ const InfoDatabase = (search) => {
             <NextIcon width={50} height={50} />
           </button>
 
-          <div className = {styles.birdChar}>
+          <div className={styles.birdChar}>
             {/* Characteristics: */}
-            <p className={styles.charTitle}>
-              Characteristics:
-            </p>
-            <br/>
+            <p className={styles.charTitle}>Characteristics:</p>
+            <br />
             <p className={styles.charContent}>
               {stageChar[index]}
               {/* placehodler */}
@@ -643,7 +626,9 @@ const InfoDatabase = (search) => {
                   alignItems: "center",
                 }}
               >
-                <h3 className={styles.db1Infos}>Diet and Foraging 主要食谱与觅食行为:</h3>
+                <h3 className={styles.db1Infos}>
+                  Diet and Foraging 主要食谱与觅食行为:
+                </h3>
                 <p className={styles.db1Infos}>{diet}</p>
               </div>
             )}
@@ -671,7 +656,9 @@ const InfoDatabase = (search) => {
                   alignItems: "center",
                 }}
               >
-                <h3 className={styles.db1Infos}>Movements and Migration 迁徙行为:</h3>
+                <h3 className={styles.db1Infos}>
+                  Movements and Migration 迁徙行为:
+                </h3>
                 <p className={styles.db1Infos}>{migration}</p>
               </div>
             )}
@@ -772,14 +759,17 @@ const InfoDatabase = (search) => {
                     <p>Setting: {artInfoArray[artsIndex].setting}</p>
                   </div>
                 </div>
-                {artPathsArray.length>1?
-                <button className={styles.nextArBtn} onClick={nextArt}>
-                  <NextIcon
-                    className={styles.shiftIcon}
-                    width={50}
-                    height={50}
-                  />
-                </button>:<></>}
+                {artPathsArray.length > 1 ? (
+                  <button className={styles.nextArBtn} onClick={nextArt}>
+                    <NextIcon
+                      className={styles.shiftIcon}
+                      width={50}
+                      height={50}
+                    />
+                  </button>
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
           )}
@@ -814,7 +804,6 @@ const InfoDatabase = (search) => {
           index={0}
           seasonCheck={springCheck}
           seasonIndex={springPicsArrayIndex}
-
           seasonLeft={springLeftover}
           seasonInfo={springInfo}
         />
