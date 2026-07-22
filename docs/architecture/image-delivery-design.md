@@ -1,26 +1,25 @@
 # Image delivery and loading design
 
-Date: 2026-07-22.
+Date: 2026-07-23.
 
 This design is intentionally incremental. It improves how existing images are
-requested before introducing new derivative formats or any production media
-backfill.
+requested without changing MongoDB paths or replacing the current media store.
 
 ## Verified current behavior
 
 - MongoDB stores legacy media paths while the server exposes both
   `/public/plantspic` and `/public/compressed/plantspic` trees.
-- The upload code currently writes same-name legacy and compressed outputs.
-- Several client views instantiate `new Image()` and then render another
-  `<img>`. In the bird landing flow the preload targets the original tree while
-  the rendered element targets the compressed tree, which creates two distinct
-  requests when both files exist.
+- Existing upload contracts still write their legacy outputs. New uploads also
+  schedule additive responsive variants after the successful database write;
+  variant failure does not change the upload response contract.
+- Public catalogue, gallery, detail, home, and creation views use the shared
+  image component instead of preloading one URL and rendering another.
 - Grid images are normally rendered at roughly 15.5–18 viewport-width units;
   zoomed images can reach 70% of the viewport. One source size is therefore not
   appropriate for every context.
-- The last verified production aggregate contained 1,229 files across the
-  plant-image and compressed-image trees. It did not establish unique-image
-  count, dimensions, compression ratio, or the best derivative widths.
+- The verified production population contains 1,033 readable originals with a
+  median width of 1600 px and median height of 900 px. The responsive widths are
+  480, 960, and 1600 px.
 
 ## Design decisions
 
@@ -49,37 +48,35 @@ or an equivalent aspect ratio prevent layout shifts:
 - [web.dev: image performance issues](https://web.dev/learn/images/performance-issues)
 - [web.dev: image performance](https://web.dev/learn/performance/image-performance)
 
-### 3. Responsive variants are explicit, never guessed
+### 3. Responsive variants are explicit and versioned
 
-- A shared client image component accepts an existing fallback URL plus an
-  optional, explicit variant descriptor.
-- A `<picture>`/`srcset` is emitted only when the API states that each candidate
-  exists. Browsers select a supported `<source>`; they do not automatically
-  recover from a missing modern-format URL by trying the nested `<img>`.
-- Existing documents without variant metadata continue using the current
-  compressed/legacy fallback. This makes an additive rollout database-compatible
-  and avoids a mandatory backfill.
-- Candidate thumbnail/detail widths will be selected after an isolated sample
-  records source dimensions, rendered slot sizes, DPR, encoded byte size, and
-  visual quality. No fixed width or compression percentage is asserted yet.
+- The shared client helper emits `srcset` and `sizes` for 480, 960, and 1600 px
+  versioned URLs. The browser selects one candidate for the rendered slot.
+- The backend serves an existing variant with immutable caching. If a requested
+  variant is absent, the same URL safely serves the legacy compressed file or
+  original with a short cache lifetime. The image component also clears
+  `srcset` and walks compressed/original fallbacks after a network error.
+- MongoDB continues to store the original legacy path. No variant metadata or
+  schema migration is required.
 
 Responsive source selection and format fallback follow:
 
 - [MDN: the picture element](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/picture)
 - [MDN: responsive images](https://developer.mozilla.org/en-US/docs/Web/HTML/Guides/Responsive_images)
 
-### 4. New derivatives are additive and deterministic
+### 4. Derivatives are additive and deterministic
 
 - New uploads retain the original and current legacy compressed output.
-- The derivative pipeline will auto-orient, resize without enlargement, strip
+- The derivative pipeline auto-orients, resizes without enlargement, strips
   location/camera metadata by default, and write to a separate versioned
   directory. A failure must remove every derivative from that attempt while
   leaving prior media untouched.
-- WebP is the first modern-format candidate. AVIF is deferred until encoding
+- WebP quality is 78. AVIF is deferred until encoding
   time and visual samples justify its additional format and cache variants.
-- Sharp processing receives a pixel/input limit and timeout. Output settings
-  are validated with representative photographs and artwork rather than one
-  universal quality claim.
+- Sharp processing receives a pixel limit and timeout. Files publish through a
+  same-directory temporary output and hard link, so an existing destination is
+  never overwritten. Rename and deletion workflows also handle compressed and
+  versioned derivatives.
 
 Relevant implementation behavior is documented by Sharp:
 
@@ -98,7 +95,31 @@ Relevant implementation behavior is documented by Sharp:
 
 See [MDN Cache-Control](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Cache-Control).
 
-## Measurement gates
+## Verified production measurements
+
+The 2026-07-23 full-population calculation measured every readable original
+and exact-name derivative:
+
+| Width   | Exact pairs | Derivative bytes | Median bytes | Aggregate reduction versus originals |
+| ------- | ----------: | ---------------: | -----------: | -----------------------------------: |
+| 480 px  |       1,033 |       27,799,366 |       22,712 |                               98.68% |
+| 960 px  |       1,033 |       73,519,304 |       54,176 |                               96.52% |
+| 1600 px |       1,033 |      135,733,456 |       92,174 |                               93.57% |
+
+All 3,099 planned outputs were created with zero processing failures. Original
+bytes remained 2,109,916,481 and total variant storage is 237,052,126 bytes.
+These reductions are width-specific; a browser downloads one selected
+candidate, and the three percentages must not be added. Human visual review is
+not the same as byte measurement.
+
+A file-size-stratified visual check covered five originals at the minimum,
+quartile, median, upper-quartile, and maximum positions together with their 480
+and 1600 px outputs. The sample included photography and artwork and showed no
+obvious decode failure, rotation/crop error, severe blocking, or unusable colour
+shift at the rendered inspection sizes. This is a representative smoke check,
+not an exhaustive perceptual-quality score.
+
+## Ongoing measurement gates
 
 For the same route, viewport, cache state, and protocol, record before and
 after:
@@ -111,20 +132,18 @@ after:
 - build JavaScript size separately from media transfer size.
 
 Results from local fixtures are labelled as fixture results. Production-sized
-claims require an approved staging sample or an aggregate in-place production
-calculation. A fresh dimension sample was not collected during this design
-pass because the read-only SSH connection did not complete; no dimensions or
-compression ratios are inferred from file size alone.
+claims use the aggregate in-place population calculation and never infer image
+quality from file size alone.
 
 ## Rollout and rollback
 
-1. Remove double requests and add bounded fallback for existing media URLs.
-2. Add the reusable image component and apply eager/lazy priority by view role.
-3. Add and test the derivative service using anonymous local fixtures.
-4. Enable optional variant metadata for new uploads only after isolated
-   MongoDB/Redis/media validation.
-5. Treat any historical backfill and Nginx cache change as separate approved
-   operations with a dry-run manifest and media backup.
+1. Double-request removal and bounded legacy fallback are complete.
+2. Reusable responsive image selection and viewport-based priority are
+   complete for the main public media views.
+3. The derivative service passed anonymous local fixture tests.
+4. The additive production backfill completed after a 1,033-file dry run and
+   capacity check; 3,099 outputs were created without overwriting originals.
+5. No Nginx configuration change or MongoDB migration was made.
 
 Rollback first returns clients to existing legacy URLs. New derivative files
 are additive and can remain unreferenced; originals are never deleted or
