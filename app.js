@@ -36,6 +36,8 @@ const featureList = require("./models/featureList");
 const creationBottom = require("./models/creationBottom");
 const FeatureHome = require("./models/featureHome");
 const { createRuntime } = require("./runtime");
+const { createAuthMiddleware } = require("./middleware/auth");
+const catalogRouter = require("./routes/catalog");
 const Code = require("./models/code");
 const birdPost = require('./models/birdPost')
 const crypto = require("crypto");
@@ -47,6 +49,13 @@ const runtime = createRuntime({
   env: process.env,
   logger: console,
 });
+const {
+  getAuthorizationToken,
+  requireAdmin,
+  requireAuth,
+  sessionStoreUnavailable,
+  verifyToken,
+} = createAuthMiddleware({ User, jwt, runtime });
 
 app.use(compression()); //gzip compression for faster speed
 app.use(bodyParser.json());
@@ -151,142 +160,6 @@ async function cleanupRecords(model, records) {
   );
 }
 
-function getAuthorizationToken(authorization) {
-  if (typeof authorization !== "string") {
-    return null;
-  }
-
-  const value = authorization.trim();
-  if (!value || value === "undefined") {
-    return null;
-  }
-
-  const bearerMatch = value.match(/^Bearer\s+(.+)$/i);
-  const token = bearerMatch ? bearerMatch[1].trim() : value;
-
-  return token || null;
-}
-
-async function verifyToken(req, res, next) {
-  const token = getAuthorizationToken(req.headers["authorization"]);
-  req.sessionStoreUnavailable = false;
-
-  if (!token) {
-    req.user = null;
-    req.token = null;
-    return next();
-  }
-
-  let decoded;
-  try {
-    decoded = jwt.verify(token, process.env.secret);
-  } catch (err) {
-    if (err.name === "TokenExpiredError") {
-      const expiredToken = jwt.decode(token);
-      if (expiredToken?.username) {
-        try {
-          const sessionToken = await runtime.getSessionToken(
-            expiredToken.username,
-          );
-          if (sessionToken === token) {
-            await runtime.deleteSession(expiredToken.username);
-          }
-        } catch (_) {
-          console.warn("Unable to clear an expired session cache entry");
-        }
-      }
-    }
-
-    req.user = null;
-    req.token = null;
-    return next();
-  }
-
-  try {
-    const sessionToken = await runtime.getSessionToken(decoded.username);
-
-    if (sessionToken !== token) {
-      req.user = null;
-      req.token = null;
-      return next();
-    }
-  } catch (_) {
-    req.user = null;
-    req.token = null;
-    req.sessionStoreUnavailable = true;
-    return next();
-  }
-
-  req.user = decoded;
-  req.token = token;
-  return next();
-}
-
-function requireAuth(req, res, next) {
-  return verifyToken(req, res, async (error) => {
-    if (error) {
-      return next(error);
-    }
-
-    if (req.sessionStoreUnavailable) {
-      return sessionStoreUnavailable(res);
-    }
-
-    if (!req.user?.username) {
-      if (
-        getAuthorizationToken(req.headers["authorization"]) &&
-        !runtime.isSessionStoreReady()
-      ) {
-        return sessionStoreUnavailable(res);
-      }
-
-      return res.status(401).json({
-        success: false,
-        message: "Authentication required",
-      });
-    }
-
-    try {
-      const currentUser = await User.findOne(
-        { username: req.user.username },
-        { username: 1, admin: 1 },
-      );
-
-      if (!currentUser) {
-        return res.status(401).json({
-          success: false,
-          message: "Authentication required",
-        });
-      }
-
-      req.authenticatedUser = {
-        username: currentUser.username,
-        admin: Boolean(currentUser.admin),
-      };
-      return next();
-    } catch (authError) {
-      return next(authError);
-    }
-  });
-}
-
-function requireAdmin(req, res, next) {
-  return requireAuth(req, res, (error) => {
-    if (error) {
-      return next(error);
-    }
-
-    if (!req.authenticatedUser?.admin) {
-      return res.status(403).json({
-        success: false,
-        message: "Administrator access required",
-      });
-    }
-
-    return next();
-  });
-}
-
 const USER_PUBLIC_PROJECTION = { username: 1, admin: 1 };
 
 function toPublicUser(user) {
@@ -295,13 +168,6 @@ function toPublicUser(user) {
     username: user.username,
     admin: Boolean(user.admin),
   };
-}
-
-function sessionStoreUnavailable(res) {
-  return res.status(503).json({
-    success: false,
-    message: "Authentication service unavailable",
-  });
 }
 
 app.post("/login", verifyToken, async (req, res) => {
@@ -1335,71 +1201,7 @@ app.post(
   },
 );
 
-app.get("/searchNames", async (req, res) => {
-  const posts = await Post.find({ authorization: true });
-  if (!posts) {
-    res.json({ success: false, returnNames: [], numOfPlants: 0 });
-  }
-  res.json({ success: true, returnNames: posts, numOfPlants: posts.length });
-});
-
-
-
-app.get("/searchBirdNames", async (req, res) => {
-  const birdPosts = await BirdPost.find({ authorization: true });
-  if (!birdPosts) {
-    res.json({ success: false, returnNames: [], numOfPlants: 0 });
-  }
-  res.json({ success: true, returnNames: birdPosts, numOfPlants: birdPosts.length });
-});
-
-app.post("/syncPlantInfo", async (req, res) => {
-  const resultPost = await Post.find({
-    latinName: req.body.postName,
-    authorization: true,
-  });
-  const photographs = await Pic.find({
-    art: "photography",
-    plant: req.body.postName,
-  });
-  const arts = await Art.find({ plant: req.body.postName });
-  res.json({ resultPost: resultPost, photographs: photographs, arts: arts });
-});
-
-app.post("/syncBirdInfo", async (req, res) => {
-  const resultPost = await BirdPost.find({
-    latinName: req.body.postName,
-    authorization: true,
-  });
-  const photographs = await Pic.find({
-    art: "photography",
-    plant: req.body.postName,
-  });
-  const arts = await Art.find({ plant: req.body.postName });
-  res.json({ resultPost: resultPost, photographs: photographs, arts: arts });
-});
-
-app.get("/numOfPlants", async (req, res) => {
-  const posts = await Post.find({ authorization: true });
-  var numOfPlants = 0;
-
-  posts.forEach((post) => {
-    numOfPlants++;
-  });
-
-  res.json({ numOfPlants });
-});
-
-app.get("/numOfBirds", async (req, res) => {
-  const posts = await BirdPost.find({ authorization: true });
-  var numOfPlants = 0;
-
-  posts.forEach((post) => {
-    numOfPlants++;
-  });
-
-  res.json({ numOfPlants });
-});
+app.use(catalogRouter);
 
 app.get("/adminInfo", requireAdmin, async (req, res) => {
   const users = await User.find({}, USER_PUBLIC_PROJECTION);
