@@ -4,10 +4,12 @@ Date: 2026-07-22
 
 ## Read-only checks completed
 
-- `biphflora.com` resolves through the current network path to `198.18.0.85`;
-  this is a documentation-only observation because the address is in a
-  synthetic/reserved range and is not treated as the origin identity.
-- TCP port 22 accepted a connection attempt.
+- The local resolver maps `biphflora.com` to a synthetic/reserved network
+  address. An independent DNS-over-HTTPS query returned a separate source
+  address; the exact origin address is retained only in private connection
+  evidence and is intentionally omitted from this public report.
+- TCP port 22 accepted a connection attempt on the DNS-derived origin; the
+  other checked common SSH ports (2022, 2200, 2222, 10022) were refused.
 - Public HTTPS returned 200 for `/`, `/health/live`, `/health/ready`, and
   `/catalog/names?type=plant`, but each health/catalog response was the 429-byte
   CRA HTML shell rather than JSON. `/api/health/live` returned 404 HTML. The
@@ -18,7 +20,9 @@ Date: 2026-07-22
   exact path is the only matching `biphflora connect*` file in Downloads; it is
   an ASCII file with 41 bytes, no line terminator, and mode `0644`. Read-only
   authentication attempts for `root` and `ubuntu` on the public hostname did
-  not authenticate. No additional usernames or keys were brute-forced.
+  not authenticate. The SSH server advertises password authentication; the
+  exact file was tested through both `sshpass -f` and OpenSSH askpass, with
+  `root` still rejected. No additional usernames or keys were brute-forced.
 
 ## Deployment status
 
