@@ -135,8 +135,12 @@ function createContentRouter({
         autumnPics: autumnPics,
         winterPics: winterPics,
       });
-    } catch (error) {
-      console.log(error);
+    } catch (_) {
+      console.warn("Unable to load seasonal pictures");
+      res.status(500).json({
+        success: false,
+        message: "Unable to load seasonal pictures",
+      });
     }
   });
 
@@ -185,8 +189,12 @@ function createContentRouter({
       const pics = await Pic.find({ plant: req.body.plant });
       const arts = await Art.find({ plant: req.body.plant });
       res.json({ success: true, pics, arts });
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
+    } catch (_) {
+      console.warn("Unable to load media details");
+      res.status(500).json({
+        success: false,
+        message: "Unable to load media details",
+      });
     }
   });
 

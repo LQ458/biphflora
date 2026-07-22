@@ -83,6 +83,7 @@ const urls = {
   searchNames: apiUrl("/searchNames"),
   searchBirdNames: apiUrl("/searchBirdNames"),
   catalogNames: (type) => apiUrl(`/catalog/names?type=${type}`),
+  searchTelemetry: apiUrl("/telemetry/search"),
 };
 
 export default urls;

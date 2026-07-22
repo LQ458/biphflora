@@ -35,11 +35,19 @@ const {
 const featureList = require("./models/featureList");
 const creationBottom = require("./models/creationBottom");
 const FeatureHome = require("./models/featureHome");
+const AuditEvent = require("./models/auditEvent");
+const SearchEvent = require("./models/searchEvent");
 const { createRuntime } = require("./runtime");
 const { createAuthMiddleware } = require("./middleware/auth");
+const {
+  createAuditMiddleware,
+  createRequestContext,
+  createRequestLogger,
+} = require("./middleware/observability");
 const { createAuthRouter } = require("./routes/auth");
 const catalogRouter = require("./routes/catalog");
 const { createContentRouter } = require("./routes/content");
+const { createTelemetryRouter } = require("./routes/telemetry");
 const {
   cleanupFiles,
   getCompressedPlantMediaDirectory,
@@ -51,7 +59,6 @@ const {
 const Code = require("./models/code");
 const birdPost = require('./models/birdPost')
 const crypto = require("crypto");
-const { log } = require("console");
 dotenv.config();
 const runtime = createRuntime({
   mongoose,
@@ -67,6 +74,18 @@ const {
   verifyToken,
 } = createAuthMiddleware({ User, jwt, runtime });
 
+app.use(createRequestContext());
+if (process.env.REQUEST_LOG_ENABLED === "true") {
+  app.use(createRequestLogger({ logger: console }));
+}
+app.use(
+  createAuditMiddleware({
+    enabled: process.env.AUDIT_EVENTS_ENABLED === "true",
+    actorHashSecret: process.env.AUDIT_HASH_SECRET,
+    writeEvent: (event) => AuditEvent.create(event),
+    logger: console,
+  }),
+);
 app.use(compression()); //gzip compression for faster speed
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -84,6 +103,14 @@ app.use(
     credentials: true,
   }),
 ); //cors for cross-origin requests
+
+app.use(
+  createTelemetryRouter({
+    enabled: process.env.SEARCH_TELEMETRY_ENABLED === "true",
+    SearchEvent,
+    logger: console,
+  }),
+);
 
 app.get("/health/live", (req, res) => {
   res.status(200).json({ status: "live" });
@@ -191,9 +218,6 @@ app.post("/makeFeatured", requireAdmin, async (req, res) => {
   if (req.body.pic != "Pic " && req.body.art != "+ Art") {
     homeScreenFeatureList.plant.push(req.body);
     await homeScreenFeatureList.save();
-    console.log("Feature status saved");
-  } else {
-    console.log("failed (no id)");
   }
 
   res.json({ success: true });
@@ -214,7 +238,6 @@ app.use(
 app.get("/adminDataGet", requireAdmin, async (req, res) => {
   const plants = await Post.find({ authorization: true });
   const users = await User.find({}, USER_PUBLIC_PROJECTION);
-  console.log("message recieved");
   res.json({ success: true, plants, users: users.map(toPublicUser) });
 });
 
@@ -226,11 +249,7 @@ app.post("/adminToggle", requireAdmin, async (req, res) => {
 });
 
 app.post("/edit", requireAuth, async function (req, res) {
-  try {
-    res.json({ success: true });
-  } catch (error) {
-    console.log(error);
-  }
+  res.json({ success: true });
 });
 
 app.post("/newPostAuth", requireAdmin, uploadWithCleanup, async (req, res, type) => {
@@ -323,8 +342,12 @@ app.post("/featureToHome", requireAdmin, async (req, res) => {
 
     const entries = await FeatureHome.find();
     res.json({ success: true, entries });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+  } catch (_) {
+    console.warn("Unable to update featured content");
+    res.status(500).json({
+      success: false,
+      message: "Unable to update featured content",
+    });
   }
 });
 
@@ -459,11 +482,8 @@ app.post(
   async function (req, res) {
     try {
       var username = "admin";
-      if (req.user?.admin) {
-        authorization = true;
-      } else if (req.user) {
+      if (!req.user?.admin && req.user) {
         username = req.user?.username;
-        authorization = false;
       }
 
       const post = new Post({
@@ -500,17 +520,18 @@ app.post(
 
       await post.save();
 
-      console.log("123123123123");
-
-      res.json({ success: true });
+      return res.json({ success: true });
     } catch (error) {
       if (error.code === 11000) {
-        res
+        return res
           .status(400)
           .json({ success: false, message: "Plant already exists" });
-      } else {
-        console.log(error, "uploading problems");
       }
+      console.warn("Unable to create plant submission");
+      return res.status(500).json({
+        success: false,
+        message: "Unable to create plant submission",
+      });
     }
   },
 );
@@ -523,11 +544,8 @@ app.post(
     try {
       var username = "admin";
 
-      if (req.user?.admin) {
-        authorization = true;
-      } else if (req.user) {
+      if (!req.user?.admin && req.user) {
         username = req.user?.username;
-        authorization = false;
       }
 
       const post = new BirdPost({
@@ -574,11 +592,18 @@ app.post(
       );
 
       await post.save();
-      res.json({ success: true });
+      return res.json({ success: true });
     } catch (error) {
-      res
+      if (error.code === 11000) {
+        return res
           .status(400)
           .json({ success: false, message: "Bird already exists" });
+      }
+      console.warn("Unable to create bird submission");
+      return res.status(500).json({
+        success: false,
+        message: "Unable to create bird submission",
+      });
     }
   },
 );
@@ -594,7 +619,6 @@ app.post("/newCreationAuth", requireAdmin, uploadWithCleanup, async (req, res) =
       }
       post.auth = true;
       await post.save();
-      console.log("creation saved");
     } else {
       const post = await creationBottom.findOne({ _id: req.body.id });
       if (!post) {
@@ -610,8 +634,8 @@ app.post("/newCreationAuth", requireAdmin, uploadWithCleanup, async (req, res) =
       await creationBottom.deleteOne({ _id: req.body.id });
     }
     res.json({ success: true, message: "creation saved" });
-  } catch (error) {
-    console.error(error);
+  } catch (_) {
+    console.warn("Unable to review creation submission");
     res.status(500).json({ success: false, message: "An error occurred" });
   }
 });
@@ -974,8 +998,8 @@ app.post("/adminDeleteUser", requireAdmin, async (req, res) => {
     });
 
     res.status(200).json({ message: "User deleted successfully" });
-  } catch (error) {
-    console.log(error);
+  } catch (_) {
+    console.warn("Unable to delete user");
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -989,8 +1013,9 @@ app.post("/adminMakeAdminUser", requireAdmin, async (req, res) => {
     await user.save();
 
     res.json({ success: true });
-  } catch (error) {
-    console.log(error);
+  } catch (_) {
+    console.warn("Unable to change user role");
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
@@ -1183,8 +1208,8 @@ app.put("/handleBirdEditDecision", requireAdmin, async function (req, res) {
         pic.plant = newLatin;
         pic.path = newRelativePath;
         await pic.save();
-      } catch (error) {
-        console.error(`Error processing pic ${pic._id}:`, error);
+      } catch (_) {
+        console.warn("Unable to rename related picture");
       }
     }
 
@@ -1211,19 +1236,18 @@ app.put("/handleBirdEditDecision", requireAdmin, async function (req, res) {
         art.plant = newLatin;
         art.path = newRelativePath;
         await art.save();
-      } catch (error) {
-        console.error(`Error processing art ${art._id}:`, error);
+      } catch (_) {
+        console.warn("Unable to rename related artwork");
       }
     }
 
     await BirdEditTextRequest.deleteOne({ _id: request._id });
     return res.json({ success: true, message: "request accepted" });
-  } catch (error) {
-    console.error("Error in handleEditDecision:", error);
+  } catch (_) {
+    console.warn("Unable to review bird edit request");
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: error.message,
     });
   }
 });
@@ -1238,14 +1262,8 @@ app.put("/handleEditDecision", requireAdmin, async function (req, res) {
         .json({ success: false, message: "Request not found" });
     }
 
-    console.log(request);
-
     const originalLatin = request.originalLatin;
     const newLatin = request.latinName;
-
-    console.log("latins:")
-    console.log(originalLatin)
-    console.log(newLatin)
 
     if (!req.body.decision) {
       await EditTextRequest.deleteOne({ _id: request._id });
@@ -1275,9 +1293,6 @@ app.put("/handleEditDecision", requireAdmin, async function (req, res) {
         runValidators: true,
       },
     );
-
-    console.log("sending edit request")
-    // console.log("finished sending edit request")
 
     if (!postToEdit) {
       return res
@@ -1310,8 +1325,8 @@ app.put("/handleEditDecision", requireAdmin, async function (req, res) {
         pic.plant = newLatin;
         pic.path = newRelativePath;
         await pic.save();
-      } catch (error) {
-        console.error(`Error processing pic ${pic._id}:`, error);
+      } catch (_) {
+        console.warn("Unable to rename related picture");
       }
     }
 
@@ -1338,19 +1353,18 @@ app.put("/handleEditDecision", requireAdmin, async function (req, res) {
         art.plant = newLatin;
         art.path = newRelativePath;
         await art.save();
-      } catch (error) {
-        console.error(`Error processing art ${art._id}:`, error);
+      } catch (_) {
+        console.warn("Unable to rename related artwork");
       }
     }
 
     await EditTextRequest.deleteOne({ _id: request._id });
     return res.json({ success: true, message: "request accepted" });
-  } catch (error) {
-    console.error("Error in handleEditDecision:", error);
+  } catch (_) {
+    console.warn("Unable to review plant edit request");
     return res.status(500).json({
       success: false,
       message: "Internal server error",
-      error: error.message,
     });
   }
 });
@@ -1413,9 +1427,12 @@ app.post("/unFeatureHome", requireAdmin, uploadWithCleanup, async (req, res) => 
     await FeatureHome.deleteOne({ _id: req.body.id });
     const entries = await FeatureHome.find();
     res.json({ success: true, entries });
-  } catch (error) {
-    console.error("Error in unFeatureHome:", error);
-    res.status(500).json({ success: false, message: error.message });
+  } catch (_) {
+    console.warn("Unable to remove featured content");
+    res.status(500).json({
+      success: false,
+      message: "Unable to remove featured content",
+    });
   }
 });
 
@@ -1436,9 +1453,9 @@ app.post("/unFeatureCreation", requireAdmin, uploadWithCleanup, async (req, res)
     await creationBottom.deleteOne({ _id: req.body.temp });
     const temp = await creationBottom.find({ auth: true });
     res.json({ success: true, temp });
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "plant not deleted" });
+  } catch (_) {
+    console.warn("Unable to delete creation");
+    res.status(500).json({ success: false, message: "plant not deleted" });
   }
 });
 
@@ -1448,9 +1465,9 @@ app.post("/editPageDelete", requireAdmin, async (req, res) => {
     await fs.unlink(path.join(__dirname, "public", pic.path));
     await Pic.deleteOne({ _id: req.body.id });
     res.json({ success: true, message: "pic deleted" });
-  } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: "pic not deleted" });
+  } catch (_) {
+    console.warn("Unable to delete picture");
+    res.status(500).json({ success: false, message: "pic not deleted" });
   }
 });
 
@@ -1470,16 +1487,16 @@ app.delete("/editPageDeletePlant", requireAdmin, async (req, res) => {
         try {
           await fs.unlink(path.join(__dirname, "public", pic.path));
           await Pic.deleteOne({ _id: pic._id });
-        } catch (error) {
-          console.log("Error deleting pic:", error);
+        } catch (_) {
+          console.warn("Unable to delete related picture");
         }
       }),
       ...arts.map(async (art) => {
         try {
           await fs.unlink(path.join(__dirname, "public", art.path));
           await Art.deleteOne({ _id: art._id });
-        } catch (error) {
-          console.log("Error deleting art:", error);
+        } catch (_) {
+          console.warn("Unable to delete related artwork");
         }
       }),
       Post.deleteOne({ _id: req.body.id }),
@@ -1489,8 +1506,8 @@ app.delete("/editPageDeletePlant", requireAdmin, async (req, res) => {
       success: true,
       message: "plant and related data(including pics and arts) deleted",
     });
-  } catch (error) {
-    console.error("Error in editPageDeletePlant:", error);
+  } catch (_) {
+    console.warn("Unable to delete plant and related media");
     res.status(500).json({ success: false, message: "plant not deleted" });
   }
 });

@@ -60,8 +60,8 @@ the product. Every future measurement must use the evidence-record template in
 | Art documents | 27 | Direct | Current MongoDB Art collection |
 | Media filesystem footprint | 1,245 files / 2,332,361,589 bytes | Direct | Includes non-record files and derivatives |
 | Current registered accounts | 3 | Direct | Current MongoDB user documents; not active users |
-| Searches, success rate, zero-result rate, language use | Unavailable | Unavailable | No search event telemetry |
-| Detail views, uploads, creates, edits, reviews | Unavailable | Unavailable | No append-only operation audit |
+| Searches, success rate, zero-result rate, language use | Unavailable | Unavailable | Aggregate search telemetry exists but is disabled by default; no historical events have been verified |
+| Detail views, uploads, creates, edits, reviews | Unavailable | Unavailable | Append-only audit path exists but is disabled by default; no historical events have been verified |
 | Actual contributors and monthly active contributors | Unavailable | Unavailable | Account/editor fields do not verify distinct people or activity |
 | Browser/contributor ratio | Unavailable | Unavailable | Requires both traffic and auditable contribution events |
 | Organization workflows and feedback | Unavailable | Unavailable | Needs consented, reviewed qualitative evidence |
@@ -77,14 +77,14 @@ the product. Every future measurement must use the evidence-record template in
 | p50/p95/p99, search, upload, database latency | Unavailable | Unavailable | No latency telemetry |
 | CPU/memory/disk state | Point-in-time baseline collected privately | Direct | Not a capacity trend or performance claim |
 | TLS validity | 2026-02-25 through 2027-02-25 | Direct | Certificate dates only |
-| Automated restart/health/alerting | Partial process management; no app health endpoint | Direct/partial | Health endpoint and alert coverage must be added and verified |
+| Automated restart/health/alerting | Liveness/readiness endpoints exist; historical monitor coverage unavailable | Direct/partial | Process management is observed; external monitoring and alert coverage are not verified |
 | Backup restore success | Unavailable | Unavailable | Presence of backup files is not a restore test |
 | Pic/Art path existence | 997 of 997 document paths present | Direct | Does not prove visual validity or unique physical files |
 | Average size, compression ratio, storage saved | Unavailable | Unavailable | Requires matched original/derivative analysis |
 | Image format/limit/process failure rate | Unavailable | Unavailable | Need validated server rules and operation telemetry |
 | Multilingual/fuzzy search quality and index latency | Implementation exists; quality metric unavailable | Partial | Requires a test corpus and measured queries |
 | Architecture/API/schema/auth model | Source-reviewed baseline available | Direct/partial | Must be kept current as modules move |
-| Test coverage/CI/security scan | Incomplete | Direct | Current test command and CI do not yet provide a trustworthy coverage baseline |
+| Test coverage/CI/security scan | Focused tests and CI workflow present; numeric coverage unavailable | Partial | CI configuration is committed; hosted-run history and dependency scan results still need verification |
 
 ## Guardrails for future reporting
 

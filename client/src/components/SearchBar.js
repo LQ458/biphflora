@@ -3,6 +3,7 @@ import { ReactComponent as SearchIcon } from "../src/buttons/search-outline.svg"
 import "../styles/searchBar.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { recordSearchAttempt } from "../api/telemetry";
 
 const SearchBar = ({
   handleGet,
@@ -11,7 +12,7 @@ const SearchBar = ({
   handleSearch,
   barWidth,
   placeHolder,
-  type
+  type,
 }) => {
   const [empty, setEmpty] = useState(true);
   const navigate = useNavigate();
@@ -28,13 +29,22 @@ const SearchBar = ({
       navigate(`/search/${plant.replaceAll(" ", "_")}`);
     }
   };
+  const recordAndRedirect = (plant) => {
+    recordSearchAttempt({
+      query,
+      resultCount: searchResults.length,
+      selected: Boolean(plant),
+      catalogType: type === "bird" ? "bird" : "plant",
+    });
+    redirect(plant);
+  };
 
   return (
     <div className="searchBarDiv">
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          redirect(searchResults[0]?.[0]);
+          recordAndRedirect(searchResults[0]?.[0]);
         }}
         style={{ width: barWidth }}
         className="db2SubmitForm"
@@ -45,6 +55,12 @@ const SearchBar = ({
           onChange={(event) => {
             handleSearch(event);
             setEmpty(event.target.value === "");
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" && !searchResults[0]) {
+              event.preventDefault();
+              recordAndRedirect();
+            }
           }}
           className="db2SearchBar"
           placeholder={placeHolder}
@@ -65,7 +81,7 @@ const SearchBar = ({
             <button
               id="buttonOne"
               className="searchResultsButton"
-              onClick={(e) => redirect(searchResults[0][0])}
+              onClick={() => recordAndRedirect(searchResults[0][0])}
             >
               <h2 className="db1h2">
                 {searchResults[0][0] +
@@ -80,7 +96,7 @@ const SearchBar = ({
             <button
               id="buttonTwo"
               className="searchResultsButton"
-              onClick={(e) => redirect(searchResults[1][0])}
+              onClick={() => recordAndRedirect(searchResults[1][0])}
             >
               <h2 className="db1h2">
                 {searchResults[1][0] +
@@ -95,7 +111,7 @@ const SearchBar = ({
             <button
               id="buttonThree"
               className="searchResultsButton"
-              onClick={(e) => redirect(searchResults[2][0])}
+              onClick={() => recordAndRedirect(searchResults[2][0])}
             >
               <h2 className="db1h2">
                 {searchResults[2][0] +

@@ -1,7 +1,7 @@
 {
   "name": "biphflora",
   "version": "3.0.0",
-  "description": "",
+  "description": "Private plant and bird catalog with community contribution workflows",
   "main": "index.js",
   "scripts": {
     "start": "nodemon app.js",
@@ -14,7 +14,10 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "SEE LICENSE IN LICENSE",
+  "engines": {
+    "node": ">=18.17.0"
+  },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",

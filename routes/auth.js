@@ -137,7 +137,11 @@ function createAuthRouter({
       if (error.code === 11000) {
         return res.json({ success: false, message: "Username already exists" });
       }
-      return res.json({ success: false, message: error.message });
+      console.warn("Unable to register user");
+      return res.status(500).json({
+        success: false,
+        message: "Unable to register user",
+      });
     }
   });
 
