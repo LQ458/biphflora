@@ -27,12 +27,19 @@ const multer = require("multer");
 const featureList = require("./models/featureList");
 const creationBottom = require("./models/creationBottom");
 const FeatureHome = require("./models/featureHome");
-const redis = require("redis");
+const { createRuntime } = require("./runtime");
 const Code = require("./models/code");
 const birdPost = require('./models/birdPost')
 const crypto = require("crypto");
 const { log } = require("console");
 dotenv.config();
+const runtime = createRuntime({
+  mongoose,
+  redis: require("redis"),
+  env: process.env,
+  logger: console,
+});
+const redisClient = runtime.redisClient;
 
 app.use(compression()); //gzip compression for faster speed
 app.use(bodyParser.json());
@@ -52,10 +59,18 @@ app.use(
   }),
 ); //cors for cross-origin requests
 
-app.use(function (err, req, res, next) {
-  console.error(err.stack); // Log error stack to console
-  res.status(500).send("Something broke!");
-}); // Error handling middleware
+app.get("/health/live", (req, res) => {
+  res.status(200).json({ status: "live" });
+});
+
+app.get("/health/ready", (req, res) => {
+  const readiness = runtime.getReadiness();
+
+  res.status(readiness.ready ? 200 : 503).json({
+    status: readiness.ready ? "ready" : "not_ready",
+    dependencies: readiness.dependencies,
+  });
+});
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -81,34 +96,6 @@ const upload = multer({
 ]); // Set up multer upload
 
 const globalUpload = multer({});
-
-app.listen(process.env.PORT, "0.0.0.0", () => {
-  console.log("Server is running on port 3001");
-}); // Start the server
-
-const redisClient = redis.createClient({
-  url: process.env.REDIS_URL,
-  pingInterval: 1000,
-});
-
-async function connectToRedis() {
-  try {
-    await redisClient.connect();
-    console.log("Connected to Redis");
-  } catch (err) {
-    console.error("Failed to connect to Redis:", err);
-  }
-}
-
-connectToRedis();
-
-process.on("uncaughtException", function (err) {
-  console.log("Caught Exception:" + err); //直接捕获method()未定义函数，Node进程未被退出。
-});
-
-mongoose.connect(process.env.MONGODB_URL).then(() => {
-  console.log("connected to mongodb");
-}); // Connect to MongoDB
 
 async function verifyToken(req, res, next) {
   const token = req.headers["authorization"];
@@ -1838,3 +1825,18 @@ app.post("/getPicsAndArts", async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+
+app.use(function (err, req, res, next) {
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  console.error("Unhandled request error");
+  return res.status(500).send("Something broke!");
+});
+
+module.exports = { app, runtime };
+
+if (require.main === module) {
+  require("./server").startServer();
+}

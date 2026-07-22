@@ -62,7 +62,7 @@ const Login = () => {
   }, []);
 
   return (
-    <body className="loginbd">
+    <main className="loginbd">
       <section className="loginsec">
         <div style={{ position: "fixed", left: 0, top: 0 }}>
           <Navbar />
@@ -81,7 +81,7 @@ const Login = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
-                <label for="username">Username:</label>
+                <label htmlFor="username">Username:</label>
               </div>
               <div className="inputboxLogin">
                 <input
@@ -92,7 +92,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <label for="password">Password:</label>
+                <label htmlFor="password">Password:</label>
               </div>
               <br />
               <button type="submit" className="loginBtn">
@@ -117,7 +117,7 @@ const Login = () => {
           </div>
         </div>
       </section>
-    </body>
+    </main>
   );
 };
 
