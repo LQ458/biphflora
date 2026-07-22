@@ -97,14 +97,12 @@ const Admin = ({ handleAdminPreview }) => {
             <thead>
               <tr>
                 <th>Username</th>
-                <th>Password</th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id}>
+                <tr key={user._id || user.username}>
                   <td className="Name">{user.username}</td>
-                  <td>{user.password}</td>
                 </tr>
               ))}
             </tbody>

@@ -4,6 +4,27 @@ import { Map, fromJS } from "immutable";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
+axios.interceptors.request.use((config) => {
+  const token = localStorage.getItem("askanything");
+  const apiBaseUrl = process.env.REACT_APP_Source_URL;
+  const normalizedApiBaseUrl = apiBaseUrl?.replace(/\/$/, "");
+  const isApiRequest =
+    normalizedApiBaseUrl &&
+    (config.url === normalizedApiBaseUrl ||
+      config.url?.startsWith(`${normalizedApiBaseUrl}/`));
+
+  if (!token || !isApiRequest) {
+    return config;
+  }
+
+  const headers = config.headers || {};
+  if (!headers.authorization && !headers.Authorization) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  config.headers = headers;
+
+  return config;
+});
 
 const userReducer = (state, action) => {
   switch (action.type) {
@@ -56,6 +77,8 @@ export const UserProvider = ({ children }) => {
         {
           username,
           password,
+        },
+        {
           headers: {
             authorization: token,
           },
@@ -85,6 +108,7 @@ export const UserProvider = ({ children }) => {
       localStorage.removeItem("askanything");
       const response = await axios.post(
         `${process.env.REACT_APP_Source_URL}/logout`,
+        {},
         {
           headers: {
             authorization: token,

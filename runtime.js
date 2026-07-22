@@ -109,6 +109,33 @@ function createRuntime({
     return getReadiness();
   };
 
+  const getSessionToken = async (username) => {
+    if (!redisClient.isReady) {
+      return null;
+    }
+
+    return redisClient.get(username);
+  };
+
+  const setSessionToken = async (username, token) => {
+    if (!redisClient.isReady) {
+      throw new Error("Redis session store is unavailable");
+    }
+
+    await redisClient.set(username, token);
+  };
+
+  const deleteSession = async (username) => {
+    if (!redisClient.isReady) {
+      throw new Error("Redis session store is unavailable");
+    }
+
+    await redisClient.del(username);
+    return true;
+  };
+
+  const isSessionStoreReady = () => redisClient.isReady;
+
   const disconnect = async () => {
     const tasks = [];
 
@@ -140,8 +167,12 @@ function createRuntime({
   return {
     redisClient,
     connect,
+    deleteSession,
     disconnect,
+    getSessionToken,
     getReadiness,
+    setSessionToken,
+    isSessionStoreReady,
   };
 }
 

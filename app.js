@@ -24,6 +24,14 @@ const path = require("path");
 const fs = require("fs").promises; // Node.js file system module with promise support
 const bcrypt = require("bcrypt");
 const multer = require("multer");
+const {
+  MAX_IMAGE_FILE_SIZE,
+  createImageFilename,
+  ensureUploadTempDirectory,
+  imageFileFilter,
+  getUploadErrorResponse,
+  validateImageFiles,
+} = require("./models/uploadPolicy");
 const featureList = require("./models/featureList");
 const creationBottom = require("./models/creationBottom");
 const FeatureHome = require("./models/featureHome");
@@ -39,7 +47,6 @@ const runtime = createRuntime({
   env: process.env,
   logger: console,
 });
-const redisClient = runtime.redisClient;
 
 app.use(compression()); //gzip compression for faster speed
 app.use(bodyParser.json());
@@ -74,22 +81,28 @@ app.get("/health/ready", (req, res) => {
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./public/uploads/"); // Set the destination folder for uploaded files
+    try {
+      cb(null, ensureUploadTempDirectory());
+    } catch (error) {
+      cb(error);
+    }
   },
   filename: function (req, file, cb) {
-    const fileExtension = file.originalname.split(".").pop().toLowerCase();
-    const filename =
-      req.body.plant.replace(/\s+/g, "") +
-      "-" +
-      crypto.randomBytes(16).toString("hex").slice(0, 16) +
-      "." +
-      fileExtension; // Generate a unique filename
-    cb(null, filename);
+    try {
+      cb(null, createImageFilename(file.mimetype));
+    } catch (error) {
+      cb(error);
+    }
   },
 }); // Set up multer storage
 
 const upload = multer({
   storage: storage,
+  limits: {
+    fileSize: MAX_IMAGE_FILE_SIZE,
+    files: 2,
+  },
+  fileFilter: imageFileFilter,
 }).fields([
   { name: "pic", maxCount: 1 },
   { name: "art", maxCount: 1 },
@@ -97,47 +110,206 @@ const upload = multer({
 
 const globalUpload = multer({});
 
-async function verifyToken(req, res, next) {
-  const token = req.headers["authorization"];
+function getUploadedFiles(files) {
+  if (Array.isArray(files)) {
+    return files;
+  }
 
-  if (!token || token === "undefined") {
+  return Object.values(files || {}).flat();
+}
+
+async function cleanupFiles(filePaths) {
+  await Promise.all(
+    filePaths.map((filePath) =>
+      fs.unlink(filePath).catch((error) => {
+        if (error.code !== "ENOENT") {
+          console.warn("Unable to clean up uploaded file");
+        }
+      }),
+    ),
+  );
+}
+
+function uploadWithCleanup(req, res, next) {
+  upload(req, res, async (error) => {
+    if (error) {
+      await cleanupFiles(getUploadedFiles(req.files).map((file) => file.path));
+      return next(error);
+    }
+
+    return next();
+  });
+}
+
+async function cleanupRecords(model, records) {
+  await Promise.all(
+    records.map((record) =>
+      model.deleteOne({ _id: record._id }).catch(() => {
+        console.warn("Unable to roll back uploaded record");
+      }),
+    ),
+  );
+}
+
+function getAuthorizationToken(authorization) {
+  if (typeof authorization !== "string") {
+    return null;
+  }
+
+  const value = authorization.trim();
+  if (!value || value === "undefined") {
+    return null;
+  }
+
+  const bearerMatch = value.match(/^Bearer\s+(.+)$/i);
+  const token = bearerMatch ? bearerMatch[1].trim() : value;
+
+  return token || null;
+}
+
+async function verifyToken(req, res, next) {
+  const token = getAuthorizationToken(req.headers["authorization"]);
+  req.sessionStoreUnavailable = false;
+
+  if (!token) {
     req.user = null;
+    req.token = null;
+    return next();
+  }
+
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.secret);
+  } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      const expiredToken = jwt.decode(token);
+      if (expiredToken?.username) {
+        try {
+          const sessionToken = await runtime.getSessionToken(
+            expiredToken.username,
+          );
+          if (sessionToken === token) {
+            await runtime.deleteSession(expiredToken.username);
+          }
+        } catch (_) {
+          console.warn("Unable to clear an expired session cache entry");
+        }
+      }
+    }
+
+    req.user = null;
+    req.token = null;
     return next();
   }
 
   try {
-    const decoded = await new Promise((resolve, reject) => {
-      jwt.verify(token, process.env.secret, (err, decoded) => {
-        if (err) {
-          if (err.message === "jwt expired") {
-            // If the JWT is expired, delete it from Redis
-            redisClient.del(decoded.username);
-          }
-          return reject(err);
-        }
-        resolve(decoded);
+    const sessionToken = await runtime.getSessionToken(decoded.username);
+
+    if (sessionToken !== token) {
+      req.user = null;
+      req.token = null;
+      return next();
+    }
+  } catch (_) {
+    req.user = null;
+    req.token = null;
+    req.sessionStoreUnavailable = true;
+    return next();
+  }
+
+  req.user = decoded;
+  req.token = token;
+  return next();
+}
+
+function requireAuth(req, res, next) {
+  return verifyToken(req, res, async (error) => {
+    if (error) {
+      return next(error);
+    }
+
+    if (req.sessionStoreUnavailable) {
+      return sessionStoreUnavailable(res);
+    }
+
+    if (!req.user?.username) {
+      if (
+        getAuthorizationToken(req.headers["authorization"]) &&
+        !runtime.isSessionStoreReady()
+      ) {
+        return sessionStoreUnavailable(res);
+      }
+
+      return res.status(401).json({
+        success: false,
+        message: "Authentication required",
       });
-    });
+    }
 
-    req.user = decoded;
+    try {
+      const currentUser = await User.findOne(
+        { username: req.user.username },
+        { username: 1, admin: 1 },
+      );
 
-    const redisToken = await redisClient.get(req.user.username);
+      if (!currentUser) {
+        return res.status(401).json({
+          success: false,
+          message: "Authentication required",
+        });
+      }
 
-    if (redisToken === token) {
-      req.token = token;
-    } else if (redisToken) {
-      req.token = redisToken;
+      req.authenticatedUser = {
+        username: currentUser.username,
+        admin: Boolean(currentUser.admin),
+      };
+      return next();
+    } catch (authError) {
+      return next(authError);
+    }
+  });
+}
+
+function requireAdmin(req, res, next) {
+  return requireAuth(req, res, (error) => {
+    if (error) {
+      return next(error);
+    }
+
+    if (!req.authenticatedUser?.admin) {
+      return res.status(403).json({
+        success: false,
+        message: "Administrator access required",
+      });
     }
 
     return next();
-  } catch (err) {
-    req.user = null;
-    return next();
-  }
+  });
+}
+
+const USER_PUBLIC_PROJECTION = { username: 1, admin: 1 };
+
+function toPublicUser(user) {
+  return {
+    _id: user._id,
+    username: user.username,
+    admin: Boolean(user.admin),
+  };
+}
+
+function sessionStoreUnavailable(res) {
+  return res.status(503).json({
+    success: false,
+    message: "Authentication service unavailable",
+  });
 }
 
 app.post("/login", verifyToken, async (req, res) => {
   var passwordMatch = false;
+  if (req.sessionStoreUnavailable) {
+    return sessionStoreUnavailable(res);
+  }
+
   if (req.user) {
     return res.json({
       success: true,
@@ -148,7 +320,7 @@ app.post("/login", verifyToken, async (req, res) => {
   }
 
   const { username, password } = req.body;
-  const user = await User.findOne({ username });
+  const user = await User.findOne({ username }).select("+password");
 
   if (user) {
     passwordMatch = await bcrypt.compare(password, user.password);
@@ -157,26 +329,46 @@ app.post("/login", verifyToken, async (req, res) => {
   }
 
   if (passwordMatch) {
+    if (!runtime.isSessionStoreReady()) {
+      return sessionStoreUnavailable(res);
+    }
+
     var token = jwt.sign(
       { username: user.username, admin: user.admin },
       process.env.secret,
       { expiresIn: "180d" },
     );
 
-    const redisToken = await redisClient.get(username);
+    try {
+      const redisToken = await runtime.getSessionToken(username);
+      let hasUsableSession = false;
 
-    if (redisToken) {
-      token = redisToken;
-    } else {
-      await redisClient.set(username, token, redis.print);
+      if (redisToken) {
+        try {
+          const sessionPayload = jwt.verify(redisToken, process.env.secret);
+          hasUsableSession = sessionPayload?.username === username;
+        } catch (_) {
+          hasUsableSession = false;
+        }
+      }
+
+      if (hasUsableSession) {
+        token = redisToken;
+      } else {
+        await runtime.deleteSession(username);
+        await runtime.setSessionToken(username, token);
+      }
+
+      return res.json({
+        success: true,
+        message: "Login successful",
+        user: (({ username, admin }) => ({ username, admin }))(user),
+        token,
+      });
+    } catch (_) {
+      console.warn("Unable to create a login session");
+      return sessionStoreUnavailable(res);
     }
-
-    return res.json({
-      success: true,
-      message: "Login successful",
-      user: (({ username, admin }) => ({ username, admin }))(user),
-      token,
-    });
   } else {
     return res.json({
       success: false,
@@ -186,6 +378,10 @@ app.post("/login", verifyToken, async (req, res) => {
 });
 
 app.get("/refresh", verifyToken, async (req, res) => {
+  if (req.sessionStoreUnavailable) {
+    return sessionStoreUnavailable(res);
+  }
+
   if (!req.user) {
     return res.json({ success: false, message: "Token not valid" });
   }
@@ -199,22 +395,35 @@ app.get("/refresh", verifyToken, async (req, res) => {
 
 app.post("/logout", verifyToken, async (req, res) => {
   if (!req.user) {
+    if (
+      req.sessionStoreUnavailable ||
+      (getAuthorizationToken(req.headers["authorization"]) &&
+        !runtime.isSessionStoreReady())
+    ) {
+      return sessionStoreUnavailable(res);
+    }
+
     return res.json({ success: true, message: "Logout successful" });
   }
 
-  await redisClient.del(req.user?.username);
+  try {
+    await runtime.deleteSession(req.user.username);
+  } catch (_) {
+    console.warn("Unable to remove login session");
+    return sessionStoreUnavailable(res);
+  }
 
   return res.json({ success: true, message: "Logout successful" });
 });
 
-app.post("/adminView", async (req, res) => {
+app.post("/adminView", requireAdmin, async (req, res) => {
   const resultPlant = await Post.findOne({ latinName: req.body.search });
   const resultPics = await Pic.find({ plant: req.body.search });
   const resultArts = await Art.find({ plant: req.body.search });
   res.json({ success: true, resultPlant, resultPics, resultArts });
 });
 
-app.post("/makeFeatured", async (req, res) => {
+app.post("/makeFeatured", requireAdmin, async (req, res) => {
   var homeScreenFeatureList = await featureList.findOne({
     name: "homescreenFeature",
   });
@@ -247,7 +456,6 @@ app.post("/register", async (req, res) => {
     await User.create({
       username,
       password: password,
-      originalPassword: req.body.password,
       admin: false,
     });
     return res.json({ success: true, message: "Register successful" });
@@ -259,14 +467,14 @@ app.post("/register", async (req, res) => {
   }
 });
 
-app.get("/adminDataGet", async (req, res) => {
+app.get("/adminDataGet", requireAdmin, async (req, res) => {
   const plants = await Post.find({ authorization: true });
-  const users = await User.find();
+  const users = await User.find({}, USER_PUBLIC_PROJECTION);
   console.log("message recieved");
-  res.json({ success: true, plants, users });
+  res.json({ success: true, plants, users: users.map(toPublicUser) });
 });
 
-app.post("/adminToggle", async (req, res) => {
+app.post("/adminToggle", requireAdmin, async (req, res) => {
   const user = await User.findOne({ username: req.body.username });
   user.admin = !user.admin;
   await user.save();
@@ -362,7 +570,7 @@ app.get("/userInfoGlossaryBird", verifyToken, async (req, res) => {
   console.log("123")
 });
 
-app.post("/edit", async function (req, res) {
+app.post("/edit", requireAuth, async function (req, res) {
   try {
     res.json({ success: true });
   } catch (error) {
@@ -370,7 +578,7 @@ app.post("/edit", async function (req, res) {
   }
 });
 
-app.post("/newPostAuth", verifyToken, upload, async (req, res, type) => {
+app.post("/newPostAuth", requireAdmin, uploadWithCleanup, async (req, res, type) => {
   if (req.body.decision) {
     const post = await Post.findOne({ _id: req.body.id });
     post.authorization = true;
@@ -382,7 +590,7 @@ app.post("/newPostAuth", verifyToken, upload, async (req, res, type) => {
   res.json({ success: true });
 });
 
-app.post("/newBirdPostAuth", verifyToken, upload, async (req, res, type) => {
+app.post("/newBirdPostAuth", requireAdmin, uploadWithCleanup, async (req, res, type) => {
   if (req.body.decision) {
     const post = await BirdPost.findOne({ _id: req.body.id });
     post.authorization = true;
@@ -393,7 +601,7 @@ app.post("/newBirdPostAuth", verifyToken, upload, async (req, res, type) => {
   res.json({ success: true });
 });
 
-app.post("/featureToHome", verifyToken, async (req, res) => {
+app.post("/featureToHome", requireAdmin, async (req, res) => {
   try {
     const { picId, artId, isCreation } = req.body;
 
@@ -465,11 +673,25 @@ app.post("/featureToHome", verifyToken, async (req, res) => {
   }
 });
 
-app.post("/uploadCreation", verifyToken, upload, async (req, res) => {
+app.post("/uploadCreation", requireAuth, uploadWithCleanup, async (req, res) => {
+  const inputFiles = [];
+  const outputFiles = [];
+  let creation;
+
   try {
     const { body, files } = req;
-    const inputFiles = [];
-    const outputFolderPath = "public/plantspic/";
+    const uploadedFiles = getUploadedFiles(files);
+    inputFiles.push(...uploadedFiles.map((file) => file.path));
+    outputFiles.push(
+      ...uploadedFiles.map((file) =>
+        path.join(__dirname, "public", "plantspic", file.filename),
+      ),
+    );
+    const outputFolderPath = `${path.join(
+      __dirname,
+      "public",
+      "plantspic",
+    )}${path.sep}`;
     const plant = await Post.findOne({ latinName: body.plant });
 
     if (!plant) {
@@ -486,6 +708,8 @@ app.post("/uploadCreation", verifyToken, upload, async (req, res) => {
       });
     }
 
+    await validateImageFiles([files.pic[0], files.art[0]]);
+
     // Get or create pic code
     var picCode = await Code.findOne({ type: "crePic" });
     if (!picCode) {
@@ -499,10 +723,6 @@ app.post("/uploadCreation", verifyToken, upload, async (req, res) => {
       artCode = new Code({ type: "creArt", count: 0 });
       await artCode.save();
     }
-
-    // Add files to compression queue
-    inputFiles.push("./public/uploads/" + files.pic[0].filename);
-    inputFiles.push("./public/uploads/" + files.art[0].filename);
 
     // Compress images and wait for results
     const compressionResults = await imageCompressor.compressImages(
@@ -522,13 +742,13 @@ app.post("/uploadCreation", verifyToken, upload, async (req, res) => {
     const artPath = path.join("/plantspic/", files.art[0].filename);
 
     // Create creation entry
-    const creation = new creationBottom({
+    creation = new creationBottom({
       auth: false,
       plant: body.plant,
       art: artPath,
       pic: picPath,
       date: new Date().toISOString(),
-      creator: req.user?.username || "admin",
+      creator: req.authenticatedUser.username,
       artist: body.artist,
       photographer: body.photographer,
       photoDate: body.photoDate,
@@ -557,36 +777,36 @@ app.post("/uploadCreation", verifyToken, upload, async (req, res) => {
       ),
     ]);
 
-    // Clean up original files after successful compression
-    await Promise.all(
-      inputFiles.map((file) =>
-        fs.unlink(file).catch((err) => {
-          console.warn(
-            `Warning: Could not delete temporary file ${file}:`,
-            err,
-          );
-        }),
-      ),
-    );
-
-    res.json({
+    return res.json({
       success: true,
       message: "Creation uploaded successfully",
       creation,
     });
   } catch (error) {
-    console.error("Error in uploadCreation:", error);
-    res.status(500).json({
+    if (creation?._id) {
+      await cleanupRecords(creationBottom, [creation]);
+    }
+    await cleanupFiles(outputFiles);
+
+    const uploadError = getUploadErrorResponse(error);
+    if (uploadError) {
+      return res.status(uploadError.status).json(uploadError.body);
+    }
+
+    console.error("Creation upload failed");
+    return res.status(500).json({
       success: false,
-      message: error.message || "Failed to upload creation",
+      message: "Unable to process creation upload",
     });
+  } finally {
+    await cleanupFiles(inputFiles);
   }
 });
 
 app.post(
   "/uploadPlant",
+  requireAuth,
   globalUpload.none(),
-  verifyToken,
   async function (req, res) {
     try {
       var username = "admin";
@@ -648,8 +868,8 @@ app.post(
 
 app.post(
   "/uploadBird",
+  requireAuth,
   globalUpload.none(),
-  verifyToken,
   async function (req, res) {
     try {
       var username = "admin";
@@ -714,7 +934,7 @@ app.post(
   },
 );
 
-app.post("/newCreationAuth", verifyToken, upload, async (req, res) => {
+app.post("/newCreationAuth", requireAdmin, uploadWithCleanup, async (req, res) => {
   try {
     if (req.body.decision) {
       const post = await creationBottom.findOne({ _id: req.body.id });
@@ -747,10 +967,23 @@ app.post("/newCreationAuth", verifyToken, upload, async (req, res) => {
   }
 });
 
-app.post("/uploadArt", artmiddleware, verifyToken, async function (req, res) {
+app.post("/uploadArt", requireAuth, artmiddleware, async function (req, res) {
   const inputFiles = [];
-  const outputFolderPath = "public/plantspic/";
-  const compressedOutputFolderPath = "public/plantspic/";
+  const outputFiles = [];
+  const createdArts = [];
+  const uploadedFiles = getUploadedFiles(req.files);
+  const outputFolderPath = `${path.join(
+    __dirname,
+    "public",
+    "plantspic",
+  )}${path.sep}`;
+
+  inputFiles.push(...uploadedFiles.map((file) => file.path));
+  outputFiles.push(
+    ...uploadedFiles.map((file) =>
+      path.join(__dirname, "public", "plantspic", file.filename),
+    ),
+  );
 
   try {
     const plant = await Post.findOne({ latinName: req.body.plant });
@@ -760,37 +993,8 @@ app.post("/uploadArt", artmiddleware, verifyToken, async function (req, res) {
         .json({ success: false, message: "Plant not found" });
     }
 
-    var code = await Code.findOne({ type: "art" });
-    if (!code) {
-      console.log("No code found, creating a new one with count 0");
-      code = new Code({ type: "art", count: 0 });
-      await code.save();
-    }
-
-    var username = req.user?.username || "admin";
-
-    if (req.files && req.files.length >= 1) {
-      for (const file of req.files) {
-        const filePath = "./public/uploads/" + file.filename;
-        inputFiles.push(filePath);
-        let newCount = (code.count + 1).toString().padStart(4, "0");
-        const art = new Art({
-          plant: req.body.plant,
-          location: req.body.artLocation,
-          artist: req.body.artist,
-          path: "/plantspic/" + file.filename,
-          code: newCount,
-        });
-
-        await art.save();
-        console.log("Art saved with code:", newCount);
-
-        code = await Code.findOneAndUpdate(
-          { type: "art" },
-          { $inc: { count: 1 } },
-          { new: true },
-        );
-      }
+    if (uploadedFiles.length >= 1) {
+      await validateImageFiles(uploadedFiles);
 
       // Compress images and wait for results
       const compressionResults = await imageCompressor.compressImages(
@@ -802,44 +1006,97 @@ app.post("/uploadArt", artmiddleware, verifyToken, async function (req, res) {
       const failedFiles = compressionResults.filter(
         (result) => !result.success,
       );
-      if (failedFiles.length > 0) {
-        throw new Error(
-          `Failed to compress files: ${failedFiles.map((f) => f.file).join(", ")}`,
+      if (
+        compressionResults.length !== inputFiles.length ||
+        failedFiles.length > 0
+      ) {
+        throw new Error("Image compression failed");
+      }
+
+      var code = await Code.findOne({ type: "art" });
+      if (!code) {
+        code = new Code({ type: "art", count: 0 });
+        await code.save();
+      }
+
+      for (const file of uploadedFiles) {
+        const newCount = (code.count + 1).toString().padStart(4, "0");
+        const art = new Art({
+          plant: req.body.plant,
+          location: req.body.artLocation,
+          artist: req.body.artist,
+          path: "/plantspic/" + file.filename,
+          code: newCount,
+        });
+
+        await art.save();
+        createdArts.push(art);
+        code = await Code.findOneAndUpdate(
+          { type: "art" },
+          { $inc: { count: 1 } },
+          { new: true },
         );
       }
 
-      // Clean up original files after successful compression
-      await Promise.all(
-        inputFiles.map((file) =>
-          fs.unlink(file).catch((err) => {
-            console.warn(
-              `Warning: Could not delete temporary file ${file}:`,
-              err,
-            );
-          }),
-        ),
-      );
-
-      res.json({ success: true, message: "Art uploaded successfully" });
+      return res.json({ success: true, message: "Art uploaded successfully" });
     } else {
-      res.status(400).json({ success: false, message: "No files uploaded" });
+      return res
+        .status(400)
+        .json({ success: false, message: "No files uploaded" });
     }
   } catch (error) {
-    console.error("An error occurred:", error);
-    res
+    await cleanupRecords(Art, createdArts);
+    await cleanupFiles(outputFiles);
+
+    const uploadError = getUploadErrorResponse(error);
+    if (uploadError) {
+      return res.status(uploadError.status).json(uploadError.body);
+    }
+
+    console.error("Artwork upload failed");
+    return res
       .status(500)
-      .json({ success: false, message: "Error processing request" });
+      .json({ success: false, message: "Unable to process image upload" });
+  } finally {
+    await cleanupFiles(inputFiles);
   }
 });
 
 app.post(
   "/uploadPic",
+  requireAuth,
   uploadmiddleware,
-  verifyToken,
   async function (req, res) {
     const inputFiles = [];
-    const outputFolderPath = "public/plantspic/";
-    const smallerCompressedFolderPath = "public/compressed/plantspic/";
+    const outputFiles = [];
+    const createdPics = [];
+    const uploadedFiles = getUploadedFiles(req.files);
+    const outputFolderPath = `${path.join(
+      __dirname,
+      "public",
+      "plantspic",
+    )}${path.sep}`;
+    const smallerCompressedFolderPath = `${path.join(
+      __dirname,
+      "public",
+      "compressed",
+      "plantspic",
+    )}${path.sep}`;
+
+    inputFiles.push(...uploadedFiles.map((file) => file.path));
+    outputFiles.push(
+      ...uploadedFiles.flatMap((file) => [
+        path.join(__dirname, "public", "plantspic", file.filename),
+        path.join(
+          __dirname,
+          "public",
+          "compressed",
+          "plantspic",
+          file.filename,
+        ),
+      ]),
+    );
+
     try {
       const plant = await Post.findOne({ latinName: req.body.picEnglishName });
 
@@ -847,27 +1104,54 @@ app.post(
         return res.status(404).send("Plant not found");
       }
 
-      var code = await Code.findOne({ type: "pic" });
-      if (!code) {
-        console.log("No pic code found, creating a new one with count 0");
-        code = new Code({ type: "pic", count: 0 });
-        await code.save();
-      }
+      if (uploadedFiles.length >= 1) {
+        await validateImageFiles(uploadedFiles);
 
-      var username = "admin";
-      if (req.user) {
-        username = req.user?.username;
-      }
+        const compressionResults = await imageCompressor.compressImages(
+          inputFiles,
+          outputFolderPath,
+          5,
+          90,
+        );
+        let failedFiles = compressionResults.filter(
+          (result) => !result.success,
+        );
+        if (
+          compressionResults.length !== inputFiles.length ||
+          failedFiles.length > 0
+        ) {
+          throw new Error("Image compression failed");
+        }
 
-      if (req.files && req.files.length >= 1) {
-        for (const file of req.files) {
-          const filePath = "./public/uploads/" + file.filename;
-          inputFiles.push(filePath);
-          let newCount = (code.count + 1).toString().padStart(4, "0");
+        const smallerCompressionResults = await imageCompressor.compressImages(
+          inputFiles,
+          smallerCompressedFolderPath,
+          9,
+          70,
+        );
+
+        failedFiles = smallerCompressionResults.filter(
+          (result) => !result.success,
+        );
+        if (
+          smallerCompressionResults.length !== inputFiles.length ||
+          failedFiles.length > 0
+        ) {
+          throw new Error("Image compression failed");
+        }
+
+        var code = await Code.findOne({ type: "pic" });
+        if (!code) {
+          code = new Code({ type: "pic", count: 0 });
+          await code.save();
+        }
+
+        for (const file of uploadedFiles) {
+          const newCount = (code.count + 1).toString().padStart(4, "0");
           const pic = new Pic({
             plant: req.body.picEnglishName,
             art: req.body.picArt,
-            modifiedBy: username,
+            modifiedBy: req.authenticatedUser.username,
             season: req.body.picSeason,
             takenBy: req.body.picPhotographer,
             location: req.body.picSetting,
@@ -878,112 +1162,77 @@ app.post(
           });
 
           await pic.save();
+          createdPics.push(pic);
           code = await Code.findOneAndUpdate(
             { type: "pic" },
             { $inc: { count: 1 } },
             { new: true },
           );
-          console.log("pic saved with code: " + newCount);
         }
 
-        // for (const file of req.files) {
-        //   const filePath = "./public/uploads/" + file.filename;
-        //   inputFiles.push(filePath);
-        //   let newCount = (code.count + 1).toString().padStart(4, "0");
-        //   const pic = new Pic({
-        //     plant: req.body.picEnglishName,
-        //     art: req.body.picArt,
-        //     modifiedBy: username,
-        //     season: req.body.picSeason,
-        //     takenBy: req.body.picPhotographer,
-        //     location: req.body.picSetting,
-        //     path: "/compressed/plantspic/" + file.filename,
-        //     time: req.body.month,
-        //     featured: false,
-        //     code: newCount,
-        //   });
-
-        //   await pic.save();
-        //   code = await Code.findOneAndUpdate(
-        //     { type: "pic" },
-        //     { $inc: { count: 1 } },
-        //     { new: true },
-        //   );
-        //   console.log("pic saved with code: " + newCount);
-        // }
-
-        // Compress images and wait for results
-        const compressionResults = await imageCompressor.compressImages(
-          inputFiles,
-          outputFolderPath,
-          5,
-          90
-        );
-
-        
-
-        // Check if any compression failed
-        var failedFiles = compressionResults.filter(
-          (result) => !result.success,
-        );
-        if (failedFiles.length > 0) {
-          throw new Error(
-            `Failed to compress files: ${failedFiles.map((f) => f.file).join(", ")}`,
-          );
-        }
-        
-
-        const smallerCompressionResults = await imageCompressor.compressImages(
-          inputFiles,
-          smallerCompressedFolderPath,
-          9,
-          70
-        );
-
-        // Check if any compression failed
-        failedFiles = smallerCompressionResults.filter(
-          (result) => !result.success,
-        );
-
-        if (failedFiles.length > 0) {
-          throw new Error(
-            `Failed to compress files: ${failedFiles.map((f) => f.file).join(", ")}`,
-          );
-        }
-
-        // Clean up original files after successful compression
-        await Promise.all(
-          inputFiles.map((file) =>
-            fs.unlink(file).catch((err) => {
-              console.warn(
-                `Warning: Could not delete temporary file ${file}:`,
-                err,
-              );
-            }),
-          ),
-        );
-
-        res.json({ success: true, message: "Picture uploaded successfully" });
+        return res.json({
+          success: true,
+          message: "Picture uploaded successfully",
+        });
       } else {
-        res.status(400).json({ success: false, message: "No files uploaded" });
+        return res
+          .status(400)
+          .json({ success: false, message: "No files uploaded" });
       }
     } catch (error) {
-      console.error("Error in uploadPic:", error);
-      res
+      await cleanupRecords(Pic, createdPics);
+      await cleanupFiles(outputFiles);
+
+      const uploadError = getUploadErrorResponse(error);
+      if (uploadError) {
+        return res.status(uploadError.status).json(uploadError.body);
+      }
+
+      console.error("Picture upload failed");
+      return res
         .status(500)
-        .json({ success: false, message: "Error processing request" });
+        .json({ success: false, message: "Unable to process image upload" });
+    } finally {
+      await cleanupFiles(inputFiles);
     }
   },
 );
 
 app.post(
   "/uploadBirdPic",
+  requireAuth,
   uploadmiddleware,
-  verifyToken,
   async function (req, res) {
     const inputFiles = [];
-    const outputFolderPath = "public/plantspic/";
-    const smallerCompressedFolderPath = "public/compressed/plantspic/";
+    const outputFiles = [];
+    const createdPics = [];
+    const uploadedFiles = getUploadedFiles(req.files);
+    const outputFolderPath = `${path.join(
+      __dirname,
+      "public",
+      "plantspic",
+    )}${path.sep}`;
+    const smallerCompressedFolderPath = `${path.join(
+      __dirname,
+      "public",
+      "compressed",
+      "plantspic",
+    )}${path.sep}`;
+
+    inputFiles.push(...uploadedFiles.map((file) => file.path));
+    outputFiles.push(
+      ...uploadedFiles.flatMap((file) => [
+        path.join(__dirname, "public", "plantspic", file.filename),
+        path.join(
+          __dirname,
+          "public",
+          "compressed",
+          "plantspic",
+          file.filename,
+        ),
+      ]),
+    );
+
     try {
       const plant = await BirdPost.findOne({ latinName: req.body.picEnglishName });
 
@@ -991,132 +1240,97 @@ app.post(
         return res.status(404).send("Plant not found");
       }
 
-      var code = await Code.findOne({ type: "pic" });
-      if (!code) {
-        console.log("No pic code found, creating a new one with count 0");
-        code = new Code({ type: "pic", count: 0 });
-        await code.save();
-      }
+      if (uploadedFiles.length >= 1) {
+        await validateImageFiles(uploadedFiles);
 
-      var username = "admin";
-      if (req.user) {
-        username = req.user?.username;
-      }
+        const compressionResults = await imageCompressor.compressImages(
+          inputFiles,
+          outputFolderPath,
+          5,
+          90,
+        );
+        let failedFiles = compressionResults.filter(
+          (result) => !result.success,
+        );
+        if (
+          compressionResults.length !== inputFiles.length ||
+          failedFiles.length > 0
+        ) {
+          throw new Error("Image compression failed");
+        }
 
-      if (req.files && req.files.length >= 1) {
-        for (const file of req.files) {
-          const filePath = "./public/uploads/" + file.filename;
-          inputFiles.push(filePath);
-          let newCount = (code.count + 1).toString().padStart(4, "0");
+        const smallerCompressionResults = await imageCompressor.compressImages(
+          inputFiles,
+          smallerCompressedFolderPath,
+          9,
+          70,
+        );
+
+        failedFiles = smallerCompressionResults.filter(
+          (result) => !result.success,
+        );
+        if (
+          smallerCompressionResults.length !== inputFiles.length ||
+          failedFiles.length > 0
+        ) {
+          throw new Error("Image compression failed");
+        }
+
+        var code = await Code.findOne({ type: "pic" });
+        if (!code) {
+          code = new Code({ type: "pic", count: 0 });
+          await code.save();
+        }
+
+        for (const file of uploadedFiles) {
+          const newCount = (code.count + 1).toString().padStart(4, "0");
           const pic = new Pic({
             plant: req.body.picEnglishName,
             art: req.body.picArt,
-            modifiedBy: username,
-            season: req.body.picSeason.replace("-","").replace(" ",""),
+            modifiedBy: req.authenticatedUser.username,
+            season: req.body.picSeason.replace("-", "").replace(" ", ""),
             takenBy: req.body.picPhotographer,
             location: req.body.picSetting,
             path: "/plantspic/" + file.filename,
             time: req.body.month,
             featured: false,
             code: newCount,
-            dbType: 'bird'
+            dbType: "bird",
           });
 
           await pic.save();
+          createdPics.push(pic);
           code = await Code.findOneAndUpdate(
             { type: "pic" },
             { $inc: { count: 1 } },
             { new: true },
           );
-          console.log("pic saved with code: " + newCount);
         }
 
-        // for (const file of req.files) {
-        //   const filePath = "./public/uploads/" + file.filename;
-        //   inputFiles.push(filePath);
-        //   let newCount = (code.count + 1).toString().padStart(4, "0");
-        //   const pic = new Pic({
-        //     plant: req.body.picEnglishName,
-        //     art: req.body.picArt,
-        //     modifiedBy: username,
-        //     season: req.body.picSeason,
-        //     takenBy: req.body.picPhotographer,
-        //     location: req.body.picSetting,
-        //     path: "/compressed/plantspic/" + file.filename,
-        //     time: req.body.month,
-        //     featured: false,
-        //     code: newCount,
-        //   });
-
-        //   await pic.save();
-        //   code = await Code.findOneAndUpdate(
-        //     { type: "pic" },
-        //     { $inc: { count: 1 } },
-        //     { new: true },
-        //   );
-        //   console.log("pic saved with code: " + newCount);
-        // }
-
-        // Compress images and wait for results
-        const compressionResults = await imageCompressor.compressImages(
-          inputFiles,
-          outputFolderPath,
-          5,
-          90
-        );
-
-        
-
-        // Check if any compression failed
-        var failedFiles = compressionResults.filter(
-          (result) => !result.success,
-        );
-        if (failedFiles.length > 0) {
-          throw new Error(
-            `Failed to compress files: ${failedFiles.map((f) => f.file).join(", ")}`,
-          );
-        }
-        
-
-        const smallerCompressionResults = await imageCompressor.compressImages(
-          inputFiles,
-          smallerCompressedFolderPath,
-          9,
-          70
-        );
-
-        // Check if any compression failed
-        failedFiles = smallerCompressionResults.filter(
-          (result) => !result.success,
-        );
-
-        if (failedFiles.length > 0) {
-          throw new Error(
-            `Failed to compress files: ${failedFiles.map((f) => f.file).join(", ")}`,
-          );
-        }
-
-        // Clean up original files after successful compression
-        await Promise.all(
-          inputFiles.map((file) =>
-            fs.unlink(file).catch((err) => {
-              console.warn(
-                `Warning: Could not delete temporary file ${file}:`,
-                err,
-              );
-            }),
-          ),
-        );
-
-        res.json({ success: true, message: "Picture uploaded successfully" });
+        return res.json({
+          success: true,
+          message: "Picture uploaded successfully",
+        });
       } else {
-        res.status(400).json({ success: false, message: "No files uploaded" });
+        return res
+          .status(400)
+          .json({ success: false, message: "No files uploaded" });
       }
     } catch (error) {
-      console.error("Error in uploadPic:", error);
-      res
+      await cleanupRecords(Pic, createdPics);
+      await cleanupFiles(outputFiles);
+
+      const uploadError = getUploadErrorResponse(error);
+      if (uploadError) {
+        return res.status(uploadError.status).json(uploadError.body);
+      }
+
+      console.error("Bird picture upload failed");
+      return res
         .status(500)
-        .json({ success: false, message: "Error processing request" });
+        .json({ success: false, message: "Unable to process image upload" });
+    } finally {
+      await cleanupFiles(inputFiles);
     }
   },
 );
@@ -1187,29 +1401,28 @@ app.get("/numOfBirds", async (req, res) => {
   res.json({ numOfPlants });
 });
 
-app.get("/adminInfo", verifyToken, async (req, res) => {
-  if (req.user) {
-    const users = await User.find();
-    const posts = await Post.find({ authorization: true });
-    const pics = await Pic.find();
-    res.json({
-      success: true,
-      users,
-      posts,
-      username: req.user?.username,
-      admin: req.user?.admin,
-      pics,
-    });
-  } else {
-    res.json({ admin: false, success: true });
-  }
+app.get("/adminInfo", requireAdmin, async (req, res) => {
+  const users = await User.find({}, USER_PUBLIC_PROJECTION);
+  const posts = await Post.find({ authorization: true });
+  const pics = await Pic.find();
+  res.json({
+    success: true,
+    users: users.map(toPublicUser),
+    posts,
+    username: req.authenticatedUser.username,
+    admin: true,
+    pics,
+  });
 });
 
-app.post("/adminDeleteUser", async (req, res) => {
+app.post("/adminDeleteUser", requireAdmin, async (req, res) => {
   try {
     const userToDelete = await User.findById(req.body.id);
 
     await User.deleteOne({ _id: userToDelete._id });
+    await runtime.deleteSession(userToDelete.username).catch(() => {
+      console.warn("Unable to remove deleted user session");
+    });
 
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
@@ -1218,7 +1431,7 @@ app.post("/adminDeleteUser", async (req, res) => {
   }
 });
 
-app.post("/adminMakeAdminUser", async (req, res) => {
+app.post("/adminMakeAdminUser", requireAdmin, async (req, res) => {
   try {
     var user = await User.findById(req.body.id);
 
@@ -1267,7 +1480,7 @@ app.post("/getPics", async (req, res) => {
   }
 });
 
-app.post("/makePicFeatured", async (req, res) => {
+app.post("/makePicFeatured", requireAdmin, async (req, res) => {
   const pic = await Pic.findById(req.body.id);
   pic.featured = !pic.featured;
   await pic.save();
@@ -1292,7 +1505,7 @@ app.post("/makePicFeatured", async (req, res) => {
 //   // res.sendFile(path.join(__dirname, "/guide.html"));
 // });
 
-app.post("/updateText", verifyToken, async function (req, res) {
+app.post("/updateText", requireAuth, async function (req, res) {
   const editTextRequest = new EditTextRequest({
     latinName: req.body.latinName,
     chineseName: req.body.chineseName,
@@ -1315,7 +1528,7 @@ app.post("/updateText", verifyToken, async function (req, res) {
   console.log("updated plant successfully")
 });
 
-app.post("/birdUpdateText", verifyToken, async function (req, res) {
+app.post("/birdUpdateText", requireAuth, async function (req, res) {
   const editTextRequest = new BirdEditTextRequest({
     latinName: req.body.latinName,
     chineseName: req.body.chineseName,
@@ -1350,15 +1563,7 @@ app.post("/birdUpdateText", verifyToken, async function (req, res) {
   res.json({ success: true });
 });
 
-app.get("/adminAuth", verifyToken, async function (req, res) {
-  var admin;
-
-  if (req.user?.admin) {
-    admin = req.user?.admin;
-  } else {
-    admin = null;
-  }
-
+app.get("/adminAuth", requireAdmin, async function (req, res) {
   const plantAuthPosts = await EditTextRequest.find();
   const birdAuthPosts = await BirdEditTextRequest.find();
   const authPosts = plantAuthPosts.concat(birdAuthPosts);
@@ -1371,14 +1576,14 @@ app.get("/adminAuth", verifyToken, async function (req, res) {
 
   res.json({
     success: true,
-    admin: admin,
+    admin: true,
     authPosts,
     newAuthPosts,
     newCreationEntries,
   });
 });
 
-app.put("/handleBirdEditDecision", verifyToken, async function (req, res) {
+app.put("/handleBirdEditDecision", requireAdmin, async function (req, res) {
   try {
     // await BirdEditTextRequest.findByIdAndDelete("6864f3e21f4a1cd7556aabc1")
     // await EditTextRequest.findByIdAndDelete("6864f3e21f4a1cd7556aabc1")
@@ -1509,7 +1714,7 @@ app.put("/handleBirdEditDecision", verifyToken, async function (req, res) {
   }
 });
 
-app.put("/handleEditDecision", verifyToken, async function (req, res) {
+app.put("/handleEditDecision", requireAdmin, async function (req, res) {
   try {
     const request = await EditTextRequest.findById(req.body.id);
     
@@ -1638,8 +1843,8 @@ app.put("/handleEditDecision", verifyToken, async function (req, res) {
 
 app.post(
   "/uploadFeatureSingle",
-  verifyToken,
-  upload,
+  requireAdmin,
+  uploadWithCleanup,
   async function (req, res) {
     const plant = req.body.plant.substring(1);
     const temp = await Pic.findOne({ path: req.body.path });
@@ -1661,8 +1866,8 @@ app.post(
 
 app.post(
   "/uploadFeatureArtSingle",
-  verifyToken,
-  upload,
+  requireAdmin,
+  uploadWithCleanup,
   async function (req, res) {
     const plant = req.body.plant.substring(1);
     const temp = await Art.findOne({ path: req.body.path });
@@ -1682,13 +1887,13 @@ app.post(
   },
 );
 
-app.get("/uploadHome", upload, async (req, res) => {
+app.get("/uploadHome", uploadWithCleanup, async (req, res) => {
 
   const entries = await FeatureHome.find();
   res.json({ success: true, entries });
 });
 
-app.post("/unFeatureHome", upload, async (req, res) => {
+app.post("/unFeatureHome", requireAdmin, uploadWithCleanup, async (req, res) => {
   try {
     // 使用 _id 来精确删除特定的 feature
     await FeatureHome.deleteOne({ _id: req.body.id });
@@ -1700,12 +1905,12 @@ app.post("/unFeatureHome", upload, async (req, res) => {
   }
 });
 
-app.get("/uploadCreation", upload, async (req, res) => {
+app.get("/uploadCreation", uploadWithCleanup, async (req, res) => {
   const temp = await creationBottom.find({ auth: true });
   res.json({ temp, success: true });
 });
 
-app.post("/unFeatureCreation", upload, async (req, res) => {
+app.post("/unFeatureCreation", requireAdmin, uploadWithCleanup, async (req, res) => {
   try {
     const art = await creationBottom.findOne({ _id: req.body.temp });
     const artPath = art.art;
@@ -1763,7 +1968,7 @@ app.get("/db2AltBird", async (req, res) => {
   res.json({ success: true, pic });
 });
 
-app.post("/editPageDelete", async (req, res) => {
+app.post("/editPageDelete", requireAdmin, async (req, res) => {
   try {
     const pic = await Pic.findOne({ _id: req.body.id });
     await fs.unlink(path.join(__dirname, "public", pic.path));
@@ -1775,7 +1980,7 @@ app.post("/editPageDelete", async (req, res) => {
   }
 });
 
-app.delete("/editPageDeletePlant", async (req, res) => {
+app.delete("/editPageDeletePlant", requireAdmin, async (req, res) => {
   try {
     const plant = (await Post.findOne({ _id: req.body.id })).latinName;
 
@@ -1829,6 +2034,11 @@ app.post("/getPicsAndArts", async (req, res) => {
 app.use(function (err, req, res, next) {
   if (res.headersSent) {
     return next(err);
+  }
+
+  const uploadError = getUploadErrorResponse(err);
+  if (uploadError) {
+    return res.status(uploadError.status).json(uploadError.body);
   }
 
   console.error("Unhandled request error");

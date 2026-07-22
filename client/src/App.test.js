@@ -8,6 +8,11 @@ jest.mock("react-player", () => () => null);
 
 jest.mock("axios", () => ({
   defaults: {},
+  interceptors: {
+    request: {
+      use: jest.fn(),
+    },
+  },
   get: jest.fn().mockResolvedValue({ data: {} }),
   post: jest.fn(),
 }));
