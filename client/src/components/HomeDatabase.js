@@ -6,14 +6,14 @@ import { useNavigate } from "react-router-dom";
 import "../styles/homeDatabase.css";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
+import MediaImage from "./MediaImage.js";
+import { getCatalogNames } from "../api/catalog";
 const DatabaseTwo = ({ handleGet, setLoading }) => {
   const [query, setQuery] = useState("");
   const [namesArray, setNamesArray] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [numOfPlants, setNumOfPlants] = useState("");
   const [pics, setPics] = useState([]);
-  const [load, setLoad] = useState([true, true, true]);
-  const [loadedSrc, setLoadedSrc] = useState(["", "", ""]);
   const navigate = useNavigate();
   const redirect = (plant) => {
     //plant的类型是string
@@ -38,13 +38,9 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          urls.searchNames,
-        );
-        console.log(`response:${response.data.returnNames.length}`);
-        const fetchedNamesArray = response.data.returnNames;
-        setNamesArray(fetchedNamesArray);
-        setNumOfPlants(response.data.numOfPlants);
+        const catalogNames = await getCatalogNames("plant");
+        setNamesArray(catalogNames);
+        setNumOfPlants(catalogNames.length);
       } catch (error) {
         console.log(error);
       }
@@ -68,40 +64,8 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
   };
 
   useEffect(() => {
-    var newArray = [true, true, true];
-    var srcs = [];
-    setLoad(newArray);
-    pics.forEach((pic, index) => {
-      const img = new Image();
-      img.src = mediaUrl(pic.path);
-      img.onload = () => {
-        newArray[index] = false;
-        srcs[index] = mediaUrl(pic.path);
-        setLoadedSrc([...srcs]);
-        setLoad([...newArray]);
-      };
-      img.onerror = async () => {
-        try {
-          const response = await axios.get(urls.db2Alt);
-          const altImg = new Image();
-          altImg.src = mediaUrl(response.data.pic.path);
-          altImg.onload = () => {
-            newArray[index] = false;
-            srcs[index] =
-              mediaUrl(response.data.pic.path);
-            setLoadedSrc([...srcs]);
-            setLoad([...newArray]);
-          };
-          altImg.onerror = () => {
-            console.error("Failed to load alt image");
-          };
-        } catch (error) {
-          console.log(error);
-        }
-      };
-    });
     setLoading(false);
-  }, [pics, setLoading]); // Image Load Function
+  }, [pics, setLoading]);
 
   return (
     <div
@@ -169,44 +133,26 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
           ? pics.map((pic, index) => {
               return (
                 <div key={index} className="pic">
-                  {load[index] ? (
-                    <div className="db2picAlt" />
-                  ) : (
-                    <img
-                      style={{ cursor: "pointer" }}
-                      src={loadedSrc[index]}
-                      alt="plant"
-                      className="picImg"
-                      onClick={() =>
-                        redirect(
-                          loadedSrc[index].split("/").pop().split("-")[0],
-                        )
-                      }
-                      // 从url中分离plant name
-                    />
-                  )}
+                  <MediaImage
+                    style={{ cursor: "pointer" }}
+                    src={mediaUrl(pic.path, { compressed: true })}
+                    fallbackSrc={mediaUrl(pic.path)}
+                    failedContent={<div className="db2picAlt" />}
+                    loading="eager"
+                    alt="plant"
+                    className="picImg"
+                    onClick={() =>
+                      redirect(pic.path.split("/").pop().split("-")[0])
+                    }
+                    // 从url中分离plant name
+                  />
                 </div>
               );
             })
           : Array.from({ length: 3 }, (_, index) => index).map((index) => {
               return (
                 <div key={index} className="pic">
-                  {load[index] ? (
-                    <div className="db2picAlt" />
-                  ) : (
-                    <img
-                      style={{ cursor: "pointer" }}
-                      src={loadedSrc[index]}
-                      alt="plant"
-                      className="picImg"
-                      onClick={() =>
-                        redirect(
-                          loadedSrc[index].split("/").pop().split("-")[0],
-                        )
-                      }
-                      // 从url中分离plant name
-                    />
-                  )}
+                  <div className="db2picAlt" />
                 </div>
               );
             })}

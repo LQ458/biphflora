@@ -8,6 +8,8 @@ import { redirect, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.js";
 import SearchBar from "../components/SearchBar.js";
 import SearchPlant from "../components/SearchPlant.js";
+import { getCatalogNames } from "../api/catalog";
+import MediaImage from "../components/MediaImage.js";
 import { useRef } from "react";
 const Home = ({ handleGets }) => {
   const navigate = useNavigate();
@@ -45,11 +47,7 @@ const Home = ({ handleGets }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          urls.searchNames,
-        );
-        const fetchedNamesArray = response.data.returnNames;
-        setNamesArray(fetchedNamesArray);
+        setNamesArray(await getCatalogNames("plant"));
       } catch (error) {
         console.log(error);
       }
@@ -213,8 +211,10 @@ const Home = ({ handleGets }) => {
                   ) : (
                     currentPic && (
                       <div className={styles.picContainer}>
-                        <img
+                        <MediaImage
                           src={mediaUrl(currentPic, { compressed: true })}
+                          fallbackSrc={mediaUrl(currentPic)}
+                          loading="eager"
                           alt="PlantPic"
                           className={styles.currentPics}
                         />
@@ -251,8 +251,9 @@ const Home = ({ handleGets }) => {
                   ) : (
                     artPaths[picsArrayIndex] && (
                       <div className={styles.artContainer}>
-                        <img
-                          src={mediaUrl(artPaths[picsArrayIndex], { compressed: true })}
+                        <MediaImage
+                          src={mediaUrl(artPaths[picsArrayIndex])}
+                          loading="eager"
                           alt="PlantArt"
                           className={styles.currentArts}
                         />

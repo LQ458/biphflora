@@ -52,6 +52,7 @@ const urls = {
 
   // Media-related URLs
   upload: apiUrl("/upload"),
+  uploadPlant: apiUrl("/uploadPlant"),
   uploadBird: apiUrl("/uploadBird"),
   uploadPic: apiUrl("/uploadPic"),
   uploadBirdPic: apiUrl("/uploadBirdPic"),
@@ -81,6 +82,7 @@ const urls = {
   updateText: apiUrl("/updateText"),
   searchNames: apiUrl("/searchNames"),
   searchBirdNames: apiUrl("/searchBirdNames"),
+  catalogNames: (type) => apiUrl(`/catalog/names?type=${type}`),
 };
 
 export default urls;

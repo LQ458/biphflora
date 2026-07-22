@@ -1,257 +1,148 @@
 import "./App.css";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Glossary from "./pages/Glossary";
-import BirdGlossary from "./pages/BirdGlossary";
-import Home from "./pages/Home";
-import Database from "./pages/Database";
-import BirdDatabase from "./pages/BirdDatabase";
-import Upload from "./pages/Upload";
-import Creation from "./pages/Creation";
-import AboutUs from "./pages/AboutUs";
-import Activities from "./pages/Activities";
-import AdminView from "./components/AdminView";
-import EditPage from "./pages/EditPage";
-import AdminAuth from "./components/AdminAuth";
-import BirdEditPage from "./pages/BirdEditPage";
-import NotFound from "./pages/NotFound";
-import { UserProvider } from "./UserContext";
+import React, { lazy, Suspense, useState } from "react";
+import { Route, Routes, useLocation, useParams } from "react-router-dom";
 import { PrimeReactProvider } from "primereact/api";
 import "primereact/resources/themes/saga-green/theme.css";
 import "primeicons/primeicons.css";
-import "primereact/resources/primereact.min.css"; // 核心样式                           // 图标
-import "primeflex/primeflex.css"; // 布局
+import "primereact/resources/primereact.min.css";
+import "primeflex/primeflex.css";
+import Database from "./pages/Database";
+import NotFound from "./pages/NotFound";
+import { UserProvider } from "./UserContext";
 
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import React, { useState } from "react";
-import { useParams, useLocation } from 'react-router-dom';
-import VideoModal from "./components/VideoModal";
+const AboutUs = lazy(() => import("./pages/AboutUs"));
+const Activities = lazy(() => import("./pages/Activities"));
+const AdminAuth = lazy(() => import("./components/AdminAuth"));
+const AdminView = lazy(() => import("./components/AdminView"));
+const BirdDatabase = lazy(() => import("./pages/BirdDatabase"));
+const BirdEditPage = lazy(() => import("./pages/BirdEditPage"));
+const BirdGlossary = lazy(() => import("./pages/BirdGlossary"));
+const Creation = lazy(() => import("./pages/Creation"));
+const EditPage = lazy(() => import("./pages/EditPage"));
+const Glossary = lazy(() => import("./pages/Glossary"));
+const Home = lazy(() => import("./pages/Home"));
+const Login = lazy(() => import("./pages/Login"));
+const Register = lazy(() => import("./pages/Register"));
+const Upload = lazy(() => import("./pages/Upload"));
+const VideoModal = lazy(() => import("./components/VideoModal"));
+
+function SearchWithParam({ handleEditPage, dbType }) {
+  const { plantKey } = useParams();
+  const search = plantKey.replaceAll("_", " ");
+
+  if (dbType === "plant") {
+    return <Database search={search} handleEditPage={handleEditPage} />;
+  }
+
+  return <BirdDatabase search={search} handleEditPage={handleEditPage} />;
+}
+
+function RouteLoading() {
+  return (
+    <div className="routeLoading" role="status" aria-live="polite">
+      Loading…
+    </div>
+  );
+}
 
 function App() {
   const [search, setSearch] = useState("");
-  const [previewKey, setPreviewKey] = useState("");
   const [editKey, setEditKey] = useState();
   const location = useLocation();
-  
-  // This lets the modal open "on top of" the existing page.
   const background = location.state && location.state.background;
-
-  
-  
-  // const [CR, setCR] = useState("");
-
-  const handleGets = (input) => {
-    setSearch(input);
-  };
-
-  //一个搜索植物的Wrapper
-  function SearchWithParam({ handleEditPage, dbType }) {
-    const { plantKey } = useParams();  
-
-    if(dbType === "plant"){
-      //plantkKey是url中的植物名
-      // console.log("searching:");
-      // console.log(plantKey.replaceAll("_", " "));
-      return (
-        
-        <Database
-          search={plantKey.replaceAll("_", " ")}
-          handleEditPage={handleEditPage}
-        />
-      );
-    }else{
-      //plantkKey是url中的植物名
-      return (
-        <BirdDatabase
-          search={plantKey.replaceAll("_", " ")}
-          handleEditPage={handleEditPage}
-        />
-      );
-    }
-    
-  }
-
-  // const handleAdminPreview = (input) => {
-  //   setPreviewKey(input);
-  // };
 
   const handleEditPage = (plant) => {
     setEditKey(plant);
   };
 
   return (
-    <div>
     <UserProvider>
       <PrimeReactProvider>
-        
-        {/* <Router> */}
-          <div className="App">
+        <div className="App">
+          <Suspense fallback={<RouteLoading />}>
             <Routes location={background || location}>
-              {/* <Route
-                path="/"
-                element={
-                  <>
-                    <Home handleGets={handleGets} />
-                  </>
-                }
-              /> */}
               <Route
                 path="/KQsfhwifheKDFJfkdfjdkfjd3q3puod0d0"
-                element={
-                  <>
-                    <Login />
-                  </>
-                }
+                element={<Login />}
               />
-              <Route
-                path="/SdIkdishfijeldifh!kdjfieh"
-                element={
-                  <>
-                    <Register />
-                  </>
-                }
-              />
+              <Route path="/SdIkdishfijeldifh!kdjfieh" element={<Register />} />
               <Route
                 path="/databasePlant"
                 element={
-                  <>
-                    <Database handleEditPage={handleEditPage} DbType="plant" />
-                  </>
+                  <Database handleEditPage={handleEditPage} DbType="plant" />
                 }
               />
               <Route
                 path="/databaseBird"
                 element={
-                  <>
-                    <BirdDatabase handleEditPage={handleEditPage} DbType="bird" />
-                  </>
+                  <BirdDatabase handleEditPage={handleEditPage} DbType="bird" />
                 }
               />
-              <Route
-                path="/upload"
-                element={
-                  <>
-                    <Upload />
-                  </>
-                }
-              />
+              <Route path="/upload" element={<Upload />} />
               <Route
                 path="/editPage"
-                element={
-                  <>
-                    <EditPage editKey={editKey} />
-                  </>
-                }
+                element={<EditPage editKey={editKey} />}
               />
               <Route
                 path="/"
-                element = {<><Database handleEditPage={handleEditPage} DbType="plant" /> </>}
+                element={
+                  <Database handleEditPage={handleEditPage} DbType="plant" />
+                }
               />
-              <Route
-                path="/home"
-                element = {<> <Home handleGets={handleGets} /> </>}
-              />
+              <Route path="/home" element={<Home handleGets={setSearch} />} />
               <Route
                 path="/birdEditPage"
-                element={
-                  <>
-                    <BirdEditPage editKey={editKey} />
-                  </>
-                }
+                element={<BirdEditPage editKey={editKey} />}
               />
               <Route
                 path="/glossary"
-                element={
-                  <>
-                    <Glossary handleGets={handleGets} />
-                  </>
-                }
+                element={<Glossary handleGets={setSearch} />}
               />
               <Route
                 path="/glossaryBird"
-                element={
-                  <>
-                    <BirdGlossary handleGets={handleGets} />
-                  </>
-                }
+                element={<BirdGlossary handleGets={setSearch} />}
               />
               <Route
                 path="/search"
                 element={
-                  <>
-                    <Database search={search} handleEditPage={handleEditPage} />
-                  </>
+                  <Database search={search} handleEditPage={handleEditPage} />
                 }
               />
               <Route
                 path="/search/:plantKey"
                 element={
-                  <>
-                    <SearchWithParam handleEditPage={handleEditPage} dbType="plant" />
-                  </>
+                  <SearchWithParam
+                    handleEditPage={handleEditPage}
+                    dbType="plant"
+                  />
                 }
               />
-
               <Route
                 path="/searchBird/:plantKey"
                 element={
-                  <>
-                    <SearchWithParam handleEditPage={handleEditPage} dbType="bird"/>
-                  </>
+                  <SearchWithParam
+                    handleEditPage={handleEditPage}
+                    dbType="bird"
+                  />
                 }
-              >
-                {/* <Route path=":subpageID" element = {<SubPageComponent/>}></Route> */}
-
-              </Route>
-
-
+              />
               <Route
                 path="/creation"
                 element={
-                  <>
-                    <Creation currentPage="paintings" handleGets={handleGets} />
-                  </>
+                  <Creation currentPage="paintings" handleGets={setSearch} />
                 }
               />
-
               <Route path="/video/:vidKey" element={<VideoModal />} />
-
-              <Route
-                path="/aboutus"
-                element={
-                  <>
-                    <AboutUs />
-                  </>
-                }
-              />
-              <Route
-                path="/activities"
-                element={
-                  <>
-                    <Activities />
-                  </>
-                }
-              />
-              <Route
-                path="/adminView"
-                element={<AdminView search={previewKey} />}
-              />
-              <Route
-                path="/adminAuth"
-                element={
-                  <>
-                    <AdminAuth />
-                  </>
-                }
-              />
-
+              <Route path="/aboutus" element={<AboutUs />} />
+              <Route path="/activities" element={<Activities />} />
+              <Route path="/adminView" element={<AdminView search="" />} />
+              <Route path="/adminAuth" element={<AdminAuth />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </div>
-        {/* </Router> */}
+          </Suspense>
+        </div>
       </PrimeReactProvider>
     </UserProvider>
-    </div>
   );
 }
 

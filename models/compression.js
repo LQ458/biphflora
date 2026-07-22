@@ -1,53 +1,78 @@
+const crypto = require("node:crypto");
+const fs = require("node:fs/promises");
+const path = require("node:path");
 const sharp = require("sharp");
-const fs = require("fs").promises;
-const path = require("path");
 
-async function compressImages(inputFiles, outputFolderPath, level,jquality) {
+// Keep Sharp's documented default pixel ceiling explicit until production
+// dimensions can be sampled in an isolated environment.
+const MAX_INPUT_PIXELS = 268_402_689;
+const PROCESSING_TIMEOUT_SECONDS = 30;
+
+function createPipeline(inputFile, extension, pngCompressionLevel, quality) {
+  const image = sharp(inputFile, {
+    failOn: "error",
+    limitInputPixels: MAX_INPUT_PIXELS,
+  })
+    .rotate()
+    .timeout({ seconds: PROCESSING_TIMEOUT_SECONDS });
+
+  if (extension === ".jpg" || extension === ".jpeg") {
+    return image.jpeg({ quality });
+  }
+  if (extension === ".png") {
+    return image.png({ compressionLevel: pngCompressionLevel });
+  }
+  if (extension === ".webp") {
+    return image.webp({ quality, lossless: false });
+  }
+
+  return null;
+}
+
+async function compressImages(
+  inputFiles,
+  outputFolderPath,
+  pngCompressionLevel,
+  quality,
+) {
   const results = [];
+  await fs.mkdir(outputFolderPath, { recursive: true });
 
   for (const inputFile of inputFiles) {
     const fileName = path.basename(inputFile);
-    const ext = path.extname(inputFile).toLowerCase();
-    const outputFilePath = `${outputFolderPath}${fileName}`;
-
-    console.log(
-      `Starting processing file: ${inputFile} at ${new Date().toISOString()}`,
+    const extension = path.extname(inputFile).toLowerCase();
+    const outputFilePath = path.join(outputFolderPath, fileName);
+    const temporaryOutputPath = `${outputFilePath}.tmp-${crypto
+      .randomBytes(8)
+      .toString("hex")}${extension}`;
+    const pipeline = createPipeline(
+      inputFile,
+      extension,
+      pngCompressionLevel,
+      quality,
     );
 
+    if (!pipeline) {
+      results.push({ success: false, file: inputFile });
+      continue;
+    }
+
     try {
-      let compressImage;
-
-      if (ext === ".jpg" || ext === ".jpeg") {
-        compressImage = () => sharp(inputFile).jpeg({ quality: jquality });
-      } else if (ext === ".webp") {
-        compressImage = () =>
-          sharp(inputFile).webp({ quality: jquality, lossless: false });
-      } else if (ext === ".png") {
-        compressImage = () => sharp(inputFile).png({ compressionLevel: level });
-      } else {
-        console.error(
-          `Invalid format for input image "${inputFile}", only PNG, JPG/JPEG, or WEBP are supported. Skipping this file.`,
-        );
-        continue;
-      }
-
-      const data = await compressImage().toBuffer();
-      await fs.writeFile(outputFilePath, data);
-
-      console.log(
-        `Output file successfully written: ${outputFilePath} at ${new Date().toISOString()}`,
-      );
+      await pipeline.toFile(temporaryOutputPath);
+      await fs.rename(temporaryOutputPath, outputFilePath);
       results.push({ success: true, file: inputFile });
-    } catch (err) {
-      console.error("Error processing image:", err);
-      console.error(
-        `Failed to process file: ${inputFile} at ${new Date().toISOString()}`,
-      );
-      results.push({ success: false, file: inputFile, error: err });
+    } catch (_) {
+      await fs.unlink(temporaryOutputPath).catch(() => {});
+      results.push({ success: false, file: inputFile });
     }
   }
 
   return results;
 }
 
-module.exports = { compressImages };
+module.exports = {
+  MAX_INPUT_PIXELS,
+  PROCESSING_TIMEOUT_SECONDS,
+  compressImages,
+  createPipeline,
+};

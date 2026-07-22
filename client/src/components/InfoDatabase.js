@@ -8,6 +8,8 @@ import styles from "../styles/infoDatabase.module.css";
 import { UserContext } from "../UserContext.js";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
+import MediaImage from "./MediaImage.js";
+import { getCatalogNames } from "../api/catalog";
 
 const InfoDatabase = (search) => {
   const { user } = useContext(UserContext);
@@ -19,8 +21,6 @@ const InfoDatabase = (search) => {
   const [query, setQuery] = useState("");
   const [namesArray, setNamesArray] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [load, setLoad] = useState(true);
-  const [loadedSrc, setLoadedSrc] = useState(null);
   const [plant, setPlant] = useState();
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
@@ -33,7 +33,6 @@ const InfoDatabase = (search) => {
   const [editor, setEditor] = useState("Editor:");
   const [picPaths, setPicPaths] = useState([]);
   const [artPathsArray, setArtPathsArray] = useState([]);
-  const [numOfPlants, setNumOfPlants] = useState("");
   const [loadingMessage, setLoadingMessage] = useState("");
   const [otherNames, setOtherNames] = useState("");
   const [springPathsArray, setSpringPathsArray] = useState([]);
@@ -281,28 +280,9 @@ const InfoDatabase = (search) => {
   }, [searchName]);
 
   useEffect(() => {
-    const numOfPlants = async () => {
-      try {
-        const response = await axios.get(
-          urls.numOfPlants,
-        );
-        setNumOfPlants(response.data.numOfPlants);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    numOfPlants();
-  }, []);
-
-  useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          urls.searchNames,
-        );
-        const fetchedNamesArray = response.data.returnNames;
-        setNamesArray(fetchedNamesArray);
+        setNamesArray(await getCatalogNames("plant"));
       } catch (error) {
         console.log(error);
       }
@@ -398,16 +378,6 @@ const InfoDatabase = (search) => {
     setWinterLeftover(paths.winter.path.length % 4);
   };
 
-  useEffect(() => {
-    setLoad(true);
-    const img = new Image();
-    img.src = mediaUrl(displayArtPath);
-    img.onload = () => {
-      setLoad(false);
-      setLoadedSrc(displayArtPath);
-    };
-  }, [displayArtPath]); // Image Load Function
-
   function Season({
     seasonPaths = [],
     season,
@@ -424,9 +394,12 @@ const InfoDatabase = (search) => {
         const code = codes[index] || "N/A"; // 如果code为空，则显示'N/A'
         return (
           <div key={index}>
-            <img
+            <MediaImage
               className={styles.databaseImg}
-              src={mediaUrl(path)}
+              src={mediaUrl(path, { compressed: true })}
+              fallbackSrc={mediaUrl(path)}
+              loading="lazy"
+              decoding="async"
               alt={`${index + 1}`}
               onClick={() => handleZoom(path, seasonInfo[index])}
             />
@@ -644,24 +617,23 @@ const InfoDatabase = (search) => {
             <div className={styles.arts}>
               <h3 className={styles.artTitle}>Artwork</h3>
               <div className={styles.artPicContainer}>
-                {load ? (
-                  <div className={styles.artAlt} />
-                ) : (
-                  <div style={{ position: "relative" }}>
-                    <img
-                      src={mediaUrl(loadedSrc)}
-                      id="artPic"
-                      onClick={() => handleArtZoom(displayArtPath)}
-                      alt="art"
-                      className={styles.artPic}
-                    />
-                    <div className={styles.artLabel}>
-                      <p>Painter: {artInfoArray[artsIndex].painter}</p>
-                      {/* <p>Time: {postingtime}</p> */}
-                      <p>Setting: {artInfoArray[artsIndex].setting}</p>
-                    </div>
+                <div style={{ position: "relative" }}>
+                  <MediaImage
+                    src={displayArtPath ? mediaUrl(displayArtPath) : ""}
+                    failedContent={<div className={styles.artAlt} />}
+                    loading="lazy"
+                    decoding="async"
+                    id="artPic"
+                    onClick={() => handleArtZoom(displayArtPath)}
+                    alt="art"
+                    className={styles.artPic}
+                  />
+                  <div className={styles.artLabel}>
+                    <p>Painter: {artInfoArray[artsIndex].painter}</p>
+                    {/* <p>Time: {postingtime}</p> */}
+                    <p>Setting: {artInfoArray[artsIndex].setting}</p>
                   </div>
-                )}
+                </div>
                 {artPathsArray.length>1?
                 <button className={styles.nextArBtn} onClick={nextArt}>
                   <NextIcon
@@ -738,9 +710,11 @@ const InfoDatabase = (search) => {
       <div className={styles.zoomPicBox}>
         {zoomPicLink && (
           <div className={styles.zoomBox}>
-            <img
+            <MediaImage
               className={styles.zoomPic}
               src={mediaUrl(zoomPicLink)}
+              loading="lazy"
+              decoding="async"
               alt={zoomPicLink}
             />
             <button
@@ -770,9 +744,11 @@ const InfoDatabase = (search) => {
         )}
         {zoomArtLink && (
           <div className={styles.zoomBox}>
-            <img
+            <MediaImage
               className={styles.zoomPic}
               src={mediaUrl(zoomArtLink)}
+              loading="lazy"
+              decoding="async"
               alt={zoomArtLink}
             />
             <button

@@ -7,6 +7,7 @@ import { Toast } from "primereact/toast";
 import axios from "../api/http";
 import urls, { mediaUrl } from "../tools/url";
 import "../styles/uploadHome.css";
+import { getCatalogNames } from "../api/catalog";
 
 const PictureGrid = ({ items, selectedItem, onSelect }) => {
   return (
@@ -70,11 +71,9 @@ const UploadHome = () => {
   useEffect(() => {
     const fetchPlants = async () => {
       try {
-        const response = await axios.get(
-          urls.searchNames,
-        );
+        const catalogNames = await getCatalogNames("plant");
         setPlants(
-          response.data.returnNames.map((plant) => ({
+          catalogNames.map((plant) => ({
             label: plant.latinName,
             value: plant.latinName,
           })),

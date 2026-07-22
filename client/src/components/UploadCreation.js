@@ -8,6 +8,7 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { FileUpload } from "primereact/fileupload";
 import { Dropdown } from "primereact/dropdown";
+import { getCatalogNames } from "../api/catalog";
 
 const UploadCreation = () => {
   const [namesArray, setNamesArray] = useState([]);
@@ -123,10 +124,7 @@ const UploadCreation = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          urls.searchNames,
-        );
-        const fetchedNamesArray = response.data.returnNames.map((result) => {
+        const fetchedNamesArray = (await getCatalogNames("plant")).map((result) => {
           return {
             value: result.latinName,
           };

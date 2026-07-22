@@ -11,6 +11,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import imageCompression from "browser-image-compression";
+import { getCatalogNames } from "../api/catalog";
 
 const UploadPlants = () => {
   const [latinName, setLatinName] = useState("");
@@ -51,19 +52,13 @@ const UploadPlants = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userInfoResponse = await axios.get(
-          urls.userInfo,
-        );
-        const searchNamesResponse = await axios.get(
-          urls.searchNames,
-        );
-        const fetchedNamesArray = searchNamesResponse.data.returnNames.map(
-          (result) => {
-            return {
-              value: result.latinName,
-            };
-          },
-        );
+        const [userInfoResponse, catalogNames] = await Promise.all([
+          axios.get(urls.userInfo),
+          getCatalogNames("plant"),
+        ]);
+        const fetchedNamesArray = catalogNames.map((result) => ({
+          value: result.latinName,
+        }));
         setNamesArray(fetchedNamesArray);
         setAdmin(userInfoResponse.data.admin);
         setUsername(userInfoResponse.data.username);

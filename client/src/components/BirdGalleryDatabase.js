@@ -2,8 +2,8 @@ import axios from "../api/http";
 import urls, { mediaUrl } from "../tools/url";
 import React, { useState, useEffect, useMemo } from "react";
 import styles from "../styles/galleryDatabase.module.css";
-import SearchPlant from "./SearchPlant.js";
 import ArrowIcon from "../src/buttons/arrow.svg";
+import MediaImage from "./MediaImage.js";
 
 const GalleryDatabase = (props) => {
   const seasons = useMemo(() => ["spring", "summer", "autumn", "winter"], []);
@@ -24,9 +24,6 @@ const GalleryDatabase = (props) => {
   const [curIndex, setCurIndex] = useState(0);
   const [username, setUsername] = useState("");
   const [admin, setAdmin] = useState("");
-  const [query, setQuery] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [namesArray, setNamesArray] = useState([]);
   const [pics, setPics] = useState([]);
   const [displays, setDisplays] = useState([true, false, false, false]);
   const [zoomPicLink, setZoomPicLink] = useState("");
@@ -148,38 +145,8 @@ const GalleryDatabase = (props) => {
     getPics();
   }, [props.customKey, seasons]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          urls.searchNames,
-        );
-        const fetchedNamesArray = response.data.returnNames;
-        setNamesArray(fetchedNamesArray);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   const handleBack = () => {
     props.handleBack(props.customKey);
-  };
-
-  const handleSearch = (e) => {
-    const inputValue = e.target.value;
-    setQuery(inputValue);
-    const results = SearchPlant(namesArray, inputValue);
-    const finalResults = results.slice(0, 3).map((result) => {
-      return [
-        result.item.latinName,
-        result.item.commonName,
-        result.item.chineseName,
-      ];
-    });
-    setSearchResults(finalResults);
   };
 
   const featureSingleHandle = async (input) => {
@@ -406,8 +373,11 @@ const GalleryDatabase = (props) => {
                     .slice(curIndex * 12, (curIndex + 1) * 12)
                     .map((p, index) => (
                       <div className={styles.summerPic} key={index}>
-                        <img
+                        <MediaImage
                           src={mediaUrl(p.path, { compressed: true })}
+                          fallbackSrc={mediaUrl(p.path)}
+                          loading="lazy"
+                          decoding="async"
                           alt=""
                           className={styles.summerPic}
                           onClick={() =>
@@ -510,9 +480,11 @@ const GalleryDatabase = (props) => {
         {zoomPicLink && (
           <div className={styles.zoomBackground}>
             <div className={styles.zoomBox}>
-              <img
+              <MediaImage
                 className={styles.zoomPic}
                 src={mediaUrl(zoomPicLink)}
+                loading="lazy"
+                decoding="async"
                 alt={zoomPicLink}
               />
               <button

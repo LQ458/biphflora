@@ -16,4 +16,5 @@ test("normalizes API and media paths without changing the configured origin", ()
 
 test("the plant count URL matches the existing backend route", () => {
   expect(urls.numOfPlants).toBe(`${apiOrigin}/numOfPlants`);
+  expect(urls.uploadPlant).toBe(`${apiOrigin}/uploadPlant`);
 });

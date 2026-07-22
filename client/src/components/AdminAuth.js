@@ -7,6 +7,7 @@ import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
 import { Carousel } from "primereact/carousel";
 import "../styles/AdminAuth.css";
+import { invalidateCatalogNames } from "../api/catalog";
 
 const AdminAuth = ({ admin }) => {
   const navigate = useNavigate();
@@ -33,6 +34,9 @@ const AdminAuth = ({ admin }) => {
           urls.handleBirdEditDecision,
           { id: id, decision: decision },
         );
+      }
+      if (decision) {
+        invalidateCatalogNames(dbtype === "bird" ? "bird" : "plant");
       }
       setUnAuthPosts((prevPosts) =>
         prevPosts.filter((post) => post._id !== id),
@@ -111,6 +115,9 @@ const AdminAuth = ({ admin }) => {
           id: id,
           decision: decision,
         });
+        if (decision) {
+          invalidateCatalogNames("bird");
+        }
         setUnAuthNewPosts((prevPosts) =>
           prevPosts.filter((post) => post._id !== id),
         );
@@ -132,6 +139,9 @@ const AdminAuth = ({ admin }) => {
           id: id,
           decision: decision,
         });
+        if (decision) {
+          invalidateCatalogNames("plant");
+        }
         setUnAuthNewPosts((prevPosts) =>
           prevPosts.filter((post) => post._id !== id),
         );

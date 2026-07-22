@@ -1,0 +1,60 @@
+import { act } from "react";
+import { createRoot } from "react-dom/client";
+import MediaImage from "./MediaImage";
+
+let container;
+let root;
+
+beforeEach(() => {
+  container = document.createElement("div");
+  document.body.appendChild(container);
+  root = createRoot(container);
+});
+
+afterEach(() => {
+  act(() => root.unmount());
+  container.remove();
+});
+
+test("tries a fallback once and then renders a stable failure state", () => {
+  act(() => {
+    root.render(
+      <MediaImage
+        src="/public/compressed/example.jpg"
+        fallbackSrc="/public/example.jpg"
+        failedContent={<span data-testid="missing-image">Unavailable</span>}
+        alt="example"
+      />,
+    );
+  });
+
+  let image = container.querySelector("img");
+  expect(image.getAttribute("src")).toBe("/public/compressed/example.jpg");
+
+  act(() => image.dispatchEvent(new Event("error", { bubbles: true })));
+  image = container.querySelector("img");
+  expect(image.getAttribute("src")).toBe("/public/example.jpg");
+
+  act(() => image.dispatchEvent(new Event("error", { bubbles: true })));
+  expect(container.querySelector("img")).toBeNull();
+  expect(container.querySelector('[data-testid="missing-image"]')).not.toBeNull();
+});
+
+test("defaults details to lazy loading while allowing eager images", () => {
+  act(() => {
+    root.render(<MediaImage src="/public/detail.jpg" alt="detail" />);
+  });
+
+  let image = container.querySelector("img");
+  expect(image.getAttribute("loading")).toBe("lazy");
+  expect(image.getAttribute("decoding")).toBe("async");
+
+  act(() => {
+    root.render(
+      <MediaImage src="/public/visible.jpg" alt="visible" loading="eager" />,
+    );
+  });
+
+  image = container.querySelector("img");
+  expect(image.getAttribute("loading")).toBe("eager");
+});

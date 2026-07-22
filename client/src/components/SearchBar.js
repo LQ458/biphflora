@@ -16,12 +16,16 @@ const SearchBar = ({
   const [empty, setEmpty] = useState(true);
   const navigate = useNavigate();
   const redirect = (plant) => {
+    if (!plant) {
+      return;
+    }
+
     //plant的类型是string
     // handleGet(plant);
     if(type === "bird"){
-      navigate(`/searchBird/${plant.replace(" ", "_")}`);
+      navigate(`/searchBird/${plant.replaceAll(" ", "_")}`);
     }else{
-      navigate(`/search/${plant.replace(" ", "_")}`);
+      navigate(`/search/${plant.replaceAll(" ", "_")}`);
     }
   };
 
@@ -30,7 +34,7 @@ const SearchBar = ({
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          redirect(searchResults[0][0])
+          redirect(searchResults[0]?.[0]);
         }}
         style={{ width: barWidth }}
         className="db2SubmitForm"
