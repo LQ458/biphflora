@@ -10,6 +10,10 @@
     "test:frontend": "npm --prefix client test -- --watchAll=false --runInBand",
     "build": "npm --prefix client run build",
     "verify": "npm run test:backend && npm run test:frontend && npm run build",
+    "evidence:media": "node scripts/collect-media-metrics.js",
+    "evidence:product": "node scripts/collect-product-metrics.js",
+    "evidence:traffic": "node scripts/collect-traffic-metrics.js",
+    "media:backfill": "node scripts/backfill-media-variants.js",
     "format": "prettier --write ."
   },
   "keywords": [],
