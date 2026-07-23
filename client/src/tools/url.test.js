@@ -57,3 +57,22 @@ test("builds versioned responsive media URLs without changing legacy paths", () 
     `${apiOrigin}/public/plantspic/example.jpg`,
   ]);
 });
+
+test("encodes legacy media names so srcset candidates remain parseable", () => {
+  const path = "plantspic/Araucaria columnaris-示例.png";
+  const encodedPath = "plantspic/Araucaria%20columnaris-%E7%A4%BA%E4%BE%8B.png";
+
+  expect(mediaUrl(path)).toBe(`${apiOrigin}/public/${encodedPath}`);
+
+  const props = responsiveMediaProps(path);
+  expect(props.src).toBe(
+    `${apiOrigin}/public/variants/v1/1600/${encodedPath}.webp`,
+  );
+  expect(props.srcSet).toBe(
+    [
+      `${apiOrigin}/public/variants/v1/480/${encodedPath}.webp 480w`,
+      `${apiOrigin}/public/variants/v1/960/${encodedPath}.webp 960w`,
+      `${apiOrigin}/public/variants/v1/1600/${encodedPath}.webp 1600w`,
+    ].join(", "),
+  );
+});

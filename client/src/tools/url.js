@@ -5,9 +5,7 @@ export const normalizeApiOrigin = (value) => {
   return configuredOrigin || "/api";
 };
 
-export const apiOrigin = normalizeApiOrigin(
-  process.env.REACT_APP_Source_URL,
-);
+export const apiOrigin = normalizeApiOrigin(process.env.REACT_APP_Source_URL);
 
 const withLeadingSlash = (path) => {
   const value = String(path ?? "");
@@ -15,6 +13,22 @@ const withLeadingSlash = (path) => {
 };
 
 export const apiUrl = (path = "") => `${apiOrigin}${withLeadingSlash(path)}`;
+
+const encodeMediaPath = (path) =>
+  withLeadingSlash(path)
+    .split("/")
+    .map((segment) => {
+      if (!segment) {
+        return segment;
+      }
+
+      try {
+        return encodeURIComponent(decodeURIComponent(segment));
+      } catch (_) {
+        return encodeURIComponent(segment);
+      }
+    })
+    .join("/");
 
 export const mediaUrl = (path, { compressed = false } = {}) => {
   if (!path) {
@@ -26,7 +40,9 @@ export const mediaUrl = (path, { compressed = false } = {}) => {
     ? mediaPath.replace(/^\/compressed(?=\/)/, "")
     : mediaPath;
 
-  return apiUrl(`/public${compressed ? "/compressed" : ""}${normalizedPath}`);
+  return `${apiOrigin}${encodeMediaPath(
+    `/public${compressed ? "/compressed" : ""}${normalizedPath}`,
+  )}`;
 };
 
 export const MEDIA_VARIANT_VERSION = "v1";
@@ -50,9 +66,9 @@ export const mediaVariantUrl = (
     return "";
   }
 
-  return apiUrl(
+  return `${apiOrigin}${encodeMediaPath(
     `/public/variants/${version}/${Number(width)}${mediaPath}.webp`,
-  );
+  )}`;
 };
 
 export const responsiveMediaProps = (

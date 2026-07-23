@@ -25,7 +25,7 @@ const FIXTURES = Object.freeze([
     commonName: "Synthetic Plant Alpha",
     otherNames: "Local fixture A",
     season: "spring",
-    filename: "DemoAlpha-fixture.png",
+    filename: "Demo Alpha-fixture.png",
     code: "DEMO-PLANT-ALPHA-01",
     background: "#e3f2dc",
     leaf: "#477a43",
