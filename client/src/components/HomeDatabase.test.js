@@ -14,11 +14,13 @@ jest.mock("../api/catalog", () => ({
 
 let container;
 let root;
+let updateRoot;
 
 beforeEach(() => {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
+  updateRoot = root.render.bind(root);
   http.get.mockReset();
   getCatalogNames.mockReset();
 });
@@ -36,7 +38,7 @@ test("keeps placeholders when the picture response has no array", async () => {
   getCatalogNames.mockResolvedValue([]);
 
   await act(async () => {
-    root.render(
+    updateRoot(
       <MemoryRouter
         future={{ v7_relativeSplatPath: true, v7_startTransition: true }}
       >

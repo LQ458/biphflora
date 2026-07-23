@@ -9,9 +9,6 @@ import styles from "../styles/galleryDatabase.module.css";
 import MediaImage from "./MediaImage.js";
 
 const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
-  const [pics, setPics] = useState([]);
-  const [posts, setPosts] = useState([]);
-  const [arts, setArts] = useState([]);
   const [displayObjectList, setDisplayObjectList] = useState([]);
   // const [numOfPages, setNumOfPages] = useState(0);
   const [subPgIndex, setSubPgIndex] = useState(1);
@@ -26,7 +23,6 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
   const [topIndex, setTopIndex] = useState(0);
   const [topBys, setTopBys] = useState([]);
   const [topLoc, setTopLoc] = useState([]);
-  const [topTimes, setTopTimes] = useState([]);
   const itemsPerPage = 4;
 
   function parseArtDate(dateString) {
@@ -74,22 +70,18 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
           const newTopArts = [];
           const newTopBys = [];
           const newTopLoc = [];
-          const newTopTimes = [];
 
           topThreeDisplays.forEach((display) => {
             newTopPics.push(display.pic || "");
             newTopArts.push(display.art || "");
             newTopBys.push(display.artist || "");
             newTopLoc.push(display.location || "");
-            newTopTimes.push(display.artDate || "");
           });
 
           setTopPics(newTopPics);
           setTopArts(newTopArts);
           setTopBys(newTopBys);
           setTopLoc(newTopLoc);
-          setTopTimes(newTopTimes);
-
           // Notify parent that we have data
           onDataLoad(true);
         } else {
@@ -106,11 +98,6 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
   }, [onDataLoad]);
 
   const numOfPages = Math.ceil(displayObjectList.length / itemsPerPage);
-  const startIndex = (subPgIndex - 1) * itemsPerPage;
-  const currentItems = displayObjectList.slice(
-    startIndex,
-    startIndex + itemsPerPage,
-  );
 
   const setSubIndex = (currentIndex) => {
     setSubPgIndex(currentIndex);
@@ -140,23 +127,6 @@ const CreationPaintings = ({ handleGets, handleView, onDataLoad }) => {
         setSubIndex(1);
       }
     }
-  }
-
-  function sortObjectsByDate(objects, ascending = true) {
-    const sortedObjects = [...objects];
-
-    sortedObjects.sort((a, b) => {
-      const dateA = new Date(a.postingtime);
-      const dateB = new Date(b.postingtime);
-
-      if (ascending) {
-        return dateA - dateB;
-      } else {
-        return dateB - dateA;
-      }
-    });
-
-    return sortedObjects;
   }
 
   const handleLeft = () => {

@@ -7,14 +7,13 @@ import { Link } from "react-router-dom";
 import styles from "../styles/glossary.module.css";
 import Navbar from "../components/Navbar.js";
 
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+
 const Glossary = ({ handleGets }) => {
   const navigate = useNavigate();
-  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-  const [displays, setDisplays] = useState(letters.map(() => false));
+  const [displays, setDisplays] = useState(LETTERS.map(() => false));
   const [posts, setPosts] = useState([]);
   const [cnNames, setCnNames] = useState([]);
-  const [admin, setAdmin] = useState(false);
-  const [username, setUsername] = useState("");
 
   // console("123")
 
@@ -29,11 +28,9 @@ const Glossary = ({ handleGets }) => {
         const response = await axios.get(
           urls.userInfoGlossary,
         );
-        setUsername(response.data.username);
-        setAdmin(response.data.admin);
         let newArray = [];
         let newCnNames = [];
-        letters.forEach((letter, index) => {
+        LETTERS.forEach((letter, index) => {
           newArray[index] = response.data.glossary[letter.toLowerCase()];
           newCnNames[index] = response.data.cnNames[letter.toLowerCase()];
         });
@@ -64,7 +61,7 @@ const Glossary = ({ handleGets }) => {
   };
 
   return (
-    <body className={styles.glossary}>
+    <div className={styles.glossary}>
       <Navbar />
       <div className={styles.sec}>
         <div className={styles.greenTop} />
@@ -79,7 +76,7 @@ const Glossary = ({ handleGets }) => {
         <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
           <section className={styles.letters}>
             <div className={styles.letters1}>
-              {letters.slice(0, 9).map((letter, index) => (
+              {LETTERS.slice(0, 9).map((letter, index) => (
                 <LetterButton
                   key={index}
                   letter={letter}
@@ -87,13 +84,13 @@ const Glossary = ({ handleGets }) => {
                   displays={displays}
                   post={posts[index]}
                   cnName={cnNames[index]}
-                  letters={letters}
+                  letters={LETTERS}
                   toggleDisplay={toggleDisplay}
                 />
               ))}
             </div>
             <div className={styles.letters2}>
-              {letters.slice(9, 18).map((letter, index) => (
+              {LETTERS.slice(9, 18).map((letter, index) => (
                 <LetterButton
                   key={index}
                   letter={letter}
@@ -101,13 +98,13 @@ const Glossary = ({ handleGets }) => {
                   displays={displays}
                   post={posts[index + 9]}
                   cnName={cnNames[index + 9]}
-                  letters={letters}
+                  letters={LETTERS}
                   toggleDisplay={toggleDisplay}
                 />
               ))}
             </div>
             <div className={styles.letters3}>
-              {letters.slice(18, 26).map((letter, index) => (
+              {LETTERS.slice(18, 26).map((letter, index) => (
                 <LetterButton
                   key={index}
                   letter={letter}
@@ -115,7 +112,7 @@ const Glossary = ({ handleGets }) => {
                   displays={displays}
                   post={posts[index + 18]}
                   cnName={cnNames[index + 18]}
-                  letters={letters}
+                  letters={LETTERS}
                   toggleDisplay={toggleDisplay}
                 />
               ))}
@@ -130,7 +127,7 @@ const Glossary = ({ handleGets }) => {
         </div>
       </div>
       <div className={styles.greenTop}></div>
-    </body>
+    </div>
   );
 };
 

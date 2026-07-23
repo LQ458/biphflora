@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from "react";
-import InfoDatabase from "../components/InfoDatabase.js";
-import HomeDatabase from "../components/HomeDatabase.js";
-import GalleryDatabase from "../components/GalleryDatabase.js";
 import BirdInfoDatabase from "../components/BirdInfoDatabase.js";
 import BirdHomeDatabase from "../components/BirdHomeDatabase.js";
 import BirdGalleryDatabase from "../components/BirdGalleryDatabase.js";
@@ -9,7 +6,6 @@ import "../styles/database.css";
 import Navbar from "../components/Navbar.js";
 
 const BirdDatabase = (prop) => {
-  const [DbType, setDbType] = useState(prop.DbType);
   const [search, setSearch] = useState([]);
   const [key, setKey] = useState("");
   const [loading, setLoading] = useState(true);
@@ -38,10 +34,6 @@ const BirdDatabase = (prop) => {
     setSearch(input);
   };
 
-  const handleDbTypeChange = (input) => {
-    setDbType(input);
-  }
-  
     if (key) {
       return (
         <section onLoad={() => setLoading(false)} className="db">

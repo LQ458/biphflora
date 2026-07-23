@@ -59,8 +59,9 @@ function App() {
     <UserProvider>
       <PrimeReactProvider>
         <div className="App">
-          <Suspense fallback={<RouteLoading />}>
-            <Routes location={background || location}>
+          <main>
+            <Suspense fallback={<RouteLoading />}>
+              <Routes location={background || location}>
               <Route
                 path="/KQsfhwifheKDFJfkdfjdkfjd3q3puod0d0"
                 element={<Login />}
@@ -138,8 +139,9 @@ function App() {
               <Route path="/adminView" element={<AdminView search="" />} />
               <Route path="/adminAuth" element={<AdminAuth />} />
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
+              </Routes>
+            </Suspense>
+          </main>
         </div>
       </PrimeReactProvider>
     </UserProvider>

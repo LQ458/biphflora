@@ -17,8 +17,8 @@ const EditPageTextForm = (prop) => {
   const [chineseName, setChineseName] = useState(plant.chineseName);
   const [otherNames, setOtherNames] = useState(plant.otherNames);
   const [additionalInfo, setAdditionalInfo] = useState(plant.additionalInfo);
-  const [links, setLinks] = useState(plant.link);
-  const [chineseLinks, setChineseLinks] = useState(plant.chineseLink);
+  const [links] = useState(plant.link);
+  const [chineseLinks] = useState(plant.chineseLink);
   const [editor, setEditor] = useState(plant.editor);
   const [location, setLocation] = useState(plant.location);
   const [linksStringify, setLinksStringify] = useState();

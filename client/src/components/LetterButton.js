@@ -30,14 +30,14 @@ const LetterButton = ({
           className={`lt col ${!display ? "cold" : ""}`}
           onClick={collapse}
         >
-          Collapes All
+          Collapse All
         </button>
       </div>
       <div className="posts">
         {display &&
           post &&
           post.map((p, index) => (
-            <div className="postG">
+            <div className="postG" key={`${p}-${index}`}>
               <button className="glossaryBtns" onClick={() => redirect(p)}>
                 {index + 1}.{p} <strong>{cnName[index]}</strong>
               </button>

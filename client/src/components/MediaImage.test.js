@@ -4,11 +4,13 @@ import MediaImage from "./MediaImage";
 
 let container;
 let root;
+let updateRoot;
 
 beforeEach(() => {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
+  updateRoot = root.render.bind(root);
 });
 
 afterEach(() => {
@@ -18,7 +20,7 @@ afterEach(() => {
 
 test("tries a fallback once and then renders a stable failure state", () => {
   act(() => {
-    root.render(
+    updateRoot(
       <MediaImage
         src="/public/compressed/example.jpg"
         fallbackSrc="/public/example.jpg"
@@ -44,7 +46,7 @@ test("tries a fallback once and then renders a stable failure state", () => {
 
 test("defaults details to lazy loading while allowing eager images", () => {
   act(() => {
-    root.render(<MediaImage src="/public/detail.jpg" alt="detail" />);
+    updateRoot(<MediaImage src="/public/detail.jpg" alt="detail" />);
   });
 
   let image = container.querySelector("img");
@@ -52,7 +54,7 @@ test("defaults details to lazy loading while allowing eager images", () => {
   expect(image.getAttribute("decoding")).toBe("async");
 
   act(() => {
-    root.render(
+    updateRoot(
       <MediaImage src="/public/visible.jpg" alt="visible" loading="eager" />,
     );
   });
@@ -63,7 +65,7 @@ test("defaults details to lazy loading while allowing eager images", () => {
 
 test("clears responsive candidates and tries each legacy fallback", () => {
   act(() => {
-    root.render(
+    updateRoot(
       <MediaImage
         src="/public/variants/v1/1600/plantspic/example.jpg.webp"
         srcSet="/small.webp 480w, /large.webp 1600w"

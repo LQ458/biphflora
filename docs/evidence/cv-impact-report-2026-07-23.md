@@ -12,9 +12,10 @@ The following wording is supported by the current evidence:
 - Built and operated a bilingual campus biodiversity platform with public
   evidence dating to January 2024, currently cataloguing 153 plant records,
   970 picture records, 27 artwork records, and 18 approved creation entries.
-- Maintained a 2.11 GB source-media collection of 1,033 readable files and
-  introduced responsive 480/960/1600 px WebP delivery with complete additive
-  derivative coverage while retaining every original and legacy URL.
+- Maintained a 2.11 GB canonical-media collection of 1,033 readable files,
+  backfilled complete responsive 480/960/1600 px WebP coverage, and connected
+  successful new uploads to non-blocking derivative generation with legacy
+  fallback while retaining every measured canonical file and legacy URL.
 - Reduced aggregate bytes versus the paired originals by 98.68% at 480 px,
   96.52% at 960 px, and 93.57% at 1600 px across all 1,033 media files; browser
   `srcset` now selects one size for the rendered slot.

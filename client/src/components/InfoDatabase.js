@@ -3,7 +3,7 @@ import urls, { mediaUrl, responsiveMediaProps } from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import styles from "../styles/infoDatabase.module.css";
 import { UserContext } from "../UserContext.js";
 import SearchBar from "./SearchBar.js";
@@ -22,7 +22,7 @@ const InfoDatabase = (search) => {
   const [namesArray, setNamesArray] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [plant, setPlant] = useState();
-  const [username, setUsername] = useState("");
+  const username = "";
   const [name, setName] = useState("");
   const [latin, setLatin] = useState("");
   const [loading, setLoading] = useState(true);
@@ -33,7 +33,6 @@ const InfoDatabase = (search) => {
   const [editor, setEditor] = useState("Editor:");
   const [picPaths, setPicPaths] = useState([]);
   const [artPathsArray, setArtPathsArray] = useState([]);
-  const [loadingMessage, setLoadingMessage] = useState("");
   const [otherNames, setOtherNames] = useState("");
   const [springPathsArray, setSpringPathsArray] = useState([]);
   const [summerPathsArray, setSummerPathsArray] = useState([]);
@@ -46,7 +45,6 @@ const InfoDatabase = (search) => {
   const [summerPicsArrayIndex, setSummerPicsArrayIndex] = useState(0);
   const [autumnPicsArrayIndex, setAutumnPicsArrayIndex] = useState(0);
   const [winterPicsArrayIndex, setWinterPicsArrayIndex] = useState(0);
-  const [artLength, setArtLength] = useState(0);
   const [featureBtnMsg, setFeatureBtnMsg] = useState("Feature");
   const [springLeftover, setSpringLeftover] = useState(0);
   const [summerLeftover, setSummerLeftover] = useState(0);
@@ -133,7 +131,6 @@ const InfoDatabase = (search) => {
       }
 
       setArtPathsArray(artPaths);
-      setArtLength(artPaths.length);
       setArtInfoArray(artInfo);
     };
 
@@ -217,59 +214,6 @@ const InfoDatabase = (search) => {
     handleArtChange();
   }, [artsIndex, artPathsArray]);
 
-  const handleSetup = async () => {
-    setLoading(true);
-    const startTime = Date.now();
-
-    try {
-      const response = await axios.post(urls.syncPlantInfo, {
-        postName: searchName,
-      });
-
-      const endTime = Date.now();
-      const loadTime = endTime - startTime;
-
-      if (loadTime < 500) {
-        await new Promise((resolve) => setTimeout(resolve, 500 - loadTime));
-      }
-
-      setPlant(response.data.resultPost[0]);
-      setLatin(response.data.resultPost[0].latinName);
-      document.title =
-        response.data.resultPost[0].latinName +
-        " " +
-        response.data.resultPost[0].commonName +
-        " " +
-        response.data.resultPost[0].chineseName;
-      setName(
-        response.data.resultPost[0].commonName +
-          " " +
-          response.data.resultPost[0].chineseName,
-      );
-
-      setLocation(response.data.resultPost[0].location || "");
-      setAdditionalInfoContent(
-        response.data.resultPost[0].additionalInfo.replace(/\r?\n/g, "<br>"),
-      );
-      setLink(response.data.resultPost[0].link);
-      setChineseLink(response.data.resultPost[0].chineseLink || []);
-      setEditor(response.data.resultPost[0].editor || "Unknown");
-      setPostingtime(response.data.resultPost[0].postingtime.split(" ")[0]);
-      setPicPaths(response.data.photographs);
-      assignPicPaths(response.data.photographs);
-      setArts(response.data.arts);
-      setOtherNames(response.data.resultPost[0].otherNames || "");
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    handleSetup();
-  }, [searchName]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -299,7 +243,6 @@ const InfoDatabase = (search) => {
 
   //显示完整植物信息
   const handleGet = async (getName) => {
-    setLoadingMessage("Loading...");
     setQuery("");
     setSearchResults("");
     const sendName = getName;
@@ -328,10 +271,9 @@ const InfoDatabase = (search) => {
     } catch (error) {
       console.log(error);
     }
-    setLoadingMessage("");
   };
 
-  const assignPicPaths = (picPaths) => {
+  const assignPicPaths = useCallback((picPaths) => {
     const paths = {
       spring: { path: [], code: [] },
       summer: { path: [], code: [] },
@@ -366,7 +308,60 @@ const InfoDatabase = (search) => {
     setSummerLeftover(paths.summer.path.length % 4);
     setAutumnLeftover(paths.autumn.path.length % 4);
     setWinterLeftover(paths.winter.path.length % 4);
-  };
+  }, []);
+
+  useEffect(() => {
+    const handleSetup = async () => {
+      setLoading(true);
+      const startTime = Date.now();
+
+      try {
+        const response = await axios.post(urls.syncPlantInfo, {
+          postName: searchName,
+        });
+
+        const endTime = Date.now();
+        const loadTime = endTime - startTime;
+
+        if (loadTime < 500) {
+          await new Promise((resolve) => setTimeout(resolve, 500 - loadTime));
+        }
+
+        setPlant(response.data.resultPost[0]);
+        setLatin(response.data.resultPost[0].latinName);
+        document.title =
+          response.data.resultPost[0].latinName +
+          " " +
+          response.data.resultPost[0].commonName +
+          " " +
+          response.data.resultPost[0].chineseName;
+        setName(
+          response.data.resultPost[0].commonName +
+            " " +
+            response.data.resultPost[0].chineseName,
+        );
+
+        setLocation(response.data.resultPost[0].location || "");
+        setAdditionalInfoContent(
+          response.data.resultPost[0].additionalInfo.replace(/\r?\n/g, "<br>"),
+        );
+        setLink(response.data.resultPost[0].link);
+        setChineseLink(response.data.resultPost[0].chineseLink || []);
+        setEditor(response.data.resultPost[0].editor || "Unknown");
+        setPostingtime(response.data.resultPost[0].postingtime.split(" ")[0]);
+        setPicPaths(response.data.photographs);
+        assignPicPaths(response.data.photographs);
+        setArts(response.data.arts);
+        setOtherNames(response.data.resultPost[0].otherNames || "");
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    handleSetup();
+  }, [assignPicPaths, searchName]);
 
   function Season({
     seasonPaths = [],
@@ -475,7 +470,7 @@ const InfoDatabase = (search) => {
     </section>
   ) : (
     <>
-      <body className={styles.db1}>
+      <div className={styles.db1}>
         <div className={styles.topbarInfoDB}>
           <div style={{ flexGrow: "1", alignContent: "center" }}>
             <SearchBar
@@ -700,7 +695,7 @@ const InfoDatabase = (search) => {
           summerPathsArray?.path?.length !== 0 ||
           autumnPathsArray?.path?.length !== 0 ||
           (winterPathsArray?.path?.length !== 0 && <div className="hline1" />)}
-      </body>
+      </div>
       <div className={styles.zoomPicBox}>
         {zoomPicLink && (
           <div className={styles.zoomBox}>

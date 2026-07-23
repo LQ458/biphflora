@@ -10,8 +10,10 @@ The current baseline is [production-baseline-2026-07-22.md](production-baseline-
 The metric register is [metric-catalog.md](metric-catalog.md), the current
 redacted traffic report is [traffic-report-2026-07-23.md](traffic-report-2026-07-23.md),
 the CV-safe impact record is
-[cv-impact-report-2026-07-23.md](cv-impact-report-2026-07-23.md), and collection
-rules are in [collection-method.md](collection-method.md).
+[cv-impact-report-2026-07-23.md](cv-impact-report-2026-07-23.md), the current
+lab and local performance record is
+[performance-baseline-2026-07-23.md](performance-baseline-2026-07-23.md), and
+collection rules are in [collection-method.md](collection-method.md).
 
 ## Status vocabulary
 

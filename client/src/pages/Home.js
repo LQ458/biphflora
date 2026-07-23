@@ -4,7 +4,7 @@ import urls, { responsiveMediaProps } from "../tools/url";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
 import styles from "../styles/home.module.css";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.js";
 import SearchBar from "../components/SearchBar.js";
 import SearchPlant from "../components/SearchPlant.js";
@@ -14,9 +14,7 @@ import { useRef } from "react";
 const Home = ({ handleGets }) => {
   const navigate = useNavigate();
   const [plants, setPlants] = useState([]); // [plant1, plant2, plant3, ...
-  const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
-  const [admin, setAdmin] = useState("");
   const [featuredPicsArray, setFeaturedPicsArray] = useState([]);
   const [currentPic, setCurrentPic] = useState();
   const [artPaths, setArtPaths] = useState([]);
@@ -75,9 +73,6 @@ const Home = ({ handleGets }) => {
       try {
         setLoading(true);
         const response = await axios.get(urls.userInfo);
-
-        setUsername(response.data.username);
-        setAdmin(response.data.admin);
 
         if (
           !response.data.featureLists ||

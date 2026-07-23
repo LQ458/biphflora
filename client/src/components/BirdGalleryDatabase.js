@@ -2,7 +2,6 @@ import axios from "../api/http";
 import urls, { mediaUrl, responsiveMediaProps } from "../tools/url";
 import React, { useState, useEffect, useMemo } from "react";
 import styles from "../styles/galleryDatabase.module.css";
-import ArrowIcon from "../src/buttons/arrow.svg";
 import MediaImage from "./MediaImage.js";
 
 const GalleryDatabase = (props) => {
@@ -23,21 +22,12 @@ const GalleryDatabase = (props) => {
   };
   const [curIndex, setCurIndex] = useState(0);
   const [username, setUsername] = useState("");
-  const [admin, setAdmin] = useState("");
-  const [pics, setPics] = useState([]);
-  const [displays, setDisplays] = useState([true, false, false, false]);
   const [zoomPicLink, setZoomPicLink] = useState("");
   const [zoomTakenBy, setZoomTakenBy] = useState("");
   const [zoomTime, setZoomTime] = useState("");
   const [zoomLocation, setZoomLocation] = useState("");
-  const [featureBtnMsg, setFeatureBtnMsg] = useState("Feature");
-  const [month, setMonth] = useState([]);
-  const [curMonth, setCurMonth] = useState("");
-  const [curMode, setCurMode] = useState("season");
-  const [monthPics, setMonthPics] = useState([]);
+  const [featureBtnMsg] = useState("Feature");
   const [seasonMonthMap, setSeasonMonthMap] = useState({});
-  // also set allSeasonPics so you can page later
-  const [allSeasonPics, setAllSeasonPics] = useState({});
 
   // Which season is selected (e.g. "spring", or "" if none yet)
   const [selectedSeason, setSelectedSeason] = useState("");
@@ -51,58 +41,11 @@ const GalleryDatabase = (props) => {
     }
   }, []);
 
-  const sortPicMonth = (pics) => {
-    const monthPicMap = new Map();
-
-    pics.forEach((pic) => {
-      const timeParts = pic.time.split(" ");
-      const monthYear = `${timeParts[1]} ${timeParts[3]}`; // 提取月份和年份
-      if (!monthPicMap.has(monthYear)) {
-        monthPicMap.set(monthYear, []);
-      }
-      monthPicMap.get(monthYear).push(pic); // 将图片信息添加到对应的月份
-    });
-
-    const sortedMonthArray = Array.from(monthPicMap.keys()).sort((a, b) => {
-      const [monthA, yearA] = a.split(" ");
-      const [monthB, yearB] = b.split(" ");
-      const dateA = new Date(`${monthA} 1, ${yearA}`);
-      const dateB = new Date(`${monthB} 1, ${yearB}`);
-      return dateA - dateB;
-    });
-
-    const monthPicArray = sortedMonthArray.map((month) => ({
-      month,
-      pics: monthPicMap.get(month),
-    }));
-
-    setMonth(sortedMonthArray); // 设置月份数组
-    setMonthPics(monthPicArray); // 设置月份图片数组
-    console.log(monthPicArray);
-  };
-
   const zoom = (input, takenBy, time, location) => {
     setZoomPicLink(input);
     setZoomTakenBy(takenBy);
     setZoomTime(time);
     setZoomLocation(location);
-  };
-
-  const change = (season) => {
-    setCurIndex(0);
-    const newDisplays = seasons.map(() => false);
-    newDisplays[seasons.indexOf(season)] = true;
-    setDisplays(newDisplays);
-    setCurMode("season");
-    setCurMonth("");
-  };
-
-  const changeMonth = (month) => {
-    setCurIndex(0);
-    setCurMonth(month);
-    setCurMode("month");
-    const newDisplays = seasons.map(() => false);
-    setDisplays(newDisplays);
   };
 
   useEffect(() => {
@@ -129,10 +72,7 @@ const GalleryDatabase = (props) => {
           return acc;
         }, {});
 
-        setPics(newArray);
-        sortPicMonth(newArray.flat());
         setSeasonMonthMap(seasonMonthMap);
-        setAllSeasonPics(newArray);
       } catch (error) {
         console.log(error);
       }
@@ -169,7 +109,6 @@ const GalleryDatabase = (props) => {
           },
         });
         setUsername(response.data.username);
-        setAdmin(response.data.admin);
       } catch (error) {
         console.log(error);
       }
@@ -179,7 +118,7 @@ const GalleryDatabase = (props) => {
   }, []);
 
   return (
-    <body className={styles.db}>
+    <div className={styles.db}>
       <div className={styles.lowerPart}>
         <div className={styles.lowerTop}>
           <button onClick={handleBack} className={styles.backBtn}>
@@ -232,7 +171,7 @@ const GalleryDatabase = (props) => {
               >
                 {s[0].toUpperCase() + s.slice(1)}
               </button>
-              {s != "winter" && <div className={styles.lineB} />}
+              {s !== "winter" && <div className={styles.lineB} />}
             </>
           ))}
         </div>
@@ -350,13 +289,12 @@ const GalleryDatabase = (props) => {
               seasonMonthMap[selectedSeason][selectedMonth] || [];
             const pageSize = 12;
             const start = curIndex * pageSize;
-            const end = start + pageSize;
             return (
               //
               <>
                 <div className={styles.summerPics}>
                   {picsToShow
-                    .slice(curIndex * 12, (curIndex + 1) * 12)
+                    .slice(start, start + pageSize)
                     .map((p, index) => (
                       <div className={styles.summerPic} key={index}>
                         <MediaImage
@@ -507,7 +445,7 @@ const GalleryDatabase = (props) => {
           </div>
         )}
       </div>
-    </body>
+    </div>
   );
 };
 

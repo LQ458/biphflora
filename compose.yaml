@@ -1,0 +1,42 @@
+name: biphflora-local
+
+services:
+  mongodb:
+    image: mongo:7.0.24
+    environment:
+      MONGO_INITDB_DATABASE: biphflora_demo
+    ports:
+      - "127.0.0.1:${MONGODB_PORT:-27017}:27017"
+    volumes:
+      - biphflora-demo-mongodb:/data/db
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "mongosh",
+          "--quiet",
+          "--eval",
+          "quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+
+  redis:
+    image: redis:7.4.5-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    volumes:
+      - biphflora-demo-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+
+volumes:
+  biphflora-demo-mongodb:
+  biphflora-demo-redis:

@@ -16,11 +16,11 @@ const BirdEditPageTextForm = (prop) => {
   const [commonName, setCommonName] = useState(plant.commonName);
   const [chineseName, setChineseName] = useState(plant.chineseName);
   const [otherNames, setOtherNames] = useState(plant.otherNames);
-  const [additionalInfo, setAdditionalInfo] = useState(plant.additionalInfo);
-  const [links, setLinks] = useState(plant.link);
-  const [chineseLinks, setChineseLinks] = useState(plant.chineseLink);
+  const [additionalInfo] = useState(plant.additionalInfo);
+  const [links] = useState(plant.link);
+  const [chineseLinks] = useState(plant.chineseLink);
   const [editor, setEditor] = useState(plant.editor);
-  const [location, setLocation] = useState(plant.location);
+  const [location] = useState(plant.location);
   const [linksStringify, setLinksStringify] = useState();
   const [chineseLinksStringify, setChineseLinksStringify] = useState();
   const [linkArray, setLinkArray] = useState([]);

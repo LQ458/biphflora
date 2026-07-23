@@ -2,7 +2,6 @@ import axios from "../api/http";
 import urls, { mediaUrl } from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import EditPageTextForm from "../components/EditPageTextForm.js";
 import BirdEditPageTextForm from "../components/BirdEditPageTextForm.js";
 import "../styles/editPage.css";
 import { useContext } from "react";
@@ -11,14 +10,6 @@ import Navbar from "../components/Navbar.js";
 import styles from "../styles/galleryDatabase.module.css";
 
 const BirdEditPage = (props) => {
-  const [latinName, setLatinName] = useState("");
-  const [commonName, setCommonName] = useState("");
-  const [chineseName, setChineseName] = useState("");
-  const [otherNames, setOtherNames] = useState("");
-  const [links, setLinks] = useState();
-  const [chineseLinks, setChineseLinks] = useState();
-  const [editor, setEditor] = useState();
-  const [artist, setArtist] = useState();
   const [auth, setAuth] = useState(false);
 
   const [subpage, setSubpage] = useState(false);
@@ -32,7 +23,7 @@ const BirdEditPage = (props) => {
   // Which month (e.g. "Mar 2025") is currently selected for filtering:
   const [selectedMonth, setSelectedMonth] = useState("");
   // Page index for the filtered images:
-  const [pageIndex, setPageIndex] = useState(0);
+  const [, setPageIndex] = useState(0);
   const [picsByMonth, setPicsByMonth] = useState({});
   useEffect(() => {
     if (!pics) return;
@@ -244,8 +235,6 @@ const BirdEditPage = (props) => {
         </div>
         {selectedMonth ? (() => {
           const all = picsByMonth[selectedMonth] || [];
-          const pageSize = 12;
-          const start = pageIndex * pageSize;
           const paged = all
 
           return (

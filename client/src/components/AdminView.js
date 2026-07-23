@@ -4,38 +4,18 @@ import urls from "../tools/url";
 import { useNavigate } from "react-router-dom";
 
 const AdminView = (previewKey) => {
-  const [plant, setPlant] = useState();
   const [arts, setArts] = useState([]);
   const [pics, setPics] = useState([]);
   const [displayArts, setDisplayArts] = useState(null);
   const [displayPics, setDisplayPics] = useState(null);
-  const [maxWidth, setMaxWidth] = useState("20vw");
   const [featureStatus, setFeatureStatus] = useState("Feature");
   const [cBM, setCBM] = useState("Plant + Art");
   const [cBT, setCBT] = useState({ Pic: "Pic ", Art: "+ Art" });
-  const [admin, setAdmin] = useState(false);
-  const [username, setUsername] = useState();
   const search = previewKey.search;
   const navigate = useNavigate();
 
-  const fetchAdmin = async () => {
-    try {
-      const response = await axios.get(
-        urls.userInfo,
-      );
-      setAdmin(response.data.admin);
-      if (!response.data.admin) {
-        alert("You are not an admin, redirecting to home page...");
-        navigate("/");
-      }
-      setUsername(response.data.username);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   useEffect(() => {
-    const string = "Pic: " + cBT.Pic + "  " + "Art: " + cBT.Art;
+    const string = `Pic: ${cBT.Pic}  Art: ${cBT.Art}`;
     setCBM(string);
   }, [cBT]);
 
@@ -47,7 +27,7 @@ const AdminView = (previewKey) => {
   const makeFeatured = async () => {
     setFeatureStatus("Loading....");
     try {
-      const response = await axios.post(
+      await axios.post(
         urls.makeFeatured,
         { pic: cBT.Pic, art: cBT.Art, plant: search },
       );
@@ -61,6 +41,18 @@ const AdminView = (previewKey) => {
   };
 
   useEffect(() => {
+    const fetchAdmin = async () => {
+      try {
+        const response = await axios.get(urls.userInfo);
+        if (!response.data.admin) {
+          alert("You are not an admin, redirecting to home page...");
+          navigate("/");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     const fetchData = async () => {
       try {
         await fetchAdmin();
@@ -68,7 +60,6 @@ const AdminView = (previewKey) => {
           urls.adminView,
           { search: search },
         );
-        setPlant(response.data.resultPlant);
         setArts(response.data.resultArts);
         setPics(response.data.resultPics);
       } catch (error) {
@@ -77,7 +68,7 @@ const AdminView = (previewKey) => {
     };
 
     fetchData();
-  }, []);
+  }, [navigate, search]);
 
   const handlePicChoice = (pic) => {
     setCBT((prevCBT) => {
@@ -123,7 +114,7 @@ const AdminView = (previewKey) => {
           displayPics.map((pic) => (
             <>
               <p>id: {pic._id}</p>
-              <img src={pic.path} alt={pic._id} style={{ maxWidth }} />
+              <img src={pic.path} alt={pic._id} style={{ maxWidth: "20vw" }} />
               <button onClick={() => handlePicChoice(pic)}>Choose</button>
             </>
           ))}
@@ -133,7 +124,7 @@ const AdminView = (previewKey) => {
           displayArts.map((pic) => (
             <>
               <p>id: {pic._id}</p>
-              <img src={pic.path} alt={pic._id} style={{ maxWidth }} />
+              <img src={pic.path} alt={pic._id} style={{ maxWidth: "20vw" }} />
               <button onClick={() => handleArtChoice(pic)}>Choose</button>
             </>
           ))}

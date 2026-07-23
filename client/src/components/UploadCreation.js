@@ -12,7 +12,6 @@ import { getCatalogNames } from "../api/catalog";
 
 const UploadCreation = () => {
   const [namesArray, setNamesArray] = useState([]);
-  const [username, setUsername] = useState("");
   const [admin, setAdmin] = useState("");
   const [photographer, setPhotographer] = useState("");
   const [artist, setArtist] = useState("");
@@ -108,11 +107,8 @@ const UploadCreation = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          urls.userInfo,
-        );
+        const response = await axios.get(urls.userInfo);
         setAdmin(response.data.admin);
-        setUsername(response.data.username);
       } catch (error) {
         console.log(error);
       }
@@ -219,7 +215,7 @@ const UploadCreation = () => {
       else{
         console.log(`both processing`)
 
-        const artResp = await axios.post(
+        await axios.post(
           urls.uploadArt,
           formArt,
           {
@@ -229,7 +225,7 @@ const UploadCreation = () => {
           },
         )
 
-        const creResp = await axios.post(
+        await axios.post(
           urls.uploadCreation,
           formData,
           {

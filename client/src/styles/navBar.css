@@ -40,7 +40,7 @@ div.links {
 }
 .linkBarLink {
   position: relative;
-  color: #7a9a6d;
+  color: #4f6f45;
   flex: 1;
   font-size: var(--link-size);
   text-align: center;
@@ -54,7 +54,7 @@ div.links {
 
 .linkBarLinkDD {
   position: relative;
-  color: #7a9a6d;
+  color: #4f6f45;
   flex: 1;
   font-size: var(--link-size);
   text-align: center;
@@ -170,4 +170,3 @@ div.nav {
   border-radius: 0.43rem;
   /* padding-left: 2rem; */
 }
-

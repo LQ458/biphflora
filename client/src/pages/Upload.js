@@ -13,10 +13,6 @@ import UploadBirds from "../components/UploadBird.js";
 
 const Upload = () => {
   const navigate = useNavigate();
-  const [links, setLinks] = useState("");
-  const [chineseLinks, setChineseLinks] = useState("");
-  const [linkArray, setLinkArray] = useState([]);
-  const [chineseLinkArray, setChineseLinkArray] = useState([]);
   const [currentSubpage, setCurrentSubpage] = useState("plant");
   const [auth, setAuth] = useState(false);
   const locate = useLocation();
@@ -61,36 +57,6 @@ const Upload = () => {
     };
     authUser();
   }, [navigate, status]);
-
-  useEffect(() => {
-    const splittedLinks = links.split(", ");
-    var linkArray = [];
-    splittedLinks.forEach((splittedLink) => {
-      const linkParts = splittedLink.split(":");
-      const linkTitle = linkParts[0];
-      const link = linkParts.slice(1).join(":"); // Rejoin the remaining parts into the link
-      linkArray.push({
-        linkTitle: linkTitle,
-        link: link,
-      });
-    });
-    setLinkArray(linkArray);
-  }, [links]);
-
-  useEffect(() => {
-    const splittedLinks = chineseLinks.split(", ");
-    var linkArray = [];
-    splittedLinks.forEach((splittedLink) => {
-      const linkParts = splittedLink.split(":");
-      const linkTitle = linkParts[0];
-      const link = linkParts.slice(1).join(":"); // Rejoin the remaining parts into the link
-      linkArray.push({
-        linkTitle: linkTitle,
-        link: link,
-      });
-    });
-    setChineseLinkArray(linkArray);
-  }, [chineseLinks]);
 
   return auth ? (
     <section className="upload">
