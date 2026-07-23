@@ -2,6 +2,11 @@
 
 Date: 2026-07-23
 
+> Post-release correction: the first responsive-media frontend build omitted
+> its production API prefix and was rolled back after a browser runtime failure.
+> Release `4168079` corrects the issue. See `phase-13-report.md` for the incident,
+> recovery, browser verification, and current production status.
+
 ## Release and Git record
 
 Production code release: `5e8919a`
