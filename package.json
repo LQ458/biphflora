@@ -21,6 +21,7 @@
     "evidence:product": "node scripts/collect-product-metrics.js",
     "evidence:search-performance": "node scripts/benchmark-search.js",
     "evidence:traffic": "node scripts/collect-traffic-metrics.js",
+    "evidence:traffic:snapshot": "node scripts/snapshot-traffic-metrics.js",
     "media:backfill": "node scripts/backfill-media-variants.js",
     "format": "prettier --write ."
   },
