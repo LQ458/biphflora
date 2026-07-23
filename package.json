@@ -7,11 +7,17 @@
     "start": "nodemon app.js",
     "test": "npm run test:backend",
     "test:backend": "node --test --test-concurrency=1 test/*.test.js",
+    "lint:frontend": "npm --prefix client run lint",
     "test:frontend": "npm --prefix client test -- --watchAll=false --runInBand",
     "build": "npm --prefix client run build",
-    "verify": "npm run test:backend && npm run test:frontend && npm run build",
+    "verify": "npm run test:backend && npm run lint:frontend && npm run test:frontend && npm run build",
+    "audit:production": "npm audit --omit=dev --audit-level=high --registry=https://registry.npmjs.org && npm --prefix client audit --omit=dev --audit-level=high --registry=https://registry.npmjs.org",
+    "dev:services": "docker compose up -d",
+    "dev:services:down": "docker compose down",
+    "seed:demo": "node scripts/seed-demo-data.js",
     "evidence:media": "node scripts/collect-media-metrics.js",
     "evidence:product": "node scripts/collect-product-metrics.js",
+    "evidence:search-performance": "node scripts/benchmark-search.js",
     "evidence:traffic": "node scripts/collect-traffic-metrics.js",
     "media:backfill": "node scripts/backfill-media-variants.js",
     "format": "prettier --write ."
@@ -43,7 +49,7 @@
     "sharp": "^0.35.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10",
+    "nodemon": "^3.1.14",
     "prettier": "^3.3.3"
   },
   "overrides": {
@@ -52,6 +58,7 @@
     },
     "express": {
       "path-to-regexp": "0.1.13"
-    }
+    },
+    "picomatch": "2.3.2"
   }
 }

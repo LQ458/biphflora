@@ -15,6 +15,12 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Scan committed changes for secrets
+        uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-node@v4
         with:
           node-version: 22.x
@@ -24,10 +30,8 @@ jobs:
             client/package-lock.json
       - run: npm ci
       - run: npm --prefix client ci
+      - run: npm run audit:production
       - run: npm run test:backend
+      - run: npm run lint:frontend
       - run: npm run test:frontend
       - run: npm run build
-        env:
-          # CRA promotes the documented legacy warnings to errors under CI=true.
-          # Compilation errors still fail while warning cleanup remains incremental.
-          CI: "false"
