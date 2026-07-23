@@ -2,6 +2,10 @@
 
 Date: 2026-07-23
 
+> Current production later advanced to CSS-only style fix `c5e348e`. See
+> [phase-14-report.md](phase-14-report.md) for the old-build comparison,
+> deployment event, browser acceptance, and rollback.
+
 ## Outcome
 
 Production is serving frontend hotfix `4168079`. The homepage, plant catalogue,
