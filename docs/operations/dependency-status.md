@@ -26,7 +26,7 @@ npm --prefix client audit --json --registry=https://registry.npmjs.org
 npm --prefix client audit --omit=dev --json --registry=https://registry.npmjs.org
 ```
 
-The root lockfile reported 283 total dependency entries, including 218
+The root lockfile reported 275 total dependency entries, including 210
 production entries. The client lockfile reported 1,587 total entries,
 including 109 production entries. These are npm's dependency metadata counts,
 not counts of directly declared packages.
@@ -45,12 +45,12 @@ expected to require a deliberate frontend build-system migration rather than a
 forced lockfile rewrite. No `npm audit fix --force` or other major automatic
 upgrade was run.
 
-A clean root install also emits Multer's upstream deprecation notice for the
-current `1.4.5-lts.1` release, even though npm's current production advisory
-query reports zero findings. Moving the multipart boundary to Multer 2 is a
-separate compatibility change: it should be paired with upload validation,
-failure-cleanup, size-limit, and rollback checks rather than hidden inside a
-lockfile refresh.
+GitHub Dependabot subsequently identified four direct high-severity runtime
+advisories affecting the previous Multer 1.x range. The root dependency is now
+pinned to Multer `2.2.0`, the first release covering all four advisory ranges.
+The upgrade retains the existing storage, field, count, type, and size limits;
+the multipart characterization checks exercise authentication, decoded-image
+rejection, path safety, missing-record cleanup, and error responses.
 
 ## Policy and follow-up
 

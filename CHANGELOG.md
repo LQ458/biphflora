@@ -38,6 +38,9 @@ contains no release tags from which to reconstruct earlier version sections.
   remain valid `srcset` candidates instead of falling back to the largest
   image.
 - Removed an unreferenced duplicate video-modal component.
+- Upgraded Multer from the deprecated 1.x line to 2.2.0 after four direct
+  high-severity runtime advisories were identified, retaining the existing
+  upload validation and cleanup contracts.
 
 ## [3.0.0] - 2026-07-23
 
