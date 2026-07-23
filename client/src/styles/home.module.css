@@ -34,13 +34,6 @@ section.home {
   justify-content: center;
   align-items: center;
 }
-/* Style the buttons */
-button {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1.5rem;
-}
 
 /* Style the ionicons */
 
@@ -69,7 +62,7 @@ h4.plantInBloom {
   margin: 0;
 }
 div.part1 {
-  background: url("../../public/new_bg.jpg") no-repeat;
+  background: url("../assets/backgrounds/new-bg.webp") no-repeat;
   border: none;
   background-position: top center;
   position: relative;

@@ -1,6 +1,6 @@
 section.db {
   color: #ffffff;
-  background: url("../../public/new_bg.jpg") no-repeat;
+  background: url("../assets/backgrounds/new-bg.webp") no-repeat;
   background-size: cover;
   height: 100vh;
   background-attachment: fixed;
@@ -70,7 +70,7 @@ div.homeDatabase {
 }
 
 div.birdHomeDatabase {
-  background: url("../../public/bird_bg.jpg") no-repeat;
+  background: url("../assets/backgrounds/bird-bg.webp") no-repeat;
   background-attachment: fixed;
   background-position: center -2rem;
   background-size: cover;

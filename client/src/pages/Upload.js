@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useContext } from "react";
@@ -16,7 +15,6 @@ const Upload = () => {
   const navigate = useNavigate();
   const [links, setLinks] = useState("");
   const [chineseLinks, setChineseLinks] = useState("");
-  const [namesArray, setNamesArray] = useState("");
   const [linkArray, setLinkArray] = useState([]);
   const [chineseLinkArray, setChineseLinkArray] = useState([]);
   const [currentSubpage, setCurrentSubpage] = useState("plant");
@@ -63,22 +61,6 @@ const Upload = () => {
     };
     authUser();
   }, [navigate, status]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
-        const fetchedNamesArray = response.data.returnNames;
-        setNamesArray(fetchedNamesArray);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   useEffect(() => {
     const splittedLinks = links.split(", ");

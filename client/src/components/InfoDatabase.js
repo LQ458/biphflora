@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls, { mediaUrl, responsiveMediaProps } from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
@@ -7,6 +8,8 @@ import styles from "../styles/infoDatabase.module.css";
 import { UserContext } from "../UserContext.js";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
+import MediaImage from "./MediaImage.js";
+import { getCatalogNames } from "../api/catalog";
 
 const InfoDatabase = (search) => {
   const { user } = useContext(UserContext);
@@ -18,8 +21,6 @@ const InfoDatabase = (search) => {
   const [query, setQuery] = useState("");
   const [namesArray, setNamesArray] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [load, setLoad] = useState(true);
-  const [loadedSrc, setLoadedSrc] = useState(null);
   const [plant, setPlant] = useState();
   const [username, setUsername] = useState("");
   const [name, setName] = useState("");
@@ -32,7 +33,6 @@ const InfoDatabase = (search) => {
   const [editor, setEditor] = useState("Editor:");
   const [picPaths, setPicPaths] = useState([]);
   const [artPathsArray, setArtPathsArray] = useState([]);
-  const [numOfPlants, setNumOfPlants] = useState("");
   const [loadingMessage, setLoadingMessage] = useState("");
   const [otherNames, setOtherNames] = useState("");
   const [springPathsArray, setSpringPathsArray] = useState([]);
@@ -73,15 +73,11 @@ const InfoDatabase = (search) => {
         plant: latin,
         path: zoomArtLink,
       };
-      await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadFeatureArtSingle`,
-        newFeature,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      await axios.post(urls.uploadFeatureArtSingle, newFeature, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       setFeatureBtnMsg("Success");
       setTimeout(() => setFeatureBtnMsg("Submitted!"), 1000);
       setTimeout(() => setFeatureBtnMsg("Feature"), 1000);
@@ -97,15 +93,11 @@ const InfoDatabase = (search) => {
         plant: latin,
         path: zoomPicLink,
       };
-      await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadFeatureSingle`,
-        newFeature,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
+      await axios.post(urls.uploadFeatureSingle, newFeature, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
       setFeatureBtnMsg("Success");
       setTimeout(() => setFeatureBtnMsg("Submitted!"), 1000);
       setTimeout(() => setFeatureBtnMsg("Feature"), 1000);
@@ -230,10 +222,9 @@ const InfoDatabase = (search) => {
     const startTime = Date.now();
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/syncPlantInfo`,
-        { postName: searchName },
-      );
+      const response = await axios.post(urls.syncPlantInfo, {
+        postName: searchName,
+      });
 
       const endTime = Date.now();
       const loadTime = endTime - startTime;
@@ -280,28 +271,9 @@ const InfoDatabase = (search) => {
   }, [searchName]);
 
   useEffect(() => {
-    const numOfPlants = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/numOFPlants`,
-        );
-        setNumOfPlants(response.data.numOfPlants);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    numOfPlants();
-  }, []);
-
-  useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
-        const fetchedNamesArray = response.data.returnNames;
-        setNamesArray(fetchedNamesArray);
+        setNamesArray(await getCatalogNames("plant"));
       } catch (error) {
         console.log(error);
       }
@@ -333,10 +305,9 @@ const InfoDatabase = (search) => {
     const sendName = getName;
     setSearchName(sendName);
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/syncPlantInfo`,
-        { postName: sendName },
-      );
+      const response = await axios.post(urls.syncPlantInfo, {
+        postName: sendName,
+      });
       setLatin(response.data.resultPost[0].latinName);
       setName(
         response.data.resultPost[0].commonName +
@@ -397,16 +368,6 @@ const InfoDatabase = (search) => {
     setWinterLeftover(paths.winter.path.length % 4);
   };
 
-  useEffect(() => {
-    setLoad(true);
-    const img = new Image();
-    img.src = `${process.env.REACT_APP_Source_URL}/public${displayArtPath}`;
-    img.onload = () => {
-      setLoad(false);
-      setLoadedSrc(displayArtPath);
-    };
-  }, [displayArtPath]); // Image Load Function
-
   function Season({
     seasonPaths = [],
     season,
@@ -423,9 +384,13 @@ const InfoDatabase = (search) => {
         const code = codes[index] || "N/A"; // 如果code为空，则显示'N/A'
         return (
           <div key={index}>
-            <img
+            <MediaImage
+              {...responsiveMediaProps(path, {
+                sizes: "(max-width: 700px) 45vw, 18vw",
+              })}
               className={styles.databaseImg}
-              src={`${process.env.REACT_APP_Source_URL}/public${path}`}
+              loading="lazy"
+              decoding="async"
               alt={`${index + 1}`}
               onClick={() => handleZoom(path, seasonInfo[index])}
             />
@@ -643,32 +608,34 @@ const InfoDatabase = (search) => {
             <div className={styles.arts}>
               <h3 className={styles.artTitle}>Artwork</h3>
               <div className={styles.artPicContainer}>
-                {load ? (
-                  <div className={styles.artAlt} />
-                ) : (
-                  <div style={{ position: "relative" }}>
-                    <img
-                      src={`${process.env.REACT_APP_Source_URL}/public${loadedSrc}`}
-                      id="artPic"
-                      onClick={() => handleArtZoom(displayArtPath)}
-                      alt="art"
-                      className={styles.artPic}
-                    />
-                    <div className={styles.artLabel}>
-                      <p>Painter: {artInfoArray[artsIndex].painter}</p>
-                      {/* <p>Time: {postingtime}</p> */}
-                      <p>Setting: {artInfoArray[artsIndex].setting}</p>
-                    </div>
-                  </div>
-                )}
-                {artPathsArray.length>1?
-                <button className={styles.nextArBtn} onClick={nextArt}>
-                  <NextIcon
-                    className={styles.shiftIcon}
-                    width={50}
-                    height={50}
+                <div style={{ position: "relative" }}>
+                  <MediaImage
+                    src={displayArtPath ? mediaUrl(displayArtPath) : ""}
+                    failedContent={<div className={styles.artAlt} />}
+                    loading="lazy"
+                    decoding="async"
+                    id="artPic"
+                    onClick={() => handleArtZoom(displayArtPath)}
+                    alt="art"
+                    className={styles.artPic}
                   />
-                </button>:<></>}
+                  <div className={styles.artLabel}>
+                    <p>Painter: {artInfoArray[artsIndex].painter}</p>
+                    {/* <p>Time: {postingtime}</p> */}
+                    <p>Setting: {artInfoArray[artsIndex].setting}</p>
+                  </div>
+                </div>
+                {artPathsArray.length > 1 ? (
+                  <button className={styles.nextArBtn} onClick={nextArt}>
+                    <NextIcon
+                      className={styles.shiftIcon}
+                      width={50}
+                      height={50}
+                    />
+                  </button>
+                ) : (
+                  <></>
+                )}
               </div>
             </div>
           )}
@@ -737,9 +704,11 @@ const InfoDatabase = (search) => {
       <div className={styles.zoomPicBox}>
         {zoomPicLink && (
           <div className={styles.zoomBox}>
-            <img
+            <MediaImage
               className={styles.zoomPic}
-              src={`${process.env.REACT_APP_Source_URL}/public${zoomPicLink}`}
+              src={mediaUrl(zoomPicLink)}
+              loading="lazy"
+              decoding="async"
               alt={zoomPicLink}
             />
             <button
@@ -769,9 +738,11 @@ const InfoDatabase = (search) => {
         )}
         {zoomArtLink && (
           <div className={styles.zoomBox}>
-            <img
+            <MediaImage
               className={styles.zoomPic}
-              src={`${process.env.REACT_APP_Source_URL}/public${zoomArtLink}`}
+              src={mediaUrl(zoomArtLink)}
+              loading="lazy"
+              decoding="async"
               alt={zoomArtLink}
             />
             <button

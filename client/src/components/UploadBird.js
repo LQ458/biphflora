@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import { FileUpload } from "primereact/fileupload";
@@ -10,6 +11,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import imageCompression from "browser-image-compression";
+import { getCatalogNames } from "../api/catalog";
 
 const UploadBirds = () => {
   const [latinName, setLatinName] = useState("");
@@ -63,19 +65,13 @@ const UploadBirds = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userInfoResponse = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
-        );
-        const searchNamesResponse = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchBirdNames`,
-        );
-        const fetchedNamesArray = searchNamesResponse.data.returnNames.map(
-          (result) => {
-            return {
-              value: result.latinName,
-            };
-          },
-        );
+        const [userInfoResponse, catalogNames] = await Promise.all([
+          axios.get(urls.userInfo),
+          getCatalogNames("bird"),
+        ]);
+        const fetchedNamesArray = catalogNames.map((result) => ({
+          value: result.latinName,
+        }));
         setNamesArray(fetchedNamesArray);
         setAdmin(userInfoResponse.data.admin);
         setUsername(userInfoResponse.data.username);
@@ -239,7 +235,7 @@ const UploadBirds = () => {
     formData.append("fAdultChar", fadultChar);
 
     try {
-      await axios.post(`${process.env.REACT_APP_Source_URL}/uploadBird`, formData, {
+      await axios.post(urls.uploadBird, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -391,7 +387,7 @@ const UploadBirds = () => {
 
       // 上传文件
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadBirdPic`,
+        urls.uploadBirdPic,
         formData,
         {
           headers: {
@@ -471,7 +467,7 @@ const UploadBirds = () => {
 
     try {
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadArt`,
+        urls.uploadArt,
         formData,
         {
           headers: {

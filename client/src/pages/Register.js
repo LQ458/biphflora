@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "../api/http";
+import urls from "../tools/url";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
@@ -25,7 +26,7 @@ const Register = () => {
     try {
       setLoading(true);
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/register`,
+        urls.register,
         {
           username,
           password,
@@ -54,7 +55,7 @@ const Register = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
+          urls.userInfo,
         );
         setAdmin(response.data.admin);
       } catch (error) {

@@ -18,20 +18,30 @@ const fuseOptions = {
     { name: "latinName", weight: 0.3 },
     { name: "chineseName", weight: 0.3 },
     { name: "commonName", weight: 0.4 },
+    { name: "otherNames", weight: 0.1 },
   ],
 };
 
-export default function searchPlant(list, pattern) {
-  if (!pattern) {
-    console.error("Pattern is undefined");
-    return [];
-  }
+const searchIndexes = new WeakMap();
 
+export function createPlantSearchIndex(list) {
   if (!Array.isArray(list)) {
-    console.error("List is not an array");
+    return null;
+  }
+
+  return new Fuse(list, fuseOptions);
+}
+
+export default function searchPlant(list, pattern) {
+  if (!pattern || !Array.isArray(list)) {
     return [];
   }
 
-  const fuse = new Fuse(list, fuseOptions);
+  let fuse = searchIndexes.get(list);
+  if (!fuse) {
+    fuse = createPlantSearchIndex(list);
+    searchIndexes.set(list, fuse);
+  }
+
   return fuse.search(pattern);
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import axios from "../api/http";
+import urls, { responsiveMediaProps } from "../tools/url";
 import { ReactComponent as PreviousIcon } from "../src/buttons/caret-back-outline.svg";
 import { ReactComponent as NextIcon } from "../src/buttons/caret-forward-outline.svg";
 import styles from "../styles/home.module.css";
@@ -7,6 +8,8 @@ import { redirect, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar.js";
 import SearchBar from "../components/SearchBar.js";
 import SearchPlant from "../components/SearchPlant.js";
+import { getCatalogNames } from "../api/catalog";
+import MediaImage from "../components/MediaImage.js";
 import { useRef } from "react";
 const Home = ({ handleGets }) => {
   const navigate = useNavigate();
@@ -44,11 +47,7 @@ const Home = ({ handleGets }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
-        const fetchedNamesArray = response.data.returnNames;
-        setNamesArray(fetchedNamesArray);
+        setNamesArray(await getCatalogNames("plant"));
       } catch (error) {
         console.log(error);
       }
@@ -75,9 +74,7 @@ const Home = ({ handleGets }) => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
-        );
+        const response = await axios.get(urls.userInfo);
 
         setUsername(response.data.username);
         setAdmin(response.data.admin);
@@ -183,7 +180,7 @@ const Home = ({ handleGets }) => {
     <section className={styles.home}>
       <div id="page-container">
         <div className={styles.part1}>
-          <Navbar className={styles.tobar} z-index="1000"/>
+          <Navbar className={styles.tobar} z-index="1000" />
           <nav className={styles.featureBox}>
             <div className={styles.featuredTopBar}>
               <h4 className={styles.plantInBloom}>Plant in Bloom</h4>
@@ -212,8 +209,12 @@ const Home = ({ handleGets }) => {
                   ) : (
                     currentPic && (
                       <div className={styles.picContainer}>
-                        <img
-                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${currentPic}`}
+                        <MediaImage
+                          {...responsiveMediaProps(currentPic, {
+                            sizes: "(max-width: 700px) 100vw, 36vw",
+                          })}
+                          loading="eager"
+                          fetchPriority="high"
                           alt="PlantPic"
                           className={styles.currentPics}
                         />
@@ -250,8 +251,11 @@ const Home = ({ handleGets }) => {
                   ) : (
                     artPaths[picsArrayIndex] && (
                       <div className={styles.artContainer}>
-                        <img
-                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${artPaths[picsArrayIndex]}`}
+                        <MediaImage
+                          {...responsiveMediaProps(artPaths[picsArrayIndex], {
+                            sizes: "(max-width: 700px) 100vw, 19vw",
+                          })}
+                          loading="eager"
                           alt="PlantArt"
                           className={styles.currentArts}
                         />
@@ -291,7 +295,7 @@ const Home = ({ handleGets }) => {
                       onClick={() => {
                         if (plants[picsArrayIndex]?.plant) {
                           // handleGet(plants[picsArrayIndex].plant);
-                          redirect(plants[picsArrayIndex].plant)
+                          redirect(plants[picsArrayIndex].plant);
                         }
                       }}
                       className={styles.forDetail}

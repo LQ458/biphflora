@@ -117,8 +117,6 @@ div.homeEntryBox {
   margin-bottom: 1rem;
 }
 
-.p-dialog-maximized {
-  .p-dialog-content {
-    padding: 0;
-  }
+.p-dialog-maximized .p-dialog-content {
+  padding: 0;
 }

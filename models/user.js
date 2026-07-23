@@ -9,10 +9,12 @@ const userSchema = new Schema({
   },
   originalPassword: {
     type: String,
+    select: false,
   },
   password: {
     type: String,
     required: true,
+    select: false,
   },
   admin: {
     type: Boolean,

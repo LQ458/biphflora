@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { mediaUrl } from "../tools/url";
 import "../styles/upload.css";
 import Navbar from "../components/Navbar.js";
 
@@ -134,7 +135,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             {aboutFloraClub}
           </p>
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/newAboutUs.jpg`}
+            src={mediaUrl("/newAboutUs.jpg")}
             alt="pic of bird"
             className="birdPic"
           />
@@ -157,7 +158,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
           <h2 className="webLabel">II. BIPH FLORA Website</h2>
           <p className="webContent" style = {{top: curLang==="cn"?"6.44vw":"5.04vw"}}>{aboutFloraWeb}</p>
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/favicon.ico`}
+            src={mediaUrl("/favicon.ico")}
             alt="flowerIcon"
             className="flowerIcon"
           />
@@ -165,7 +166,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
             Logo designed by Yvonne Wang, 2023
           </div>
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/6.jpg`}
+            src={mediaUrl("/6.jpg")}
             alt="bottomB"
             className="flowerBottom"
           />
@@ -316,7 +317,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
           </div> */}
           <h2 className="contactUsTitle">III. Contact Us</h2>
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/2.jpg`}
+            src={mediaUrl("/2.jpg")}
             alt="flower"
             className="whiteFlower"
           />
@@ -370,7 +371,7 @@ Videos Introducing Plant Species and Seasonal Documentaries: Members write scrip
           <br/>
           <br/>
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/${curLang === "cn" ? "9.PNG" : "9-en.png"}`}
+            src={mediaUrl(`/${curLang === "cn" ? "9.PNG" : "9-en.png"}`)}
             className="cssHell"
             style={{
               scale: curLang === "cn" ? "1" : "0.65",

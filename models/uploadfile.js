@@ -1,39 +1,56 @@
 const multer = require("multer");
-const crypto = require("crypto");
+const fs = require("fs").promises;
+const {
+  MAX_FILES_PER_BATCH,
+  batchImageUploadOptions,
+  createImageFilename,
+  ensureUploadTempDirectory,
+  getUploadErrorResponse,
+} = require("./uploadPolicy");
 
 var fileCount = 0; // Initialize a variable to keep track of the file count
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./public/uploads/"); // Set the destination folder for uploaded files
+    try {
+      cb(null, ensureUploadTempDirectory());
+    } catch (error) {
+      cb(error);
+    }
   },
   filename: function (req, file, cb) {
-    const fileExtension = file.originalname.split(".").pop().toLowerCase();
-    const filename =
-      req.body.picEnglishName +
-      "-" +
-      crypto.randomBytes(16).toString("hex").slice(0, 16) +
-      "." +
-      fileExtension; // Generate a unique filename
-    cb(null, filename);
+    try {
+      cb(null, createImageFilename(file.mimetype));
+    } catch (error) {
+      cb(error);
+    }
   },
 });
 
 const upload = multer({
   storage: storage,
-}).array("files");
+  ...batchImageUploadOptions,
+}).array("files", MAX_FILES_PER_BATCH);
 
 const middleware = function (req, res, next) {
-  upload(req, res, function (err) {
-    if (err instanceof multer.MulterError) {
-      // A Multer error occurred during file upload
-      return res.status(500).json({ message: "File upload error" });
-    } else if (err) {
-      console.log("err", err);
-      // An unknown error occurred during file upload
-      return res
-        .status(500)
-        .json({ message: "Unknown error occurred", error: err });
+  upload(req, res, async function (err) {
+    if (err) {
+      await Promise.all(
+        (req.files || []).map((file) => fs.unlink(file.path).catch(() => {})),
+      );
+    }
+
+    const uploadError = getUploadErrorResponse(err);
+    if (uploadError) {
+      return res.status(uploadError.status).json(uploadError.body);
+    }
+
+    if (err) {
+      console.error("Image upload middleware failed");
+      return res.status(500).json({
+        success: false,
+        message: "Unable to process image upload",
+      });
     }
 
     // Set the file count to the number of uploaded files at the moment

@@ -4,8 +4,10 @@ import { DataView } from "primereact/dataview";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
-import axios from "axios";
+import axios from "../api/http";
+import urls, { mediaUrl } from "../tools/url";
 import "../styles/uploadHome.css";
+import { getCatalogNames } from "../api/catalog";
 
 const PictureGrid = ({ items, selectedItem, onSelect }) => {
   return (
@@ -17,7 +19,7 @@ const PictureGrid = ({ items, selectedItem, onSelect }) => {
           onClick={() => onSelect(item)}
         >
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.path}`}
+            src={mediaUrl(item.path, { compressed: true })}
             alt={item.plant}
           />
           <div className="mt-2">
@@ -40,7 +42,7 @@ const ArtGrid = ({ items, selectedItem, onSelect }) => {
           onClick={() => onSelect(item)}
         >
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.path}`}
+            src={mediaUrl(item.path, { compressed: true })}
             alt={item.plant}
           />
           <div className="mt-2">
@@ -69,11 +71,9 @@ const UploadHome = () => {
   useEffect(() => {
     const fetchPlants = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
+        const catalogNames = await getCatalogNames("plant");
         setPlants(
-          response.data.returnNames.map((plant) => ({
+          catalogNames.map((plant) => ({
             label: plant.latinName,
             value: plant.latinName,
           })),
@@ -90,7 +90,7 @@ const UploadHome = () => {
     const fetchFeatures = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/uploadHome`,
+          urls.uploadHome,
         );
         setHomeEntries(response.data.entries || []);
       } catch (error) {
@@ -112,7 +112,7 @@ const UploadHome = () => {
       if (selectedPlant) {
         try {
           const response = await axios.post(
-            `${process.env.REACT_APP_Source_URL}/getPicsAndArts`,
+            urls.getPicsAndArts,
             { plant: selectedPlant },
           );
           setPics(response.data.pics);
@@ -153,7 +153,7 @@ const UploadHome = () => {
     }
 
     try {
-      await axios.post(`${process.env.REACT_APP_Source_URL}/featureToHome`, {
+      await axios.post(urls.featureToHome, {
         picId: selectedPic._id,
         artId: selectedArt._id,
       });
@@ -166,7 +166,7 @@ const UploadHome = () => {
 
       // 刷新列表
       const response = await axios.get(
-        `${process.env.REACT_APP_Source_URL}/uploadHome`,
+        urls.uploadHome,
       );
       setHomeEntries(response.data.entries || []);
 
@@ -186,7 +186,7 @@ const UploadHome = () => {
   const handleUnfeature = async (id) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/unFeatureHome`,
+        urls.unFeatureHome,
         { id },
       );
       if (response.data.success) {
@@ -269,14 +269,14 @@ const UploadHome = () => {
                 <div className="grid">
                   <div className="col-6">
                     <img
-                      src={`${process.env.REACT_APP_Source_URL}/public/compressed${entry.works?.pic?.path}`}
+                      src={mediaUrl(entry.works?.pic?.path, { compressed: true })}
                       alt={entry.works?.pic?.plant}
                       className="w-full"
                     />
                   </div>
                   <div className="col-6">
                     <img
-                      src={`${process.env.REACT_APP_Source_URL}/public/compressed${entry.works?.art?.path}`}
+                      src={mediaUrl(entry.works?.art?.path, { compressed: true })}
                       alt={entry.works?.art?.plant}
                       className="w-full"
                     />
@@ -300,7 +300,7 @@ const UploadHome = () => {
       >
         {selectedPic && (
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/compressed${selectedPic.path}`}
+            src={mediaUrl(selectedPic.path, { compressed: true })}
             alt={selectedPic.plant}
             style={{ maxWidth: "100%" }}
           />
@@ -314,7 +314,7 @@ const UploadHome = () => {
       >
         {selectedArt && (
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/compressed${selectedArt.path}`}
+            src={mediaUrl(selectedArt.path, { compressed: true })}
             alt={selectedArt.plant}
             style={{ maxWidth: "100%" }}
           />

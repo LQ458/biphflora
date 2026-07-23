@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls, { mediaUrl } from "../tools/url";
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/uploadCreation.css";
 import { InputText } from "primereact/inputtext";
@@ -7,6 +8,7 @@ import { Toast } from "primereact/toast";
 import { Dialog } from "primereact/dialog";
 import { FileUpload } from "primereact/fileupload";
 import { Dropdown } from "primereact/dropdown";
+import { getCatalogNames } from "../api/catalog";
 
 const UploadCreation = () => {
   const [namesArray, setNamesArray] = useState([]);
@@ -41,7 +43,7 @@ const UploadCreation = () => {
 
   const handleFeature = async (entry) => {
     try {
-      await axios.post(`${process.env.REACT_APP_Source_URL}/featureToHome`, {
+      await axios.post(urls.featureToHome, {
         picId: entry._id,
         artId: entry._id,
         isCreation: true,
@@ -68,7 +70,7 @@ const UploadCreation = () => {
   const unFeature = async (input) => {
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_Source_URL}/unFeatureCreation`,
+        urls.unFeatureCreation,
         { temp: input },
       );
       setCreationEntries(response.data.temp);
@@ -92,7 +94,7 @@ const UploadCreation = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/uploadCreation`,
+          urls.uploadCreation,
         );
         setCreationEntries(response.data.temp);
       } catch (error) {
@@ -107,7 +109,7 @@ const UploadCreation = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
+          urls.userInfo,
         );
         setAdmin(response.data.admin);
         setUsername(response.data.username);
@@ -122,10 +124,7 @@ const UploadCreation = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
-        const fetchedNamesArray = response.data.returnNames.map((result) => {
+        const fetchedNamesArray = (await getCatalogNames("plant")).map((result) => {
           return {
             value: result.latinName,
           };
@@ -201,7 +200,7 @@ const UploadCreation = () => {
     try {
       if (!(creationPicFile && creationArtFile)){
         await axios.post(
-          `${process.env.REACT_APP_Source_URL}/uploadArt`,
+          urls.uploadArt,
           formArt,
           {
             headers: {
@@ -221,7 +220,7 @@ const UploadCreation = () => {
         console.log(`both processing`)
 
         const artResp = await axios.post(
-          `${process.env.REACT_APP_Source_URL}/uploadArt`,
+          urls.uploadArt,
           formArt,
           {
             headers: {
@@ -231,7 +230,7 @@ const UploadCreation = () => {
         )
 
         const creResp = await axios.post(
-          `${process.env.REACT_APP_Source_URL}/uploadCreation`,
+          urls.uploadCreation,
           formData,
           {
             headers: {
@@ -414,14 +413,14 @@ const UploadCreation = () => {
                     <div className="flex gap-3">
                       <div className="flex-1">
                         <img
-                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.pic}`}
+                          src={mediaUrl(item.pic, { compressed: true })}
                           alt="pic"
                           className="w-full"
                         />
                       </div>
                       <div className="flex-1">
                         <img
-                          src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.art}`}
+                          src={mediaUrl(item.art, { compressed: true })}
                           alt="art"
                           className="w-full"
                         />
@@ -462,14 +461,14 @@ const UploadCreation = () => {
             <div className="flex gap-3 mb-3">
               <div className="flex-1">
                 <img
-                  src={`${process.env.REACT_APP_Source_URL}/public/compressed${selectedEntry.pic}`}
+                  src={mediaUrl(selectedEntry.pic, { compressed: true })}
                   alt="pic"
                   className="w-full"
                 />
               </div>
               <div className="flex-1">
                 <img
-                  src={`${process.env.REACT_APP_Source_URL}/public/compressed${selectedEntry.art}`}
+                  src={mediaUrl(selectedEntry.art, { compressed: true })}
                   alt="art"
                   className="w-full"
                 />

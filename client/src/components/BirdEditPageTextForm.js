@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls from "../tools/url";
 import React, { useState, useEffect, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
@@ -65,7 +66,7 @@ const BirdEditPageTextForm = (prop) => {
     setLoadingMessage("loading...");
 
     try {
-      await axios.post(`${process.env.REACT_APP_Source_URL}/birdUpdateText`, {
+      await axios.post(urls.birdUpdateText, {
         latinName,
         chineseName,
         commonName,

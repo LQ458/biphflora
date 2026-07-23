@@ -1,18 +1,19 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls, { responsiveMediaProps } from "../tools/url";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/homeDatabase.css";
 import SearchBar from "./SearchBar.js";
 import SearchPlant from "./SearchPlant.js";
+import MediaImage from "./MediaImage.js";
+import { getCatalogNames } from "../api/catalog";
 const DatabaseTwo = ({ handleGet, setLoading }) => {
   const [query, setQuery] = useState("");
   const [namesArray, setNamesArray] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [numOfPlants, setNumOfPlants] = useState("");
   const [pics, setPics] = useState([]);
-  const [load, setLoad] = useState([true, true, true]);
-  const [loadedSrc, setLoadedSrc] = useState(["", "", ""]);
   const navigate = useNavigate();
   const redirect = (plant) => {
     //plant的类型是string
@@ -22,10 +23,8 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
   useEffect(() => {
     const getDb2Pic = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/getDb2PicBird`,
-        );
-        setPics(response.data.pics);
+        const response = await axios.get(urls.getDb2PicBird);
+        setPics(Array.isArray(response.data?.pics) ? response.data.pics : []);
       } catch (error) {
         console.log(error);
       }
@@ -37,12 +36,9 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchBirdNames`,
-        );
-        const fetchedNamesArray = response.data.returnNames;
-        setNamesArray(fetchedNamesArray);
-        setNumOfPlants(response.data.numOfPlants);
+        const catalogNames = await getCatalogNames("bird");
+        setNamesArray(catalogNames);
+        setNumOfPlants(catalogNames.length);
       } catch (error) {
         console.log(error);
       }
@@ -66,40 +62,8 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
   };
 
   useEffect(() => {
-    var newArray = [true, true, true];
-    var srcs = [];
-    setLoad(newArray);
-    pics.forEach((pic, index) => {
-      const img = new Image();
-      img.src = `${process.env.REACT_APP_Source_URL}/public${pic.path}`;
-      img.onload = () => {
-        newArray[index] = false;
-        srcs[index] = `${process.env.REACT_APP_Source_URL}/public/compressed${pic.path}`;
-        setLoadedSrc([...srcs]);
-        setLoad([...newArray]);
-      };
-      img.onerror = async () => {
-        try {
-          const response = await axios.get("/db2AltBird");
-          const altImg = new Image();
-          altImg.src = `${process.env.REACT_APP_Source_URL}/public/compressed${response.data.pic.path}`;
-          altImg.onload = () => {
-            newArray[index] = false;
-            srcs[index] =
-              `${process.env.REACT_APP_Source_URL}/public/compressed${response.data.pic.path}`;
-            setLoadedSrc([...srcs]);
-            setLoad([...newArray]);
-          };
-          altImg.onerror = () => {
-            console.error("Failed to load alt image");
-          };
-        } catch (error) {
-          console.log(error);
-        }
-      };
-    });
     setLoading(false);
-  }, [pics, setLoading]); // Image Load Function
+  }, [pics, setLoading]);
 
   return (
     <div
@@ -121,7 +85,6 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
             <Link to="/databasePlant" className="changeDbLink">
               Switch to Plant Database 切换至植物检索数据库
             </Link>
-          
           </div>
           <SearchBar
             handleGet={handleGet}
@@ -162,44 +125,28 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
           ? pics.map((pic, index) => {
               return (
                 <div key={index} className="pic">
-                  {load[index] ? (
-                    <div className="db2picAlt" />
-                  ) : (
-                    <img
-                      style={{ cursor: "pointer" }}
-                      src={loadedSrc[index]}
-                      alt="plant"
-                      className="picImg"
-                      onClick={() =>
-                        redirect(
-                          loadedSrc[index].split("/").pop().split("-")[0],
-                        )
-                      }
-                      // 从url中分离plant name
-                    />
-                  )}
+                  <MediaImage
+                    {...responsiveMediaProps(pic.path, {
+                      sizes: "(max-width: 700px) 90vw, 30vw",
+                    })}
+                    style={{ cursor: "pointer" }}
+                    failedContent={<div className="db2picAlt" />}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : "auto"}
+                    alt="plant"
+                    className="picImg"
+                    onClick={() =>
+                      redirect(pic.path.split("/").pop().split("-")[0])
+                    }
+                    // 从url中分离plant name
+                  />
                 </div>
               );
             })
           : Array.from({ length: 3 }, (_, index) => index).map((index) => {
               return (
                 <div key={index} className="pic">
-                  {load[index] ? (
-                    <div className="db2picAlt" />
-                  ) : (
-                    <img
-                      style={{ cursor: "pointer" }}
-                      src={loadedSrc[index]}
-                      alt="plant"
-                      className="picImg"
-                      onClick={() =>
-                        redirect(
-                          loadedSrc[index].split("/").pop().split("-")[0],
-                        )
-                      }
-                      // 从url中分离plant name
-                    />
-                  )}
+                  <div className="db2picAlt" />
                 </div>
               );
             })}

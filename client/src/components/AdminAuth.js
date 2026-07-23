@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls, { mediaUrl } from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import { Button } from "primereact/button";
@@ -6,6 +7,7 @@ import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
 import { Carousel } from "primereact/carousel";
 import "../styles/AdminAuth.css";
+import { invalidateCatalogNames } from "../api/catalog";
 
 const AdminAuth = ({ admin }) => {
   const navigate = useNavigate();
@@ -24,14 +26,17 @@ const AdminAuth = ({ admin }) => {
         // console.log(id);
         // console.log(decision)
         await axios.put(
-          `${process.env.REACT_APP_Source_URL}/handleEditDecision`,
+          urls.handleEditDecision,
           { id: id, decision: decision },
         );
       }else{
         await axios.put(
-          `${process.env.REACT_APP_Source_URL}/handleBirdEditDecision`,
+          urls.handleBirdEditDecision,
           { id: id, decision: decision },
         );
+      }
+      if (decision) {
+        invalidateCatalogNames(dbtype === "bird" ? "bird" : "plant");
       }
       setUnAuthPosts((prevPosts) =>
         prevPosts.filter((post) => post._id !== id),
@@ -54,7 +59,7 @@ const AdminAuth = ({ admin }) => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/adminAuth`,
+          urls.adminAuth,
         );
         if (!admin) {
           toast.current.show({
@@ -82,7 +87,7 @@ const AdminAuth = ({ admin }) => {
 
   const handleNewCreationDecision = async (decision, id, dbType) => {
     try {
-      await axios.post(`${process.env.REACT_APP_Source_URL}/newCreationAuth`, {
+      await axios.post(urls.newCreationAuth, {
         id: id,
         decision: decision,
       });
@@ -106,10 +111,13 @@ const AdminAuth = ({ admin }) => {
   const handleNewPostDecision = async (decision, id, dbType) => {
     if(dbType === "bird"){
       try {
-        await axios.post(`${process.env.REACT_APP_Source_URL}/newBirdPostAuth`, {
+        await axios.post(urls.newBirdPostAuth, {
           id: id,
           decision: decision,
         });
+        if (decision) {
+          invalidateCatalogNames("bird");
+        }
         setUnAuthNewPosts((prevPosts) =>
           prevPosts.filter((post) => post._id !== id),
         );
@@ -127,10 +135,13 @@ const AdminAuth = ({ admin }) => {
       }
     }else{
       try {
-        await axios.post(`${process.env.REACT_APP_Source_URL}/newPostAuth`, {
+        await axios.post(urls.newPostAuth, {
           id: id,
           decision: decision,
         });
+        if (decision) {
+          invalidateCatalogNames("plant");
+        }
         setUnAuthNewPosts((prevPosts) =>
           prevPosts.filter((post) => post._id !== id),
         );
@@ -417,7 +428,7 @@ const AdminAuth = ({ admin }) => {
       <div className="flex gap-3">
         <div className="flex-1">
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.pic}`}
+            src={mediaUrl(item.pic, { compressed: true })}
             alt={item.pic}
             className="w-full"
           />
@@ -425,7 +436,7 @@ const AdminAuth = ({ admin }) => {
         </div>
         <div className="flex-1">
           <img
-            src={`${process.env.REACT_APP_Source_URL}/public/compressed${item.art}`}
+            src={mediaUrl(item.art, { compressed: true })}
             alt={item.art}
             className="w-full"
           />

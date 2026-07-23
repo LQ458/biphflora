@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../api/http";
+import urls from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import { TailSpin } from "react-loader-spinner";
 import { useContext } from "react";
@@ -50,7 +51,7 @@ const Login = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
+          urls.userInfo,
         );
         setAdmin(response.data.admin);
       } catch (error) {
@@ -62,7 +63,7 @@ const Login = () => {
   }, []);
 
   return (
-    <body className="loginbd">
+    <main className="loginbd">
       <section className="loginsec">
         <div style={{ position: "fixed", left: 0, top: 0 }}>
           <Navbar />
@@ -81,7 +82,7 @@ const Login = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                 />
-                <label for="username">Username:</label>
+                <label htmlFor="username">Username:</label>
               </div>
               <div className="inputboxLogin">
                 <input
@@ -92,7 +93,7 @@ const Login = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
-                <label for="password">Password:</label>
+                <label htmlFor="password">Password:</label>
               </div>
               <br />
               <button type="submit" className="loginBtn">
@@ -117,7 +118,7 @@ const Login = () => {
           </div>
         </div>
       </section>
-    </body>
+    </main>
   );
 };
 

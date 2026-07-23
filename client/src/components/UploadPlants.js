@@ -1,4 +1,5 @@
-import axios from "axios";
+import axios from "../api/http";
+import urls from "../tools/url";
 import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import { FileUpload } from "primereact/fileupload";
@@ -10,6 +11,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import imageCompression from "browser-image-compression";
+import { getCatalogNames } from "../api/catalog";
 
 const UploadPlants = () => {
   const [latinName, setLatinName] = useState("");
@@ -50,19 +52,13 @@ const UploadPlants = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userInfoResponse = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/userInfo`,
-        );
-        const searchNamesResponse = await axios.get(
-          `${process.env.REACT_APP_Source_URL}/searchNames`,
-        );
-        const fetchedNamesArray = searchNamesResponse.data.returnNames.map(
-          (result) => {
-            return {
-              value: result.latinName,
-            };
-          },
-        );
+        const [userInfoResponse, catalogNames] = await Promise.all([
+          axios.get(urls.userInfo),
+          getCatalogNames("plant"),
+        ]);
+        const fetchedNamesArray = catalogNames.map((result) => ({
+          value: result.latinName,
+        }));
         setNamesArray(fetchedNamesArray);
         setAdmin(userInfoResponse.data.admin);
         setUsername(userInfoResponse.data.username);
@@ -221,7 +217,7 @@ const UploadPlants = () => {
     formData.append("dbType", "plant");
 
     try {
-      await axios.post(`${process.env.REACT_APP_Source_URL}/uploadPlant`, formData, {
+      await axios.post(urls.uploadPlant, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -365,7 +361,7 @@ const UploadPlants = () => {
 
       // 上传文件
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadPic`,
+        urls.uploadPic,
         formData,
         {
           headers: {
@@ -445,7 +441,7 @@ const UploadPlants = () => {
 
     try {
       await axios.post(
-        `${process.env.REACT_APP_Source_URL}/uploadArt`,
+        urls.uploadArt,
         formData,
         {
           headers: {
