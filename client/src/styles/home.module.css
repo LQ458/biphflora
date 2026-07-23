@@ -34,13 +34,6 @@ section.home {
   justify-content: center;
   align-items: center;
 }
-/* Style the buttons */
-button {
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 1.5rem;
-}
 
 /* Style the ionicons */
 
