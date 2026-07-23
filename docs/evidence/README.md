@@ -14,6 +14,8 @@ the CV-safe impact record is
 lab and local performance record is
 [performance-baseline-2026-07-23.md](performance-baseline-2026-07-23.md), and
 collection rules are in [collection-method.md](collection-method.md).
+Future daily aggregate retention is described in
+[traffic-metric-retention.md](../operations/traffic-metric-retention.md).
 
 ## Status vocabulary
 
