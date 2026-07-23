@@ -10,26 +10,20 @@ const Admin = ({ handleAdminPreview }) => {
   const [users, setUsers] = useState([]);
   const [plants, setPlants] = useState([]);
   const [userLoadingState, setUserLoadingState] = useState();
-  const [admin, setAdmin] = useState(false);
-  const [username, setUsername] = useState();
-
-  const fetchAdmin = async () => {
-    try {
-      const response = await axios.get(
-        urls.userInfo,
-      );
-      setAdmin(response.data.admin);
-      if (!response.data.admin) {
-        alert("You are not an admin, redirecting to home page...");
-        navigate("/");
-      }
-      setUsername(response.data.username);
-    } catch (error) {
-      console.log(error);
-    }
-  };
 
   useEffect(() => {
+    const fetchAdmin = async () => {
+      try {
+        const response = await axios.get(urls.userInfo);
+        if (!response.data.admin) {
+          alert("You are not an admin, redirecting to home page...");
+          navigate("/");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
     const fetchData = async () => {
       try {
         await fetchAdmin();
@@ -44,7 +38,7 @@ const Admin = ({ handleAdminPreview }) => {
     };
 
     fetchData();
-  }, []);
+  }, [navigate]);
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -60,7 +54,7 @@ const Admin = ({ handleAdminPreview }) => {
     const name = username;
     setUserLoadingState("loading...");
     try {
-      const response = await axios.post(
+      await axios.post(
         urls.adminToggle,
         { username: name },
       );

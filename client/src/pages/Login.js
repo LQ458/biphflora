@@ -12,7 +12,6 @@ const Login = () => {
   const { login } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [admin, setAdmin] = useState("");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -20,6 +19,18 @@ const Login = () => {
 
   useEffect(() => {
     document.title = "Login 登录";
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await axios.get(urls.userInfo);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -47,23 +58,8 @@ const Login = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          urls.userInfo,
-        );
-        setAdmin(response.data.admin);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   return (
-    <main className="loginbd">
+    <section className="loginbd">
       <section className="loginsec">
         <div style={{ position: "fixed", left: 0, top: 0 }}>
           <Navbar />
@@ -118,7 +114,7 @@ const Login = () => {
           </div>
         </div>
       </section>
-    </main>
+    </section>
   );
 };
 

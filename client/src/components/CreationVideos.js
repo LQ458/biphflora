@@ -1,83 +1,15 @@
-import React, { useEffect,useState } from "react";
+import React from "react";
 import "../styles/creationVideos.css";
 import '../styles/videoModal.css';
-import { Link, redirect, useLocation,useNavigate } from "react-router-dom";
-import ReactPlayer from 'react-player'
+import { useNavigate } from "react-router-dom";
 
 
 
 
 
 
-const CreationDocumentary = (selectedSV) => {
-
-  const seasonVideoBgMapping = {
-    "2024sp":"",
-    "2024su":"",
-    "2024au":"",
-    "2024win":"",
-
-    "2025sp":"",
-    "2025su":"",
-    "2025au":"",
-    "2025win":"",
-
-    "2026sp":"",
-    "2026su":"",
-    "2026au":"",
-    "2026win":""
-  };
-
-  const location = useLocation();
-
+const CreationDocumentary = () => {
   const navigate = useNavigate();
-
-  const [displayVid, setDisplayVid] = useState(false);
-
-  function VideoModal(vidKey) {
-    // const { vidKey } = useParams(); // Gets the video ID from the URL (e.g., 'dQw4w9WgXcQ')
-    // const navigate = useNavigate();
-    
-    const keyVideoBgMapping = {
-      "2024sp":"",
-      "2024su":"",
-      "2024au":"",
-      "2024win":"",
-
-      "2025sp":"",
-      "2025su":"",
-      "2025au":"",
-      "2025win":"",
-
-      "2026sp":"",
-      "2026su":"",
-      "2026au":"",
-      "2026win":"",
-      "handroanthus-chrysanthus":"https://www.youtube.com/watch?v=ottGhOippQc",
-      "senna-surattensis":"https://youtu.be/n6znxjVFRXg",
-      "lagerstromia-speciosa":"https://youtu.be/WcpFuDbjQRo",
-    };
-
-    const url = `https://youtu.be/${vidKey}`
-
-    return (
-      // The overlay div, which closes the modal when clicked
-      <div className="modal-overlay" onClick={handleClose}>
-        {/* The modal content, stopping click propagation to prevent closing */}
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          
-          <ReactPlayer className='react-player' src={url} width="75rem" height="40rem"/>
-          <button className="close-button" onClick={()=>setDisplayVid(false)}>Back</button>
-        </div>
-      </div>
-    );
-  }
-
-  const [displayedKey, setDisplayedKey] = useState("ottGhOippQc");
-
-  function handleClose(){
-    setDisplayVid(false);
-  }
 
   const speciesVideoIds = {
     "Candroanthus Chrysanthus":"ottGhOippQc",
@@ -216,8 +148,6 @@ const CreationDocumentary = (selectedSV) => {
         </div>
 
       </div>
-
-      {/* {displayVid && VideoModal(displayedKey)} */}
     </div>
   );
 };

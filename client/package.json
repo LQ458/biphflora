@@ -16,19 +16,26 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "lint": "eslint src --max-warnings=0",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "deploy": "serve -s build"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "cssnano": "^7.0.6",
+    "eslint": "^8.57.1",
+    "eslint-config-react-app": "^7.0.1",
     "react-scripts": "5.0.1"
   },
   "overrides": {
     "@babel/runtime": "7.26.10",
+    "form-data@3": "3.0.5",
     "nanoid": "3.3.8",
     "postcss": "8.5.10",
-    "styled-components": "6.4.4"
+    "shell-quote@1": "1.8.4",
+    "styled-components": "6.4.4",
+    "websocket-driver@0.7": "0.7.5"
   },
   "eslintConfig": {
     "extends": [

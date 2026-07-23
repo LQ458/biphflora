@@ -1,14 +1,11 @@
-import { Link, redirect } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../styles/navBar.css";
 import { useContext } from "react";
 import { UserContext } from "../UserContext";
-import { Button } from "primereact/button";
-import { useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const { user } = useContext(UserContext);
   const status = user.get("status");
-  const navigate = useNavigate();
 
   return (
     <div className="nav">

@@ -6,30 +6,27 @@ import CreationNotes from "../components/CreationNotes.js";
 import CreationView from "../components/CreationView.js";
 import CreationVideos from "../components/CreationVideos.js";
 import Navbar from "../components/Navbar.js";
-import { Outlet } from "react-router-dom";
+
+const TITLE_MAPPING = {
+  paintings: "Creation Paintings 绘画",
+  "Notes of Nature": "Creation Notes of Nature 大自然笔记",
+  videos: "Creation Documentary 纪录",
+};
 
 const Creation = (props) => {
   const [currentSubpage, setCurrentSubpage] = useState("paintings");
   const [viewKey, setViewKey] = useState("");
   const [loading, setLoading] = useState(true);
-  const [hasData, setHasData] = useState(false);
-
-  const titleMapping = {
-    paintings: "Creation Paintings 绘画",
-    "Notes of Nature": "Creation Notes of Nature 大自然笔记",
-    videos: "Creation Documentary 纪录",
-  };
 
   useEffect(() => {
     setCurrentSubpage(props.currentPage);
   }, [props.currentPage]); // The "dependency array"
 
   useEffect(() => {
-    document.title = titleMapping[currentSubpage];
+    document.title = TITLE_MAPPING[currentSubpage];
   }, [currentSubpage]);
 
   const handleDataLoad = (hasEntries) => {
-    setHasData(hasEntries);
     setLoading(!hasEntries);
   };
 
@@ -58,7 +55,7 @@ const Creation = (props) => {
 
   const handleClick = (pick) => {
     setCurrentSubpage(pick);
-    document.title = titleMapping[pick];
+    document.title = TITLE_MAPPING[pick];
   };
 
   return (

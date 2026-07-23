@@ -70,6 +70,9 @@ const SearchBar = ({
           type="submit"
           className="db2SearchButton"
           disabled={!searchResults[0]}
+          aria-label={
+            type === "bird" ? "Search bird database" : "Search plant database"
+          }
         >
           <SearchIcon width={30} height={30} />
         </button>

@@ -19,11 +19,13 @@ jest.mock("axios", () => ({
 
 let container;
 let root;
+let updateRoot;
 
 beforeEach(() => {
   container = document.createElement("div");
   document.body.appendChild(container);
   root = createRoot(container);
+  updateRoot = root.render.bind(root);
   axios.get.mockReset();
   axios.get.mockResolvedValue({ data: {} });
   axios.post.mockReset();
@@ -39,7 +41,7 @@ afterEach(async () => {
 
 async function renderAt(pathname) {
   await act(async () => {
-    root.render(
+    updateRoot(
       <MemoryRouter
         initialEntries={[pathname]}
         future={{ v7_relativeSplatPath: true, v7_startTransition: true }}

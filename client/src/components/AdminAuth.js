@@ -14,9 +14,6 @@ const AdminAuth = ({ admin }) => {
   const [unAuthPosts, setUnAuthPosts] = useState([]);
   const [unAuthNewPosts, setUnAuthNewPosts] = useState([]);
   const [unAuthCreationEntry, setUnAuthCreationEntry] = useState([]);
-  const [currentChange, setCurrentChange] = useState(0);
-  const [newCurrentChange, setNewCurrentChange] = useState(0);
-  const [artCurrentChange, setArtCurrentChange] = useState(0);
   const toast = useRef(null);
 
   const handleEditDecision = async (id, decision, dbtype) => {
@@ -160,18 +157,6 @@ const AdminAuth = ({ admin }) => {
     }
   };
   
-
-  const handleLeft = (change, setChange) => {
-    if (change > 0) {
-      setChange(change - 1);
-    }
-  };
-
-  const handleRight = (change, setChange, posts) => {
-    if (change < posts.length - 1) {
-      setChange(change + 1);
-    }
-  };
 
   const responsiveOptions = [
     {

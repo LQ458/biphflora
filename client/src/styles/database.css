@@ -27,7 +27,7 @@ div.dmsg{
   line-height: 1.5rem;
   text-align: start;
   margin: 0.5rem;
-  color: #dce6cd;
+  color: #eef4e4;
   margin-left: 1rem;
   justify-content: center;
   width: 100%;
@@ -56,7 +56,7 @@ div.infoDatabase {
   padding-bottom: 5rem;
 }
 div.homeDatabase {
-  background: url("../../public/homescreen1.jpg") no-repeat;
+  background: url("../assets/backgrounds/home-screen.webp") no-repeat;
   background-attachment: fixed;
   background-position: center -2rem;
   background-size: cover;

@@ -10,14 +10,6 @@ import Navbar from "../components/Navbar.js";
 import styles from "../styles/galleryDatabase.module.css";
 
 const EditPage = (props) => {
-  const [latinName, setLatinName] = useState("");
-  const [commonName, setCommonName] = useState("");
-  const [chineseName, setChineseName] = useState("");
-  const [otherNames, setOtherNames] = useState("");
-  const [links, setLinks] = useState();
-  const [chineseLinks, setChineseLinks] = useState();
-  const [editor, setEditor] = useState();
-  const [artist, setArtist] = useState();
   const [auth, setAuth] = useState(false);
 
   const [subpage, setSubpage] = useState(false);
@@ -31,7 +23,7 @@ const EditPage = (props) => {
   // Which month (e.g. "Mar 2025") is currently selected for filtering:
   const [selectedMonth, setSelectedMonth] = useState("");
   // Page index for the filtered images:
-  const [pageIndex, setPageIndex] = useState(0);
+  const [, setPageIndex] = useState(0);
   const [picsByMonth, setPicsByMonth] = useState({});
   useEffect(() => {
     if (!pics) return;
@@ -230,8 +222,6 @@ const EditPage = (props) => {
         </div>
         {selectedMonth ? (() => {
           const all = picsByMonth[selectedMonth] || [];
-          const pageSize = 12;
-          const start = pageIndex * pageSize;
           const paged = all
 
           return (

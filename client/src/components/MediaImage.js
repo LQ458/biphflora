@@ -9,6 +9,7 @@ const MediaImage = ({
   failedContent = null,
   loading = "lazy",
   decoding = "async",
+  fetchPriority,
   alt,
   onError,
   ...imageProps
@@ -54,6 +55,7 @@ const MediaImage = ({
       srcSet={currentSrcSet}
       loading={loading}
       decoding={decoding}
+      fetchpriority={fetchPriority}
       alt={alt}
       onError={handleError}
     />

@@ -12,26 +12,6 @@ function VideoModal() {
   };
   
 
-  const keyVideoBgMapping = {
-    "2024sp":"",
-    "2024su":"",
-    "2024au":"",
-    "2024win":"",
-
-    "2025sp":"",
-    "2025su":"",
-    "2025au":"",
-    "2025win":"",
-
-    "2026sp":"",
-    "2026su":"",
-    "2026au":"",
-    "2026win":"",
-    "handroanthus-chrysanthus":"https://www.youtube.com/watch?v=ottGhOippQc",
-    "senna-surattensis":"https://youtu.be/n6znxjVFRXg",
-    "lagerstromia-speciosa":"https://youtu.be/WcpFuDbjQRo",
-  };
-
   const url = `https://youtu.be/${vidKey}`
 
   return (

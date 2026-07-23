@@ -11,13 +11,24 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  const [admin, setAdmin] = useState("");
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Register 注册";
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        await axios.get(urls.userInfo);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleSubmit = async (e) => {
@@ -51,23 +62,8 @@ const Register = () => {
       console.log(error);
     }
   };
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          urls.userInfo,
-        );
-        setAdmin(response.data.admin);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
   return (
-    <body className="registerbd">
+    <section className="registerbd">
       <section className="registersec">
         <div style={{ position: "fixed", left: 0, top: 0 }}>
           <Navbar />
@@ -132,7 +128,7 @@ const Register = () => {
           </div>
         </div>
       </section>
-    </body>
+    </section>
   );
 };
 

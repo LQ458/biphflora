@@ -1,6 +1,5 @@
 import axios from "../api/http";
 import urls from "../tools/url";
-import { useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import { FileUpload } from "primereact/fileupload";
 import { Toast } from "primereact/toast";
@@ -26,33 +25,25 @@ const UploadPlants = () => {
   const [picSeason, setPicSeason] = useState("");
   const [picPhotographer, setPicPhotographer] = useState("");
   const [picSetting, setPicSetting] = useState("");
-  const [picArt, setPicArt] = useState("photography");
+  const [picArt] = useState("photography");
   const [namesArray, setNamesArray] = useState([]);
   const [linkTitles, setLinkTitles] = useState([]);
   const [linkUrls, setLinkUrls] = useState([]);
   const [chineseLinkTitles, setChineseLinkTitles] = useState([]);
   const [chineseLinkUrls, setChineseLinkUrls] = useState([]);
-  const [username, setUsername] = useState("");
-  const [admin, setAdmin] = useState("");
   const [otherNames, setOtherNames] = useState("");
   const [month, setMonth] = useState("");
-  const [artist, setArtist] = useState("");
-  const [artLocation, setArtLocation] = useState([]);
-  const [plant, setPlant] = useState([]);
-  const [artFiles, setArtFiles] = useState([]);
   const [picFiles, setPicFiles] = useState([]);
   const [plantLoading, setPlantLoading] = useState(false);
   const [picLoading, setPicLoading] = useState(false);
-  const [artLoading, setArtLoading] = useState(false);
 
   const fileUploadRef = useRef(null);
-  const artFileUploadRef = useRef(null);
   const toast = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [userInfoResponse, catalogNames] = await Promise.all([
+        const [, catalogNames] = await Promise.all([
           axios.get(urls.userInfo),
           getCatalogNames("plant"),
         ]);
@@ -60,8 +51,6 @@ const UploadPlants = () => {
           value: result.latinName,
         }));
         setNamesArray(fetchedNamesArray);
-        setAdmin(userInfoResponse.data.admin);
-        setUsername(userInfoResponse.data.username);
       } catch (error) {
         console.log(error);
       }
@@ -142,17 +131,6 @@ const UploadPlants = () => {
     setChineseLinkTitles(linkArray.map((item) => item.linkTitle));
     setChineseLinkUrls(linkArray.map((item) => item.link));
   }, [chineseLinks]);
-
-  const handleArtFileChange = (e) => {
-    try {
-      setArtFiles(e.files);
-      if (artFileUploadRef.current) {
-        artFileUploadRef.current.clear();
-      }
-    } catch (error) {
-      console.error("File upload failed", error);
-    }
-  };
 
   const handlePicFileChange = (e) => {
     try {
@@ -412,74 +390,6 @@ const UploadPlants = () => {
     }
   };
 
-  const handleArtSubmit = async (e) => {
-    e.preventDefault();
-    setArtLoading(true);
-
-    const formData = new FormData();
-    formData.append("plant", plant);
-    formData.append("artist", artist);
-    formData.append("artLocation", artLocation);
-
-    if (artFiles.length === 0) {
-      toast.current.show({
-        severity: "error",
-        summary: "上传失败",
-        detail: "请上传至少一张图片",
-        life: 3000,
-      });
-      setArtLoading(false);
-      return;
-    }
-
-    if (artFiles) {
-      for (let i = 0; i < artFiles.length; i++) {
-        const file = artFiles[i];
-        formData.append("files", file);
-      }
-    }
-
-    try {
-      await axios.post(
-        urls.uploadArt,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        },
-      );
-      toast.current.show({
-        severity: "success",
-        summary: "上传成功",
-        detail: "图片上传成功",
-        life: 3000,
-      });
-      setArtFiles([]);
-      setPlant("");
-      setArtist("");
-      setArtLocation("");
-    } catch (error) {
-      if (error.response.status === 404) {
-        toast.current.show({
-          severity: "error",
-          summary: "上传失败",
-          detail: "请选择列表中的植物",
-          life: 3000,
-        });
-      } else {
-        toast.current.show({
-          severity: "error",
-          summary: "上传失败",
-          detail: "请重试",
-          life: 3000,
-        });
-      }
-    } finally {
-      setArtLoading(false);
-    }
-  };
-
   const resetPicForm = () => {
     setPicFiles([]);
     setPicEnglishName("");
@@ -489,16 +399,6 @@ const UploadPlants = () => {
     setMonth("");
     if (fileUploadRef.current) {
       fileUploadRef.current.clear();
-    }
-  };
-
-  const resetArtForm = () => {
-    setArtFiles([]);
-    setPlant("");
-    setArtist("");
-    setArtLocation("");
-    if (artFileUploadRef.current) {
-      artFileUploadRef.current.clear();
     }
   };
 
