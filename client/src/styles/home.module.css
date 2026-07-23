@@ -62,7 +62,7 @@ h4.plantInBloom {
   margin: 0;
 }
 div.part1 {
-  background: url("../../public/new_bg.jpg") no-repeat;
+  background: url("../assets/backgrounds/new-bg.webp") no-repeat;
   border: none;
   background-position: top center;
   position: relative;
