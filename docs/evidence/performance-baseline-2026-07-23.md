@@ -9,18 +9,25 @@ improved the public site.
 
 The public URL was measured once per Lighthouse form factor with Lighthouse
 13.4.1 and headless Chrome 150 on macOS arm64. Lighthouse used its simulated
-throttling profiles and a cold run. Scores and timings can vary between runs,
-machines, networks, browser versions, and server states.
+throttling profiles. Storage reset was enabled
+(`disableStorageReset: false`) and each result is one cold navigation. Scores
+and timings can vary between runs, machines, networks, browser versions, and
+server states.
 
-| Form factor | Performance | Accessibility | Best practices | SEO |   FCP |    LCP |   TBT | CLS | Requests | Transfer bytes |
-| ----------- | ----------: | ------------: | -------------: | --: | ----: | -----: | ----: | --: | -------: | -------------: |
-| Mobile      |          58 |            80 |            100 |  92 | 6.1 s | 12.9 s | 70 ms |   0 |       12 |     14,734,259 |
-| Desktop     |          85 |            80 |            100 |  92 | 0.7 s |  1.9 s |  0 ms |   0 |       12 |     14,250,731 |
+| Form factor | Emulated viewport |  DPR | Simulated network and CPU                 |
+| ----------- | ----------------- | ---: | ----------------------------------------- |
+| Mobile      | 412×823           | 1.75 | 150 ms RTT, 1,638.4 Kbps, 4× CPU slowdown |
+| Desktop     | 1350×940          |    1 | 40 ms RTT, 10,240 Kbps, 1× CPU slowdown   |
+
+| Form factor | Performance | Accessibility | Best practices | SEO |   FCP |    LCP |   TBT | CLS | Requests | Total transfer | Image requests / transfer | Responsive WebP request width |
+| ----------- | ----------: | ------------: | -------------: | --: | ----: | -----: | ----: | --: | -------: | -------------: | ------------------------: | ----------------------------: |
+| Mobile      |          58 |            80 |            100 |  92 | 6.1 s | 12.9 s | 70 ms |   0 |       12 |     14,734,259 |            5 / 14,329,185 |                    1600 (3/3) |
+| Desktop     |          85 |            80 |            100 |  92 | 0.7 s |  1.9 s |  0 ms |   0 |       12 |     14,250,731 |            5 / 13,845,640 |                    1600 (3/3) |
 
 ```text
 Metric: public home-page mobile Lighthouse observation
-Exact definition: one Lighthouse 13.4.1 navigation of https://www.biphflora.com/ using the default mobile form factor and simulated throttling
-Value: performance 58; accessibility 80; best practices 100; SEO 92; FCP 6.1 s; LCP 12.9 s; TBT 70 ms; CLS 0; 12 requests; 14,734,259 transfer bytes
+Exact definition: one Lighthouse 13.4.1 navigation of https://www.biphflora.com/ at 412×823 and DPR 1.75, with storage reset and the recorded simulated mobile network/CPU settings
+Value: performance 58; accessibility 80; best practices 100; SEO 92; FCP 6.1 s; LCP 12.9 s; TBT 70 ms; CLS 0; 12 requests / 14,734,259 bytes; 5 image requests / 14,329,185 bytes; all 3 responsive WebP requests used the 1600-width path
 Time window: fetch started 2026-07-23T04:46:25.397Z
 Source: public HTTPS responses and Lighthouse JSON output
 Query/calculation: command below; values read from Lighthouse category and audit fields
@@ -32,8 +39,8 @@ Limitations: not field data, not a percentile, not a before/after experiment, an
 
 ```text
 Metric: public home-page desktop Lighthouse observation
-Exact definition: one Lighthouse 13.4.1 navigation of https://www.biphflora.com/ using the desktop preset
-Value: performance 85; accessibility 80; best practices 100; SEO 92; FCP 0.7 s; LCP 1.9 s; TBT 0 ms; CLS 0; 12 requests; 14,250,731 transfer bytes
+Exact definition: one Lighthouse 13.4.1 navigation of https://www.biphflora.com/ at 1350×940 and DPR 1, with storage reset and the recorded simulated desktop network/CPU settings
+Value: performance 85; accessibility 80; best practices 100; SEO 92; FCP 0.7 s; LCP 1.9 s; TBT 0 ms; CLS 0; 12 requests / 14,250,731 bytes; 5 image requests / 13,845,640 bytes; all 3 responsive WebP requests used the 1600-width path
 Time window: fetch started 2026-07-23T04:46:49.033Z
 Source: public HTTPS responses and Lighthouse JSON output
 Query/calculation: command below; values read from Lighthouse category and audit fields
@@ -47,6 +54,14 @@ The mobile run transferred a 12,727,636-byte JPEG background. The current
 source tree references a 764,400-byte WebP replacement for that role, but that
 does not establish a public-site improvement until the corresponding build is
 deployed and remeasured under the same protocol and conditions.
+
+The network records also showed that all three responsive home images requested
+the 1600-width variant at both Lighthouse form factors. A fixed-viewport DOM
+inspection traced this to unescaped whitespace in legacy media filenames:
+whitespace made the `srcset` candidate list invalid, so the browser retained
+the largest `src` fallback. The source tree now percent-encodes media-path
+segments before constructing `srcset`. This is a correctness fix, not a
+measured public performance improvement until deployed and remeasured.
 
 The same run also identified missing accessible button text, insufficient
 contrast, a missing main landmark, and a missing meta description. The source
@@ -74,6 +89,44 @@ npx --yes lighthouse@13.4.1 https://www.biphflora.com/ \
 
 The JSON files are measurement artifacts, not repository inputs, and are not
 committed.
+
+## Responsive candidate selection
+
+The corrected source was checked with the anonymous local fixture, including a
+filename containing a space. This check records browser selection behavior; it
+is not a load-time benchmark and does not use its cache state as performance
+evidence.
+
+| Page            | Viewport | DPR | Declared `sizes`                | Images checked | Selected path width |
+| --------------- | -------- | --: | ------------------------------- | -------------: | ------------------: |
+| Local catalogue | 390×844  |   1 | `(max-width: 700px) 90vw, 30vw` |              3 |         480 for 3/3 |
+| Local catalogue | 1440×900 |   1 | `(max-width: 700px) 90vw, 30vw` |              3 |         480 for 3/3 |
+
+```text
+Metric: corrected responsive candidate selection
+Exact definition: currentSrc width segment for each rendered home-catalogue image after load at two fixed browser viewports
+Value: 480-width candidate for 3/3 images at 390×844 DPR 1 and 3/3 images at 1440×900 DPR 1
+Time window: one local check on 2026-07-23
+Source: anonymous biphflora_demo fixture served by the local React/Express application in Chrome 150
+Query/calculation: inspect currentSrc for every rendered img[srcset] and extract the /variants/v1/<width>/ segment
+Bot/internal-traffic filtering: not applicable
+Collected on: 2026-07-23
+Confidence: direct for these viewports, fixture records, and browser version
+Limitations: local development serving, three synthetic images, DPR 1, and no network timing; does not prove the public build has the fix
+```
+
+After loading the page at the stated viewport, the selection check can be
+repeated in the browser console without exposing filenames:
+
+```js
+[...document.querySelectorAll("img[srcset]")].map((image) => ({
+  slotCssPixels: image.clientWidth,
+  selectedWidth: new URL(image.currentSrc).pathname.match(
+    /\/variants\/v1\/(\d+)\//,
+  )?.[1],
+  sizes: image.sizes,
+}));
+```
 
 ## Source-tree static assets
 

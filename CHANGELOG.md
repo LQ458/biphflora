@@ -30,6 +30,9 @@ contains no release tags from which to reconstruct earlier version sections.
   restored strict warnings-as-errors verification.
 - Improved client landmarks, accessible names, and text contrast identified by
   the documented Lighthouse baseline.
+- Percent-encoded legacy media path segments so filenames containing whitespace
+  remain valid `srcset` candidates instead of falling back to the largest
+  image.
 
 ## [3.0.0] - 2026-07-23
 

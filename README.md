@@ -31,6 +31,15 @@ contain no production account, attribution, log, or media data._
 - MongoDB-backed records, Redis-backed active sessions, liveness/readiness
   endpoints, and opt-in privacy-conscious operational telemetry.
 
+## Technology
+
+- React 18, React Router, Axios, Fuse.js, and Create React App.
+- Node.js, Express, Mongoose, MongoDB, Redis, JWT, and bcrypt.
+- Multer and Sharp for validated uploads and responsive media generation.
+- Nginx as the externally managed production edge.
+- npm lockfiles, Node's test runner, Jest, ESLint, GitHub Actions, and Gitleaks
+  for verification.
+
 ## Verified operational snapshot
 
 The following values have a recorded source, definition, collection date, and
@@ -43,7 +52,7 @@ limitation. They are not estimates of users or availability.
 | Retained traffic evidence | 1.13 million Nginx entries were analyzed; strict filtering retained 182,149 recognized product-route requests and 37,409 successful document-load candidates from 2024-10-31 through 2026-07-22. Requests are not visits or people. |
 | Recorded workflows        | Retained logs contain 964 filtered successful write, upload, review, and delete endpoint responses. They are response counts, not unique actions or contributors.                                                                   |
 | Media delivery            | A full 1,033-file, 2.11 GB canonical-media population has 3,099 paired responsive derivatives across three widths; originals and legacy URLs remain available.                                                                      |
-| Verification              | 39 backend and 19 frontend tests, strict frontend lint, production builds, production-dependency audit, and committed-secret scanning.                                                                                              |
+| Verification              | 39 backend and 20 frontend tests, strict frontend lint, production builds, production-dependency audit, and committed-secret scanning.                                                                                              |
 
 Valid visits, verified unique visitors, historical uptime, and verified
 contributor or organization headcount remain unavailable. See the
