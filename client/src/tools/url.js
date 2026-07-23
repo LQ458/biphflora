@@ -1,6 +1,12 @@
-export const apiOrigin = (process.env.REACT_APP_Source_URL || "").replace(
-  /\/+$/,
-  "",
+export const normalizeApiOrigin = (value) => {
+  const configuredOrigin = String(value || "")
+    .trim()
+    .replace(/\/+$/, "");
+  return configuredOrigin || "/api";
+};
+
+export const apiOrigin = normalizeApiOrigin(
+  process.env.REACT_APP_Source_URL,
 );
 
 const withLeadingSlash = (path) => {

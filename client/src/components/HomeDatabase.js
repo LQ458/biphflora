@@ -24,7 +24,7 @@ const DatabaseTwo = ({ handleGet, setLoading }) => {
     const getDb2Pic = async () => {
       try {
         const response = await axios.get(urls.getDb2Pic);
-        setPics(response.data.pics);
+        setPics(Array.isArray(response.data?.pics) ? response.data.pics : []);
       } catch (error) {
         console.log(error);
       }

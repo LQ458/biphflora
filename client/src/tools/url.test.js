@@ -3,8 +3,18 @@ import urls, {
   apiUrl,
   mediaUrl,
   mediaVariantUrl,
+  normalizeApiOrigin,
   responsiveMediaProps,
 } from "./url";
+
+test("defaults missing API configuration to the production proxy", () => {
+  expect(normalizeApiOrigin(undefined)).toBe("/api");
+  expect(normalizeApiOrigin("")).toBe("/api");
+  expect(normalizeApiOrigin("  ")).toBe("/api");
+  expect(normalizeApiOrigin("http://localhost:3001/")).toBe(
+    "http://localhost:3001",
+  );
+});
 
 test("normalizes API and media paths without changing the configured origin", () => {
   expect(apiUrl("health/live")).toBe(`${apiOrigin}/health/live`);
