@@ -1,94 +1,147 @@
 # BiphFlora
 
-BiphFlora is a React and Express application for browsing, searching, contributing to, and reviewing plant and bird records. This repository is maintained for private, non-commercial use under the terms in [LICENSE](LICENSE).
+[![Verify](https://github.com/LQ458/biphflora/actions/workflows/verify.yml/badge.svg)](https://github.com/LQ458/biphflora/actions/workflows/verify.yml)
+
+[Live application](https://www.biphflora.com/) ·
+[System overview](docs/architecture/system-overview.md) ·
+[Evidence index](docs/evidence/README.md) ·
+[Deployment guidance](docs/operations/deployment-readiness.md)
+
+BiphFlora is a bilingual React and Express application for discovering,
+documenting, contributing to, and reviewing campus plant and bird records. It
+combines multilingual fuzzy search, seasonal image galleries, creative work,
+and a moderated contribution workflow while retaining the existing API and
+MongoDB contracts.
+
+| Local catalogue                                                                                           | Plant detail                                                                                               |
+| --------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| ![BiphFlora local catalogue populated with anonymous synthetic fixtures](docs/assets/local-demo-home.jpg) | ![BiphFlora plant detail populated with an anonymous synthetic fixture](docs/assets/local-demo-detail.jpg) |
+
+_The screenshots are generated from the deterministic local fixture. They
+contain no production account, attribution, log, or media data._
+
+## What the application supports
+
+- Chinese, English, Latin-name, alias, and fuzzy catalogue search.
+- Public catalogue, glossary, detail, seasonal gallery, and creation views.
+- Authenticated submissions and edits with administrator review boundaries.
+- JPEG, PNG, and WebP upload validation with canonical media retention.
+- Responsive 480, 960, and 1600 pixel WebP delivery with lazy loading,
+  `srcset`, legacy fallback, and coordinated rename/delete behavior.
+- MongoDB-backed records, Redis-backed active sessions, liveness/readiness
+  endpoints, and opt-in privacy-conscious operational telemetry.
+
+## Verified operational snapshot
+
+The following values have a recorded source, definition, collection date, and
+limitation. They are not estimates of users or availability.
+
+| Area                      | Verified observation                                                                                                                                                                                                                |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Public history            | Successful public-page evidence exists from 2024-01-15; this is a lower bound, not proof of uninterrupted uptime.                                                                                                                   |
+| Current catalogue         | 153 plant documents (152 approved, 1 pending), 970 picture documents, 27 artwork documents, and 18 approved creation entries at the 2026-07-22 production snapshot.                                                                 |
+| Retained traffic evidence | 1.13 million Nginx entries were analyzed; strict filtering retained 182,149 recognized product-route requests and 37,409 successful document-load candidates from 2024-10-31 through 2026-07-22. Requests are not visits or people. |
+| Recorded workflows        | Retained logs contain 964 filtered successful write, upload, review, and delete endpoint responses. They are response counts, not unique actions or contributors.                                                                   |
+| Media delivery            | A full 1,033-file, 2.11 GB canonical-media population has 3,099 paired responsive derivatives across three widths; originals and legacy URLs remain available.                                                                      |
+| Verification              | 39 backend and 19 frontend tests, strict frontend lint, production builds, production-dependency audit, and committed-secret scanning.                                                                                              |
+
+Valid visits, verified unique visitors, historical uptime, and verified
+contributor or organization headcount remain unavailable. See the
+[metric catalog](docs/evidence/metric-catalog.md), the
+[traffic report](docs/evidence/traffic-report-2026-07-23.md), and the
+[media calculation](docs/evidence/cv-impact-report-2026-07-23.md) before
+reusing any number.
 
 ## Architecture
 
-The application keeps the existing frontend/backend split:
-
 ```text
-React SPA (client/) ── HTTP/JSON ──> Express (app.js)
-                                      ├─ MongoDB/Mongoose: records, users, edits, media metadata
-                                      ├─ Redis: login-session token cache
-                                      └─ filesystem: original uploads and derived media
+React SPA ── HTTP/JSON ──> Express
+                              ├─ MongoDB: catalogue, users, edits, media paths
+                              ├─ Redis: active login-session tokens
+                              └─ filesystem: canonical and derived media
 ```
 
-The production arrangement documented for the current deployment is Nginx in front of the frontend and Express processes, with MongoDB and Redis running on the same host. There is no repository-managed Docker or staging environment. See [the verified baseline](docs/evidence/production-baseline-2026-07-22.md) for dates, counts, and evidence limitations.
+Production places Nginx in front of the separately built React client and the
+Express process. The backend is composed from focused authentication, catalog,
+content, telemetry, runtime, and media boundaries while compatibility handlers
+remain in `app.js` during the gradual migration. MongoDB references media
+paths; it does not contain the image bytes, so database and filesystem
+consistency are treated as separate operational concerns.
 
-### Main modules
-
-- `client/`: React pages, route-level loading, shared API and media helpers.
-- `app.js`: compatibility-preserving HTTP composition and legacy routes.
-- `routes/`: catalog, authentication, content, and optional privacy-safe telemetry routers.
-- `middleware/`: authentication/authorization, request context, logging, and audit boundaries.
-- `models/`: Mongoose schemas and image/upload policies.
-- `services/`: filesystem/media path helpers.
-- `docs/`: architecture, operations, evidence methods, and phase reports.
-
-The catalog directory (`GET /catalog/names?type=plant|bird`) is a small read-only endpoint for the client Fuse.js index. Legacy name-search endpoints remain available during the migration.
+The complete request, authentication, upload, responsive-media, fallback, and
+failure flows are documented in the
+[system overview](docs/architecture/system-overview.md) and
+[image-delivery design](docs/architecture/image-delivery-design.md).
 
 ## Local development
 
-Requirements: Node.js 18.17 or newer, npm, MongoDB, and Redis. Install each dependency tree separately:
+Requirements: Node.js 18.17 or newer, npm, Docker with Compose, and two terminal
+windows.
 
 ```sh
+cp .env.example .env
 npm ci
 npm --prefix client ci
+npm run dev:services
+npm run seed:demo
+npm run start
 ```
 
-Runtime configuration is supplied through an ignored `.env` file. The application reads `MONGODB_URL`, `REDIS_URL`, `PORT`, `HOST`, and the existing lowercase JWT variable `secret`. Optional flags are disabled unless explicitly set to `true`:
-
-```text
-MONGODB_URL=mongodb://127.0.0.1:27017/biphflora
-REDIS_URL=redis://127.0.0.1:6379
-PORT=3001
-HOST=127.0.0.1
-secret=<local-only-jwt-secret>
-REQUEST_LOG_ENABLED=false
-AUDIT_EVENTS_ENABLED=false
-AUDIT_HASH_SECRET=<local-only-audit-secret>
-SEARCH_TELEMETRY_ENABLED=false
-```
-
-The browser uses the existing `REACT_APP_Source_URL` value for the API base URL. Search telemetry has a separate opt-in flag, `REACT_APP_SEARCH_TELEMETRY_ENABLED`, and never sends raw search text.
-
-Useful commands:
+In the second terminal:
 
 ```sh
-npm run start          # backend with nodemon
-npm --prefix client start
-npm run test:backend
-npm run test:frontend
-npm run build
-npm run verify         # backend tests, frontend tests, production build
+REACT_APP_Source_URL=http://127.0.0.1:3001 npm --prefix client start
 ```
 
-The backend exposes `GET /health/live` for process liveness and `GET /health/ready` for MongoDB/Redis readiness. Readiness is intentionally distinct from liveness and does not return configuration values.
+Open `http://localhost:3000`. The seed command is idempotent and only accepts a
+literal loopback MongoDB URL targeting the fixed `biphflora_demo` database. It
+creates three anonymous synthetic records and locally generated image
+derivatives; it does not create accounts or copy production data.
 
-## Authentication and data boundaries
+Stop the repository-managed local services with:
 
-JWT requests may use the existing bare token form or the standard `Authorization: Bearer <token>` form. Authenticated operations return `401` when no valid session is available; administrator-only operations return `403` for authenticated non-admin users. User projections exclude password fields and `originalPassword` is no longer written by registration code.
+```sh
+npm run dev:services:down
+```
 
-Images are accepted as JPEG, PNG, or WebP, up to the current per-file and batch limits in [`models/uploadPolicy.js`](models/uploadPolicy.js). Original files are retained; derived files are written separately and are not generated by Git deployment. Do not run media backfills or database migrations against production from this repository.
+The browser uses `REACT_APP_Source_URL` when supplied and otherwise defaults to
+the production-compatible `/api` prefix. The backend exposes
+`GET /health/live` for process liveness and `GET /health/ready` for MongoDB and
+Redis readiness without returning configuration values.
 
-## API surface
+## Verification
 
-The compatibility surface includes authentication (`/login`, `/register`, `/refresh`, `/logout`), catalog and legacy search routes, plant/bird browsing and detail routes, contribution/edit/review routes, media uploads, and administrator routes. Exact request and response contracts are covered by focused tests and the existing client API helpers. New health and optional telemetry endpoints are additive.
+```sh
+npm run verify
+npm run audit:production
+npm run evidence:search-performance
+```
 
-## Image and search delivery
+`npm run verify` runs backend tests, strict frontend lint, focused frontend
+tests, and the production client build. The production dependency trees audit
+cleanly at the recorded baseline; remaining Create React App development/build
+chain findings are tracked separately in
+[dependency status](docs/operations/dependency-status.md). No destructive
+automatic dependency upgrade is part of the verification command.
 
-Lists use small derived media with lazy loading and a bounded fallback to the original. Detail media is loaded on demand, and the client no longer preloads an original before requesting its derived counterpart. Fuse indexes are cached per catalog snapshot and support Chinese, English, Latin, aliases, and fuzzy matching. Design constraints, source links, and measurement rules are in [the image-delivery design](docs/architecture/image-delivery-design.md); no compression percentage or latency claim is made without a reproducible sample.
+## Security and data boundaries
 
-## Evidence and operations
+JWT requests support both the standard `Bearer` form and the legacy bare-token
+form during the compatibility period. Protected operations require the current
+Redis token and MongoDB user state; administrator routes additionally recheck
+the current administrator flag. Public user responses explicitly exclude
+password fields.
 
-Metrics distinguish HTTP requests, pageviews, sessions, and visitors. Raw IPs, user agents, credentials, tokens, request bodies, and raw search text stay in their source systems. Aggregated methods and limitations live in [the metric catalog](docs/evidence/metric-catalog.md) and [the collection method](docs/evidence/collection-method.md). Historical uptime, unique visitors, active users, backups, and restore capability are reported as unavailable when no reliable evidence exists.
+Do not commit `.env` files, credentials, raw logs, production media, build
+output, database dumps, account data, or attribution labels. Evidence scripts
+aggregate data at its source and retain definitions and limitations rather than
+raw identifiers. Media backfills, database migrations, Nginx changes, service
+restarts, and production deployments remain explicit operational actions.
 
-Before any production deployment, follow the staged checklist in [deployment readiness](docs/operations/deployment-readiness.md). The safe rollback order is code/build first, then (only with separate approval) Nginx configuration, MongoDB data, or media references. This repository does not push, deploy, restart services, alter firewalls, or write production data automatically.
-
-## Repository policy
-
-Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) before making changes. Do not commit `.env` files, credentials, raw logs, production media, build output, or database dumps. Keep branch names and commit messages descriptive and free of tool or assistant labels.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) and
+[SECURITY.md](SECURITY.md) before making changes.
 
 ## License
 
-The project uses the private-use license in [LICENSE](LICENSE). It is not an open-source commercial license.
+This repository is maintained for private, non-commercial use under the terms
+in [LICENSE](LICENSE). It is not an open-source commercial license.

@@ -12,16 +12,23 @@ npm --prefix client ci
 npm --prefix client start
 ```
 
-The API base URL is read from the existing CRA variable `REACT_APP_Source_URL`. Keep local values in an ignored `.env.local` file. Search telemetry is opt-in with `REACT_APP_SEARCH_TELEMETRY_ENABLED=true`; its payload contains only a language category, result count, selection flag, and record type.
+The API base URL is read from the existing CRA variable
+`REACT_APP_Source_URL`; without it, the client uses the
+production-compatible `/api` prefix. Keep local values in an ignored
+`.env.local` file. Search telemetry is opt-in with
+`REACT_APP_SEARCH_TELEMETRY_ENABLED=true`; its payload contains only a language
+category, result count, selection flag, and record type.
 
 ## Checks
 
 ```sh
+npm --prefix client run lint
 npm --prefix client test -- --watchAll=false --runInBand
 npm --prefix client run build
 ```
 
-`npm run verify` at the repository root runs the backend tests, these frontend tests, and a production build together.
+`npm run verify` at the repository root runs the backend tests, strict frontend
+lint, these frontend tests, and a production build together.
 
 ## Delivery behavior
 
