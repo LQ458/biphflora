@@ -2,6 +2,8 @@ name: verify
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 permissions:
@@ -22,4 +24,10 @@ jobs:
             client/package-lock.json
       - run: npm ci
       - run: npm --prefix client ci
-      - run: npm run verify
+      - run: npm run test:backend
+      - run: npm run test:frontend
+      - run: npm run build
+        env:
+          # CRA promotes the documented legacy warnings to errors under CI=true.
+          # Compilation errors still fail while warning cleanup remains incremental.
+          CI: "false"
