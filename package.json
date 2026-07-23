@@ -1,10 +1,10 @@
 {
   "name": "biphflora",
   "version": "3.0.0",
-  "description": "Private plant and bird catalog with community contribution workflows",
-  "main": "index.js",
+  "description": "Bilingual campus biodiversity catalog with multilingual search, moderated contributions, and responsive media delivery",
+  "main": "server.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "nodemon server.js",
     "test": "npm run test:backend",
     "test:backend": "node --test --test-concurrency=1 test/*.test.js",
     "lint:frontend": "npm --prefix client run lint",
@@ -15,6 +15,8 @@
     "dev:services": "docker compose up -d",
     "dev:services:down": "docker compose down",
     "seed:demo": "node scripts/seed-demo-data.js",
+    "reset:demo": "node scripts/reset-demo-data.js",
+    "dev:clean": "npm run reset:demo && docker compose down --volumes",
     "evidence:media": "node scripts/collect-media-metrics.js",
     "evidence:product": "node scripts/collect-product-metrics.js",
     "evidence:search-performance": "node scripts/benchmark-search.js",
@@ -22,7 +24,13 @@
     "media:backfill": "node scripts/backfill-media-variants.js",
     "format": "prettier --write ."
   },
-  "keywords": [],
+  "keywords": [
+    "biodiversity",
+    "plant-catalog",
+    "react",
+    "express",
+    "mongodb"
+  ],
   "author": "",
   "license": "SEE LICENSE IN LICENSE",
   "engines": {

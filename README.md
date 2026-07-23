@@ -113,6 +113,19 @@ Stop the repository-managed local services with:
 npm run dev:services:down
 ```
 
+To remove the deterministic demo records, generated demo media, and
+repository-managed MongoDB/Redis volumes, run this while the local services are
+available:
+
+```sh
+npm run dev:clean
+```
+
+The reset command applies the same safety boundary as the seed command: it
+refuses credentials, non-loopback hosts, multi-host URLs, and any database
+other than `biphflora_demo`. `dev:services:down` stops services while retaining
+their local volumes; `dev:clean` is the complete disposable-demo reset.
+
 The browser uses `REACT_APP_Source_URL` when supplied and otherwise defaults to
 the production-compatible `/api` prefix. The backend exposes
 `GET /health/live` for process liveness and `GET /health/ready` for MongoDB and

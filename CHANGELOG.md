@@ -12,6 +12,8 @@ contains no release tags from which to reconstruct earlier version sections.
 
 - A loopback-only MongoDB and Redis development environment with deterministic,
   anonymous seed data.
+- A bounded reset command for removing the anonymous fixtures, generated demo
+  media, and repository-managed local service volumes.
 - Reproducible dependency, search-performance, architecture, and operational
   evidence documentation.
 
@@ -23,6 +25,8 @@ contains no release tags from which to reconstruct earlier version sections.
   visual and URL behavior.
 - Updated project setup, architecture, dependency, and review guidance to match
   the implemented system.
+- Aligned root and client package metadata with the documented 3.0.0 project
+  state and explicit server entry point.
 
 ### Fixed
 
@@ -33,6 +37,7 @@ contains no release tags from which to reconstruct earlier version sections.
 - Percent-encoded legacy media path segments so filenames containing whitespace
   remain valid `srcset` candidates instead of falling back to the largest
   image.
+- Removed an unreferenced duplicate video-modal component.
 
 ## [3.0.0] - 2026-07-23
 
